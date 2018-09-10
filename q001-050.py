@@ -1,4 +1,14 @@
 # Q1 Two Sum
+class Solution:
+    def twoSum(self, nums, target):
+        counter = {}
+        for i in nums:
+            if i in counter:
+                return i,counter[i]
+            else:
+                complement = target - i
+                counter[complement] = i
+        return None
 
 # Q2 Add Two Numbers
 import linked_list as ll
@@ -145,12 +155,57 @@ class Solution:
             return (max_of_left + min_of_right) / 2.0
 
 # Q5 Longest Palindromic Substring
+class Solution:
+    def longestPalindrome(self, s):
+        start = end = 0
+        for i in range(len(s)):
+            temp1 = self._utility_helper(s,i,i)
+            temp2 = self._utility_helper(s,i,i+1)
+            maxCount = max(temp1,temp2)
+            if (maxCount > end - start):
+                start = i - (maxCount - 1) // 2;
+                end = i + maxCount // 2;
+        return s[start:end+1]
+
+    def _utility_helper(self,s,left,right):
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return right - left - 1
+
+# Q6 ZigZag Conversion
+class Solution:
+    def convert(self, s, numRows):
+        rowList = [[] for _ in range(numRows)]
+        increasing = True
+        count = 0
+
+        for i in range(len(s)):
+            if count == 3:
+                increasing = False
+            if count == 0:
+                increasing = True
+
+            if increasing == True:
+                rowList[count].append(s[i])
+                count += 1
+            else:
+                rowList[count].append(s[i])
+                count -= 1
+        outcome = []
+        for i in rowList:
+            for j in i:
+                outcome.append(j)
+        return ''.join(outcome)
+
+# Q7 Reverse Integer
 
 
-# Q6
+# Q8 String to Integer (atoi)
 
 
-# Q7
+# Q9 Palindrome Number
+
+# Q10 Regular Expression Matching
 
 
-# Q8
