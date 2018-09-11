@@ -199,13 +199,108 @@ class Solution:
         return ''.join(outcome)
 
 # Q7 Reverse Integer
+class Solution:
+    def reverse(self, x):
+        negative = True if x < 0 else False
 
+        x = abs(x)
+        outcome = 0
+        while x != 0:
+            pop = x % 10
+            x = int(x/10)
+
+            outcome = outcome*10 + pop
+        return outcome if negative == False else -outcome
 
 # Q8 String to Integer (atoi)
-
+class Solution:
+    def myAtoi(self, string):
+        string = string.strip()
+        string = list(string)
+        outcome = 0
+        if string[0] not in '-0123456789':
+            return False
+        else:
+            negative = True if string[0] == '-' else False
+            if negative:
+                for i in range(1,len(string)):
+                    if string[i] in '0123456789':
+                        outcome = outcome * 10 + int(string[i])
+                    else:
+                        break
+            else:
+                for i in range(len(string)):
+                    if string[i] in '0123456789':
+                        outcome = outcome * 10 + int(string[i])
+                    else:
+                        break
+        return outcome if not negative else -outcome
 
 # Q9 Palindrome Number
+class Solution:
+    def isPalindrome(self, x):
+        reverted = 0
+        if x < 0:
+            return False
+        while x > reverted:
+            pop = x % 10
+            x = int(x / 10)
+            reverted = reverted * 10 + pop
+        return True if reverted == x or int(reverted/10) == x else False
 
 # Q10 Regular Expression Matching
+class Solution(object):
+    def isMatch(self, text, pattern):
+        dp = [[False] * (len(pattern) + 1) for _ in range(len(text) + 1)]
 
+        dp[-1][-1] = True
+        for i in range(len(text), -1, -1):
+            for j in range(len(pattern) - 1, -1, -1):
+                first_match = i < len(text) and pattern[j] in {text[i], '.'}
+                if j+1 < len(pattern) and pattern[j+1] == '*':
+                    dp[i][j] = dp[i][j+2] or first_match and dp[i+1][j]
+                else:
+                    dp[i][j] = first_match and dp[i+1][j+1]
+
+        return dp[0][0]
+
+# Q11 Container With Most Water
+class Solution:
+    def maxArea(self, height):
+        i = 0
+        j = len(height) - 1
+        maxArea = 0
+
+        while i != j:
+            side = min(height[i],height[j])
+            width = j - i
+            maxArea = side*width if side*width > maxArea else maxArea
+            if height[i] < height[j]:
+                i += 1
+            else:
+                j -= 1
+        return maxArea
+
+# Q12 Integer to Roman
+
+
+# Q13 Roman to Integer
+
+
+# Q14 Longest Common Prefix
+
+
+# Q15 3Sum
+
+
+# Q16 3Sum Closest
+
+
+# Q17 Letter Combinations of a Phone Number
+
+
+# Q18 4Sum
+
+
+# Q19 Remove Nth Node From End of List
 
