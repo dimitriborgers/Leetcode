@@ -11,7 +11,7 @@ class Solution:
         return None
 
 # Q2 Add Two Numbers
-import linked_list as ll
+import linked_list_mod as ll
 class LinkedList:
 
     class ListNode:
@@ -282,25 +282,190 @@ class Solution:
         return maxArea
 
 # Q12 Integer to Roman
-
+class Solution:
+    def intToRoman(self, x):
+        outcome = ''
+        if x > 1000:
+            quotient,x = divmod(x,1000)
+            outcome += quotient*'M'
+        if x > 100:
+            quotient,x = divmod(x,100)
+            if quotient == 9:
+                outcome += 'CM'
+            elif quotient >= 5:
+                quotient %= 5
+                outcome += 'D' + quotient*'C'
+            elif quotient == 4:
+                outcome += 'CD'
+            else:
+                outcome += quotient*'C'
+        if x > 10:
+            quotient,x = divmod(x,10)
+            if quotient == 9:
+                outcome += 'XC'
+            elif quotient >= 5:
+                quotient %= 5
+                outcome += 'L' + quotient*'X'
+            elif quotient == 4:
+                outcome += 'XL'
+            else:
+                outcome += quotient*'X'
+        if x < 10:
+            if x == 9:
+                outcome += 'IX'
+            elif x >= 5:
+                x %= 5
+                outcome += 'V' + x*'I'
+            elif x == 4:
+                outcome += 'IV'
+            else:
+                outcome += x*'I'
+        return outcome
 
 # Q13 Roman to Integer
-
+Same Q12
 
 # Q14 Longest Common Prefix
-
+class Solution:
+    def longestCommonPrefix(self, strs):
+        longest = strs[0]
+        for i in range(1,len(strs)):
+            tempL = ''
+            for j in range(min(len(longest),len(strs[i]))):
+                if longest[j] == strs[i][j]:
+                    tempL += longest[j]
+            longest = tempL
+        return longest
 
 # Q15 3Sum
+class Solution:
+    def threeSum(self, nums):
+        nums.sort()
+        end = len(nums)-1
+        output = []
+        for i in range(len(nums)-2):
+            j = i + 1
 
+            while j != end:
+                total = nums[i]+nums[j]+nums[end]
+                #can't do sum(x,y,z), but can do sum([x,y,z])
+
+                if total < 0:
+                    j += 1
+                elif total > 0:
+                    end -= 1
+                else:
+                    output.append([nums[i],nums[j],nums[end]])
+                    j += 1
+
+        unique_lst = []
+        [unique_lst.append(sublst) for sublst in output if not unique_lst.count(sublst)]
+
+        return unique_lst
 
 # Q16 3Sum Closest
+class Solution:
+    def threeSumClosest(self, nums, target):
+        nums.sort()
+        end = len(nums)-1
+        closest = 1000000
 
+        for i in range(len(nums)-2):
+            j = i + 1
+
+            while j < end:
+                total = nums[i]+nums[j]+nums[end]
+                closest = total if abs(total-target) < abs(closest-target) else closest
+
+                if total < target:
+                    j += 1
+                elif total > target:
+                    end -= 1
+                else:
+                    return nums[i]+nums[j]+nums[end]
+        return closest
 
 # Q17 Letter Combinations of a Phone Number
+import itertools
 
+class Solution:
+    def letterCombinations(self, digits):
+        nums = {'2':'abc','3':'def','4':'ghi','5':'jkl','6':'mno','7':'pqr','8':'stu','9':'vwx'}
+        inputDigits = []
+        #Dynamically creating variables can be done with list or dictionary
+        for i in digits:
+            inputDigits.append(nums[i])
+        #you can't unpack a dictionary with **inputDigits with product()
+        return list(''.join(i) for i in itertools.product(*inputDigits))
 
 # Q18 4Sum
+import collections
 
+class Solution(object):
+    def fourSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        nums, result, lookup = sorted(nums), [], collections.defaultdict(list)
+        print(nums)
+        for i in range(len(nums)-1):
+            for j in range(i + 1, len(nums)):
+                print("first {}".format(lookup))
+                is_duplicated = False
+                for x, y in lookup[nums[i] + nums[j]]:
+                    print("second {}".format(lookup))
+                    if nums[x] == nums[i]:
+                        is_duplicated = True
+                        break
+                if not is_duplicated:
+                    lookup[nums[i] + nums[j]].append([i, j])
+        ans = {}
+        print('get here')
+        for c in range(2, len(nums)):
+            for d in range(c+1, len(nums)):
+                if target - nums[c] - nums[d] in lookup:
+                    for [a, b] in lookup[target - nums[c] - nums[d]]:
+                        if b < c:
+                            quad = [nums[a], nums[b], nums[c], nums[d]]
+                            quad_hash = " ".join(str(quad))
+                            if quad_hash not in ans:
+                                ans[quad_hash] = True
+                                result.append(quad)
+        return result
+
+        #s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
+        # for k in s:
+            # print(k,v)
 
 # Q19 Remove Nth Node From End of List
+class Solution:
+    def removeNthFromEnd(self, head, n):
+        current = head
+        count = 0
+        while count < n - 1:
+            current = current.next
+            count += 1
+        old_next = current.next
+        current.next = current.next.next
+        old_next.next = None
 
+# Q20 Valid Parentheses
+class Solution:
+    def isValid(self, s):
+        S = []
+        for i in s:
+            if i in '{[(':
+                S.append(i)
+            else:
+                x = S.pop()
+                if i == ']' and x == '[':
+                    continue
+                elif i == ')' and x == '(':
+                    continue
+                elif i == '}' and x == '{':
+                    continue
+                else:
+                    return False
+        return True
