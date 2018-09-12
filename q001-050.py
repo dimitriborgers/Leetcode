@@ -469,3 +469,206 @@ class Solution:
                 else:
                     return False
         return True
+
+# Q21 Merge Two Sorted Lists
+def mergeLists(head1, head2):
+    temp = None
+    if head1 is None:
+        return head2
+    if head2 is None:
+        return head1
+    if head1.data <= head2.data:
+        temp = head1
+        temp.next = mergeLists(head1.next, head2)
+    else:
+        temp = head2
+        temp.next = mergeLists(head1, head2.next)
+    return temp
+
+# Q22 Generate Parentheses
+class Solution:
+    def generateParenthesis(self, N):
+        ans = []
+        def backtrack(S = '', left = 0, right = 0):
+            if len(S) == 2 * N:
+                ans.append(S)
+                return
+            if left < N:
+                backtrack(S+'(', left+1, right)
+            if right < left:
+                backtrack(S+')', left, right+1)
+
+        backtrack()
+        return ans
+
+# Q23 Merge k Sorted Lists
+class Solution:
+    def mergeLists(self,head1, head2, head3):
+        if head1 is None and head2 is None:
+            return head3
+        elif head1 is None and head3 is None:
+            return head2
+        elif head2 is None and head3 is None:
+            return head1
+        elif head1 is None:
+            smallest = min(head2.value,head3.value)
+        elif head2 is None:
+            smallest = min(head1.value,head3.value)
+        elif head3 is None:
+            smallest = min(head1.value,head2.value)
+        else:
+            smallest = min(head1.value,head2.value,head3.value)
+        if smallest == head1.value:
+            temp = head1
+            temp.next = self.mergeLists(head1.next,head2,head3)
+        elif smallest == head2.value:
+            temp = head2
+            temp.next = self.mergeLists(head1,head2.next,head3)
+        else:
+            temp = head3
+            temp.next = self.mergeLists(head1,head2,head3.next)
+        return temp
+
+# Q24 Swap Nodes in Pairs
+class Solution:
+    #seq can't equal head because that will just create a temporary pass by reference, so changes won't be saved.
+    def swapPairs(self, seq):
+        current = seq.head
+        while current and current.next:
+            first = current
+            second = current.next
+            third = current.next.next
+
+            current.next = third
+            second.next = first
+
+            if first == seq.head:
+                seq.head = second
+            else:
+                old_first.next = second
+
+            if third is None:
+                return seq.head
+
+            old_first = current
+            current = third
+
+# Q25 Reverse Nodes in k-Group
+class Solution:
+
+    def reverseKGroup(self, head, k):
+        dummy = ListNode(-1)
+        dummy.next = head
+
+        cur, cur_dummy = head, dummy
+        length = 0
+
+        while cur:
+            next_cur = cur.next
+            length = (length + 1) % k
+
+            if length == 0:
+                next_dummy = cur_dummy.next
+                self.reverse(cur_dummy, cur.next)
+                cur_dummy = next_dummy
+
+            cur = next_cur
+
+        return dummy.next
+
+    def reverse(self, begin, end):
+            first = begin.next
+            cur = first.next
+
+            while cur != end:
+                first.next = cur.next
+                cur.next = begin.next
+                begin.next = cur
+                cur = first.next
+
+if __name__ == "__main__":
+    head = ListNode(1)
+    head.next = ListNode(2)
+    head.next.next = ListNode(3)
+    head.next.next.next = ListNode(4)
+    head.next.next.next.next = ListNode(5)
+    print(Solution().reverseKGroup(head, 2))
+
+# Q26 Remove Duplicates from Sorted Array
+class Solution:
+    def removeDuplicates(self, nums):
+        for i in range(len(nums)-1):
+            while i<len(nums)-1 and nums[i] == nums[i+1]:
+                del nums[i+1]
+        return nums
+
+# Q27 Remove Element
+
+
+# Q28 Implement strStr()
+
+
+# Q29 Divide Two Integers
+
+
+# Q30 Substring with Concatenation of All Words
+
+
+# Q31 Next Permutation
+
+
+# Q32 Longest Valid Parentheses
+
+
+# Q33 Search in Rotated Sorted Array
+
+
+# Q34 Find First and Last Position of Element in Sorted Array
+
+
+# Q35 Search Insert Position
+
+
+# Q36 Valid Sudoku
+
+
+# Q37 Sudoku Solver
+
+
+# Q38 Count and Say
+
+
+# Q39 Combination Sum
+
+
+# Q40 Combination Sum II
+
+
+# Q41 First Missing Positive
+
+
+# Q42 Trapping Rain Water
+
+
+# Q43 Multiply Strings
+
+
+# Q44 Wildcard Matching
+
+
+# Q45 Jump Game II
+
+
+# Q46 Permutations
+
+
+# Q47 Permutations II
+
+
+# Q48 Rotate Image
+
+
+# Q49 Group Anagrams
+
+
+# Q50 Pow(x, n)
