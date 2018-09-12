@@ -603,16 +603,76 @@ class Solution:
         return nums
 
 # Q27 Remove Element
-
+class Solution:
+    def removeElement(self, nums, val):
+        j = 0
+        for i in range(len(nums)-1):
+            if nums[i] != val:
+                nums[j] = nums[i]
+                j += 1
+        while j != len(nums):
+            del nums[j]
+        return len(nums)
 
 # Q28 Implement strStr()
-
+class Solution:
+    def strStr(self, haystack, needle):
+        if haystack == '':
+            return 0
+        for i in range(len(haystack)):
+            index = 0
+            j = i+1
+            if haystack[i] == needle[index]:
+                index += 1
+                while j < len(haystack) and haystack[j] == needle[index]:
+                    if index == len(needle)-1:
+                        return i
+                    j += 1
+                    index += 1
+        return -1
 
 # Q29 Divide Two Integers
-
+class Solution:
+    def divide(self, dividend, divisor):
+        isNegative = True if dividend < 0 or divisor < 0 else False
+        count = 0
+        dividend, divisor = abs(dividend),abs(divisor)
+        while dividend > divisor:
+            dividend -= divisor
+            count += 1
+        if isNegative:
+            return -count
+        return count
 
 # Q30 Substring with Concatenation of All Words
+import collections
 
+class Solution:
+    def findSubstring(self, s, words):
+
+        result, m, n, k = [], len(s), len(words), len(words[0])
+        if m < n*k:
+            return result
+
+        lookup = collections.defaultdict(int)
+        for i in words:
+            lookup[i] += 1
+
+        for i in range(m+1-k*n):
+            cur, j = collections.defaultdict(int), 0
+            while j < n:
+                #s[a:b] does not include b
+                word = s[i+j*k:i+j*k+k]
+                if word not in lookup:
+                    break
+                cur[word] += 1
+                if cur[word] > lookup[word]:
+                    break
+                j += 1
+            if j == n:
+                result.append(i)
+
+        return result
 
 # Q31 Next Permutation
 
