@@ -624,6 +624,7 @@ class Solution:
             j = i+1
             if haystack[i] == needle[index]:
                 index += 1
+                #order matters in while statement
                 while j < len(haystack) and haystack[j] == needle[index]:
                     if index == len(needle)-1:
                         return i
@@ -675,19 +676,83 @@ class Solution:
         return result
 
 # Q31 Next Permutation
-
+class Solution:
+    def nextPermutation(self, nums):
+        for i in range(len(nums)-1,0,-1):
+            if nums[i] > nums[i-1]:
+                oldNums = nums[i]
+                nums[i] = nums[i-1]
+                nums[i-1] = oldNums
+                #if you just do break, the reference to the list is broken and nothing happens
+                return nums
+        #if you do nums.sort(), it returns None instead because you are not creating a new list
+        return sorted(nums)
 
 # Q32 Longest Valid Parentheses
-
+class Solution:
+    def longestValidParentheses(self, s):
+        stack = [-1]
+        length = 0
+        for i in range(len(s)):
+            if s[i] == '(':
+                stack.append(i)
+            else:
+                stack.pop()
+                if not stack:
+                    stack.append(i)
+                else:
+                    length = max(length, i - stack[-1])
+        return length
 
 # Q33 Search in Rotated Sorted Array
+class Solution(object):
+    def search(self, nums, target):
+        left, right = 0, len(nums) - 1
 
+        while left <= right:
+            mid = left + (right - left) // 2
+
+            if nums[mid] == target:
+                return mid
+            elif (nums[left] <= target < nums[mid]) or (nums[mid] < nums[left] and not (nums[mid] < target <= nums[right])):
+                right = mid - 1
+            else:
+                left = mid + 1
+        return -1
 
 # Q34 Find First and Last Position of Element in Sorted Array
+class Solution:
+    def searchRange(self, nums, target):
+        left = 0
+        right = len(nums)-1
 
+        while left <= right:
+            mid = left + (right-left) // 2
+
+            if nums[mid] == target:
+                i = j = 0
+                while nums[mid-i] == target:
+                    i += 1
+                while nums[mid+j] == target:
+                    j += 1
+                return (mid-(i-1),mid+(j-1))
+            elif nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return (-1,-1)
 
 # Q35 Search Insert Position
-
+class Solution:
+    def searchInsert(self, nums, target):
+        for i in range(len(nums)):
+            if nums[i] > target:
+                return i
+            elif nums[i] == target:
+                return i
+            else:
+                continue
+        return len(nums)
 
 # Q36 Valid Sudoku
 
