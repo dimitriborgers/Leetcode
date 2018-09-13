@@ -865,30 +865,142 @@ class Solution:
             start += 1
 
 # Q41 First Missing Positive
+class Solution:
+    def firstMissingPositive(self, A):
+        i = 0
+        while i < len(A):
+            if A[i] > 0 and A[i] - 1 < len(A) and A[i] != A[A[i]-1]:
+                A[A[i]-1], A[i] = A[i], A[A[i]-1]
+            else:
+                i += 1
 
+        for i, integer in enumerate(A):
+            if integer != i + 1:
+                return i + 1
+        return len(A) + 1
 
 # Q42 Trapping Rain Water
+class Solution:
+    def trap(self, height):
+        left = 0
+        right = len(height)-1
+        ans = 0
+        left_max = right_max = 0
 
+        while left < right:
+            if height[left] < height[right]:
+                if height[left] >= left_max:
+                    left_max = height[left]
+                else:
+                    ans += left_max - height[left]
+                left += 1
+            else:
+                if height[right] >= right_max:
+                    right_max = height[right]
+                else:
+                    ans += right_max - height[right]
+                right -= 1
+        return ans
 
 # Q43 Multiply Strings
+class Solution(object):
+    def multiply(self, num1, num2):
 
+        num1, num2 = num1[::-1], num2[::-1]
+
+        #multiplying two numbers together always creates a result that is length of length of two numbers
+        res = [0] * (len(num1) + len(num2))
+        for i in range(len(num1)):
+            for j in range(len(num2)):
+                res[i + j] += int(num1[i]) * int(num2[j])
+
+                #this is remainder being carried over
+                res[i + j + 1] += res[i + j] // 10
+                res[i + j] %= 10
+
+        # Skip leading 0s.
+        i = len(res) - 1
+        while i > 0 and res[i] == 0:
+            i -= 1
+
+        return ''.join(map(str, res[i::-1]))
 
 # Q44 Wildcard Matching
-
+class Solution:
+    def isMatch(self, s, p):
+        if not p or not s:
+            return not s and not p
+        print(p)
+        if p[0] != '*':
+            if p[0] == s[0] or p[0] == '?':
+                return self.isMatch(s[1:], p[1:])
+            else:
+                return False
+        else:
+            while len(s) > 0:
+                #p[1:] does not change for every loop since it returns False everytime until breaks out
+                if self.isMatch(s, p[1:]):
+                    return True
+                s = s[1:]
+            return self.isMatch(s, p[1:])
 
 # Q45 Jump Game II
+class Solution(object):
 
+    def jump(self, A):
+        jump_count = 0
+        reachable = 0
+        curr_reachable = 0
+        for i, length in enumerate(A):
+            if i > reachable:
+                return -1
+            if i > curr_reachable:
+                curr_reachable = reachable
+                jump_count += 1
+            reachable = max(reachable, i + length)
 
 # Q46 Permutations
+import itertools
 
+class Solution:
+    def permute(self, nums):
+        return list(itertools.permutations(nums,len(nums)))
 
 # Q47 Permutations II
+import itertools
 
+class Solution:
+    def permute(self, nums):
+        return set(list(itertools.permutations(nums,len(nums))))
 
 # Q48 Rotate Image
+class Solution2:
 
+    def rotate(self, matrix):
+        return [list(reversed(x)) for x in zip(*matrix)]
 
 # Q49 Group Anagrams
+import collections
 
+class Solution:
+    def groupAnagrams(self, strs):
+        result = collections.defaultdict(list)
+        for i in strs:
+            result[tuple(set(i))].append(i)
+        return result
 
 # Q50 Pow(x, n)
+class Solution:
+    def myPow(self,x,n):
+        if n > 0:
+            result = x
+            for i in range(n-1):
+                result *= x
+        else:
+            result = 1/x
+            for i in range(abs(n)-1):
+                result *= 1/x
+        return result
+
+#Solution.myPow() requires 3 arguments
+print(Solution().myPow(2,-2))
