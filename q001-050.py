@@ -755,19 +755,114 @@ class Solution:
         return len(nums)
 
 # Q36 Valid Sudoku
+class Solution(object):
+    def isValidSudoku(self, board):
+        for i in range(len(board)):
+            if not self.isValid([board[i][j] for j in range(len(board))]) or not self.isValid([board[j][i] for j in range(len(board))]):
+                return False
 
+        for i in range(3):
+            for j in range(3):
+                if not self.isValid([board[m][n] for n in range(3 * j, 3 * j + 3) for m in range(3 * i, 3 * i + 3)]):
+                    return False
+
+        return True
+
+    def isValid(self,row):
+        row = [i for i in row if i != '.']
+        if len(set(row)) == len(row):
+            return True
 
 # Q37 Sudoku Solver
+class Solution:
+    def solveSudoku(self, board):
+        def isValid(board, x, y):
+            for i in xrange(9):
+                if i != x and board[i][y] == board[x][y]:
+                    return False
+            for j in xrange(9):
+                if j != y and board[x][j] == board[x][y]:
+                    return False
+            i = 3 * (x / 3)
+            while i < 3 * (x / 3 + 1):
+                j = 3 * (y / 3)
+                while j < 3 * (y / 3 + 1):
+                    if (i != x or j != y) and board[i][j] == board[x][y]:
+                        return False
+                    j += 1
+                i += 1
+            return True
 
+        def solver(board):
+            for i in xrange(len(board)):
+                for j in xrange(len(board[0])):
+                    if(board[i][j] == '.'):
+                        for k in xrange(9):
+                            board[i][j] = chr(ord('1') + k)
+                            if isValid(board, i, j) and solver(board):
+                                return True
+                            board[i][j] = '.'
+                        return False
+            return True
+
+        solver(board)
 
 # Q38 Count and Say
+class Solution:
+    def countAndSay(self, n):
+        seq = "1"
+        for i in range(n - 1):
+            seq = self.getNext(seq)
+        return seq
 
+    def getNext(self, seq):
+        i, next_seq = 0, ""
+        while i < len(seq):
+            cnt = 1
+            while i < len(seq) - 1 and seq[i] == seq[i + 1]:
+                cnt += 1
+                i += 1
+            next_seq += str(cnt) + seq[i]
+            i += 1
+        return next_seq
 
 # Q39 Combination Sum
+class Solution:
 
+    def combinationSum(self, candidates, target):
+        result = []
+        self.combinationSumRecu(sorted(candidates), result, 0, [], target)
+        return result
+
+    def combinationSumRecu(self, candidates, result, start, intermediate, target):
+        if target == 0:
+            #has to be list() because this creates a new intermediate that won't be alterned by procedures following addition
+            result.append(list(intermediate))
+        while start < len(candidates) and candidates[start] <= target:
+            intermediate.append(candidates[start])
+            self.combinationSumRecu(candidates, result, start, intermediate, target - candidates[start])
+            intermediate.pop()
+            start += 1
 
 # Q40 Combination Sum II
+class Solution:
 
+    def combinationSum2(self, candidates, target):
+        result = []
+        self.combinationSumRecu(sorted(candidates), result, 0, [], target)
+        return result
+
+    def combinationSumRecu(self, candidates, result, start, intermediate, target):
+        if target == 0:
+            result.append(list(intermediate))
+        prev = 0
+        while start < len(candidates) and candidates[start] <= target:
+            if prev != candidates[start]:
+                intermediate.append(candidates[start])
+                self.combinationSumRecu(candidates, result, start + 1, intermediate, target - candidates[start])
+                intermediate.pop()
+                prev = candidates[start]
+            start += 1
 
 # Q41 First Missing Positive
 
