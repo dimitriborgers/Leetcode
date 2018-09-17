@@ -11,9 +11,16 @@ class Solution:
         return None
 
 # Q2 Add Two Numbers
+
+# Definition for singly-linked list if only using node
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+# Implementation of singly-linked list
 import linked_list_mod as ll
 class LinkedList:
-
     class ListNode:
         __slots__ = 'value','next'
 
@@ -69,7 +76,6 @@ class LinkedList:
         return old_head
 
 class Solution:
-
     def addTwoNumbers(self, l1, l2):
         l3 = LinkedList()
         remainder = 0
@@ -117,42 +123,48 @@ class Solution:
             else:
                 seq.remove(s[i])
                 i += 1
-        print(maxCount)
+        return maxCount
 
 # Q4 Median of Two Sorted Arrays
 class Solution:
     def median(self, A, B):
-    m, n = len(A), len(B)
-    if m > n:
-        A, B, m, n = B, A, n, m
-    if n == 0:
-        raise ValueError
+        m, n = len(A), len(B)
+        if m > n:
+            A, B, m, n = B, A, n, m
+        if n == 0:
+            #Don't need to write a print statement
+            raise ValueError
 
-    imin, imax, half_len = 0, m, (m + n + 1) / 2
-    while imin <= imax:
-        i = (imin + imax) / 2
-        j = half_len - i
-        if i < m and B[j-1] > A[i]:
-            # i is too small, must increase it
-            imin = i + 1
-        elif i > 0 and A[i-1] > B[j]:
-            # i is too big, must decrease it
-            imax = i - 1
-        else:
-            # i is perfect
+        #You're not just dividing both sides by 2
+        imin, imax, half_len = 0, m, (m + n + 1) // 2
+        while imin <= imax:
+            #anything at index i or greater is right part
+            #left part always equal or bigger than right part
+            i = (imin + imax) // 2
+            j = half_len - i
+            if i < m and B[j-1] > A[i]:
+                imin = i + 1
+            elif i > 0 and A[i-1] > B[j]:
+                imax = i - 1
+            else:
+                if i == 0:
+                    max_of_left = B[j-1]
+                elif j == 0:
+                    max_of_left = A[i-1]
+                else:
+                    max_of_left = max(A[i-1], B[j-1])
 
-            if i == 0: max_of_left = B[j-1]
-            elif j == 0: max_of_left = A[i-1]
-            else: max_of_left = max(A[i-1], B[j-1])
+                if (m + n) % 2 == 1:
+                    return max_of_left
 
-            if (m + n) % 2 == 1:
-                return max_of_left
+                if i == m:
+                    min_of_right = B[j]
+                elif j == n:
+                    min_of_right = A[i]
+                else:
+                    min_of_right = min(A[i], B[j])
 
-            if i == m: min_of_right = B[j]
-            elif j == n: min_of_right = A[i]
-            else: min_of_right = min(A[i], B[j])
-
-            return (max_of_left + min_of_right) / 2.0
+                return (max_of_left + min_of_right) / 2
 
 # Q5 Longest Palindromic Substring
 class Solution:
@@ -163,6 +175,7 @@ class Solution:
             temp2 = self._utility_helper(s,i,i+1)
             maxCount = max(temp1,temp2)
             if (maxCount > end - start):
+                #take away 1 because for an even length string
                 start = i - (maxCount - 1) // 2;
                 end = i + maxCount // 2;
         return s[start:end+1]
@@ -181,7 +194,7 @@ class Solution:
         count = 0
 
         for i in range(len(s)):
-            if count == 3:
+            if count == numRows-1:
                 increasing = False
             if count == 0:
                 increasing = True
@@ -192,11 +205,8 @@ class Solution:
             else:
                 rowList[count].append(s[i])
                 count -= 1
-        outcome = []
-        for i in rowList:
-            for j in i:
-                outcome.append(j)
-        return ''.join(outcome)
+
+        return ''.join([''.join(i) for i in rowList])
 
 # Q7 Reverse Integer
 class Solution:
@@ -207,7 +217,7 @@ class Solution:
         outcome = 0
         while x != 0:
             pop = x % 10
-            x = int(x/10)
+            x = x // 10
 
             outcome = outcome*10 + pop
         return outcome if negative == False else -outcome
@@ -216,7 +226,8 @@ class Solution:
 class Solution:
     def myAtoi(self, string):
         string = string.strip()
-        string = list(string)
+        if not string:
+            return False
         outcome = 0
         if string[0] not in '-0123456789':
             return False
@@ -244,25 +255,23 @@ class Solution:
             return False
         while x > reverted:
             pop = x % 10
-            x = int(x / 10)
+            x = x // 10
             reverted = reverted * 10 + pop
-        return True if reverted == x or int(reverted/10) == x else False
+        return True if reverted == x or reverted//10 == x else False
 
 # Q10 Regular Expression Matching
 class Solution(object):
     def isMatch(self, text, pattern):
-        dp = [[False] * (len(pattern) + 1) for _ in range(len(text) + 1)]
+        if not pattern:
+            return not text
 
-        dp[-1][-1] = True
-        for i in range(len(text), -1, -1):
-            for j in range(len(pattern) - 1, -1, -1):
-                first_match = i < len(text) and pattern[j] in {text[i], '.'}
-                if j+1 < len(pattern) and pattern[j+1] == '*':
-                    dp[i][j] = dp[i][j+2] or first_match and dp[i+1][j]
-                else:
-                    dp[i][j] = first_match and dp[i+1][j+1]
+        first_match = text and pattern[0] in (text[0], '.')
 
-        return dp[0][0]
+        if len(pattern) >= 2 and pattern[1] == '*':
+            return (self.isMatch(text, pattern[2:]) or
+                    first_match and self.isMatch(text[1:], pattern))
+        else:
+            return first_match and self.isMatch(text[1:], pattern[1:])
 
 # Q11 Container With Most Water
 class Solution:
