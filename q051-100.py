@@ -174,22 +174,136 @@ class Solution:
         return seq
 
 # Q61
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
 
+    def __repr__(self):
+        #Use repr as a recursive function
+        return "{} -> {}".format(self.val,repr(self.next))
+
+class Solution:
+    def rotateRight(self, head, k):
+        if not head or not head.next:
+            return head
+
+        for _ in range(k):
+            cur = head
+            while cur.next.next:
+                cur = cur.next
+            tail = cur.next
+            tail.next = head
+            head = tail
+            tail = cur
+            tail.next = None
+        return head
+
+head = ListNode(1)
+head.next = ListNode(2)
+head.next.next = ListNode(3)
+head.next.next.next = ListNode(4)
+head.next.next.next.next = ListNode(5)
 
 # Q62
+class Solution:
+    def uniquePaths(self, m, n):
+        matrix = [[0]*m for _ in range(n)]
+        matrix[0][0] = 1
+        for i in range(m):
+            matrix[0][i] = 1
+        for j in range(n):
+            matrix[j][0] = 1
 
+        for i in range(1,n):
+            for j in range(1,m):
+                matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
+        return matrix
 
 # Q63
+class Solution:
+    def uniquePathsWithObstacles(self, obstacleGrid):
+        n = len(obstacleGrid)
+        m = len(obstacleGrid[0])
+        matrix = [[0]*m for _ in range(n)]
 
+        if obstacleGrid[0][0] == 1:
+            return 0
+        matrix[0][0] = 1
+
+        for i in range(1,m):
+            if obstacleGrid[0][i] == 1:
+                for j in range(i,m):
+                    matrix[0][j] = 0
+                break
+            else:
+                matrix[0][i] = 1
+
+        for i in range(1,n):
+            if obstacleGrid[i][0] == 1:
+                for j in range(i,n):
+                    matrix[j][0] = 0
+                break
+            else:
+                matrix[i][0] = 1
+
+        for i in range(1,n):
+            for j in range(1,m):
+                if obstacleGrid[i][j] == 1:
+                    matrix[i][j] = 0
+                else:
+                    matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
+        return matrix
 
 # Q64
+import copy
 
+class Solution:
+    def minPathSum(self, grid):
+        #global variables don't need to be passed into other functions
+        global n
+        n = len(grid)
+        global m
+        m = len(grid[0])
+        #list(grid) does not work in this situation because grid is 2d array, and list(grid) would only make a new reference to the outer array, but the inner arrays would still be linked. deepcopy replaces all links.
+        result = self._minPathFinder(copy.deepcopy(grid),0,0,0)
+        return result
+
+    def _minPathFinder(self,grid,x,y,val):
+        grid[x][y] += val
+
+        if x == n-1 and y == m-1:
+            return grid[x][y]
+
+        if x < n-1 and y < m-1:
+            down = self._minPathFinder(copy.deepcopy(grid),x+1,y,grid[x][y])
+            right = self._minPathFinder(copy.deepcopy(grid),x,y+1,grid[x][y])
+            return min(down,right)
+        elif x < n-1:
+            down = self._minPathFinder(copy.deepcopy(grid),x+1,y,grid[x][y])
+            return down
+        elif y < m-1:
+            right = self._minPathFinder(copy.deepcopy(grid),x,y+1,grid[x][y])
+            return right
 
 # Q65
+import re
 
+class Solution:
+    def isNumber(self, s):
+        #$ is put at the end of thing you want to match
+        return bool(re.match('^\s*[\+-]?((\d+(\.\d*)?)|\.\d+)([eE][\+-]?\d+)?\s*$', s))
 
 # Q66
-
+class Solution:
+    def plusOne(self, digits):
+        n = len(digits)-1
+        digits[n] += 1
+        while digits[n] > 9:
+            digits[n] = 0
+            digits[n-1] += 1
+            n = n-1
+        return digits
 
 # Q67
 

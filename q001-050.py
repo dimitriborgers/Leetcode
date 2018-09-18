@@ -332,7 +332,7 @@ class Solution:
         return outcome
 
 # Q13 Roman to Integer
-Same Q12
+#Same Q12
 
 # Q14 Longest Common Prefix
 class Solution:
@@ -354,6 +354,10 @@ class Solution:
         output = []
         for i in range(len(nums)-2):
             j = i + 1
+
+            #skip if last one seen is the same
+            if i and nums[i] == nums[i - 1]:
+                continue
 
             while j != end:
                 total = nums[i]+nums[j]+nums[end]
@@ -382,10 +386,12 @@ class Solution:
         for i in range(len(nums)-2):
             j = i + 1
 
+            if i and nums[i] == nums[i - 1]:
+                continue
+
             while j < end:
                 total = nums[i]+nums[j]+nums[end]
                 closest = total if abs(total-target) < abs(closest-target) else closest
-
                 if total < target:
                     j += 1
                 elif total > target:
@@ -410,28 +416,22 @@ class Solution:
 # Q18 4Sum
 import collections
 
-class Solution(object):
+class Solution:
     def fourSum(self, nums, target):
-        """
-        :type nums: List[int]
-        :type target: int
-        :rtype: List[List[int]]
-        """
+        #in defaultdict(list), if key not found, automatically creates list
         nums, result, lookup = sorted(nums), [], collections.defaultdict(list)
-        print(nums)
         for i in range(len(nums)-1):
             for j in range(i + 1, len(nums)):
-                print("first {}".format(lookup))
+                print(lookup)
+                #Can't remove boolean because appending must be done outside below for loop existence
                 is_duplicated = False
                 for x, y in lookup[nums[i] + nums[j]]:
-                    print("second {}".format(lookup))
                     if nums[x] == nums[i]:
                         is_duplicated = True
                         break
                 if not is_duplicated:
                     lookup[nums[i] + nums[j]].append([i, j])
         ans = {}
-        print('get here')
         for c in range(2, len(nums)):
             for d in range(c+1, len(nums)):
                 if target - nums[c] - nums[d] in lookup:
@@ -444,10 +444,6 @@ class Solution(object):
                                 result.append(quad)
         return result
 
-        #s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1)]
-        # for k in s:
-            # print(k,v)
-
 # Q19 Remove Nth Node From End of List
 class Solution:
     def removeNthFromEnd(self, head, n):
@@ -459,6 +455,15 @@ class Solution:
         old_next = current.next
         current.next = current.next.next
         old_next.next = None
+
+        if __name__ == "__main__":
+            head = ListNode(1)
+            head.next = ListNode(2)
+            head.next.next = ListNode(3)
+            head.next.next.next = ListNode(4)
+            head.next.next.next.next = ListNode(5)
+
+            print(Solution().removeNthFromEnd(head, 2))
 
 # Q20 Valid Parentheses
 class Solution:
