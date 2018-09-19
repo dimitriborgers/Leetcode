@@ -138,8 +138,8 @@ class Solution:
         #You're not just dividing both sides by 2
         imin, imax, half_len = 0, m, (m + n + 1) // 2
         while imin <= imax:
-            #anything at index i or greater is right part
-            #left part always equal or bigger than right part
+            #anything at index i or greater is closeParan part
+            #openParan part always equal or bigger than closeParan part
             i = (imin + imax) // 2
             j = half_len - i
             if i < m and B[j-1] > A[i]:
@@ -148,23 +148,23 @@ class Solution:
                 imax = i - 1
             else:
                 if i == 0:
-                    max_of_left = B[j-1]
+                    max_of_openParan = B[j-1]
                 elif j == 0:
-                    max_of_left = A[i-1]
+                    max_of_openParan = A[i-1]
                 else:
-                    max_of_left = max(A[i-1], B[j-1])
+                    max_of_openParan = max(A[i-1], B[j-1])
 
                 if (m + n) % 2 == 1:
-                    return max_of_left
+                    return max_of_openParan
 
                 if i == m:
-                    min_of_right = B[j]
+                    min_of_closeParan = B[j]
                 elif j == n:
-                    min_of_right = A[i]
+                    min_of_closeParan = A[i]
                 else:
-                    min_of_right = min(A[i], B[j])
+                    min_of_closeParan = min(A[i], B[j])
 
-                return (max_of_left + min_of_right) / 2
+                return (max_of_openParan + min_of_closeParan) / 2
 
 # Q5 Longest Palindromic Substring
 class Solution:
@@ -180,11 +180,11 @@ class Solution:
                 end = i + maxCount // 2;
         return s[start:end+1]
 
-    def _utility_helper(self,s,left,right):
-        while left >= 0 and right < len(s) and s[left] == s[right]:
-            left -= 1
-            right += 1
-        return right - left - 1
+    def _utility_helper(self,s,openParan,closeParan):
+        while openParan >= 0 and closeParan < len(s) and s[openParan] == s[closeParan]:
+            openParan -= 1
+            closeParan += 1
+        return closeParan - openParan - 1
 
 # Q6 ZigZag Conversion
 class Solution:
@@ -492,6 +492,8 @@ def mergeLists(head1, head2):
     if head2 is None:
         return head1
     if head1.data <= head2.data:
+        #since you assign temp to head1, you actually change the structure of head1 list itself
+        #May need to use deepcopy if you don't want to alter original lists
         temp = head1
         temp.next = mergeLists(head1.next, head2)
     else:
@@ -503,45 +505,39 @@ def mergeLists(head1, head2):
 class Solution:
     def generateParenthesis(self, N):
         ans = []
-        def backtrack(S = '', left = 0, right = 0):
+        def backtrack(S = '', openParan = 0, closeParan = 0):
             if len(S) == 2 * N:
                 ans.append(S)
                 return
-            if left < N:
-                backtrack(S+'(', left+1, right)
-            if right < left:
-                backtrack(S+')', left, right+1)
+            if openParan < N:
+                backtrack(S+'(', openParan+1, closeParan)
+            if closeParan < openParan:
+                backtrack(S+')', openParan, closeParan+1)
 
         backtrack()
         return ans
 
 # Q23 Merge k Sorted Lists
 class Solution:
-    def mergeLists(self,head1, head2, head3):
-        if head1 is None and head2 is None:
-            return head3
-        elif head1 is None and head3 is None:
+    def mergeTwo(self,head1, head2):
+        temp = None
+        if head1 is None:
             return head2
-        elif head2 is None and head3 is None:
+        if head2 is None:
             return head1
-        elif head1 is None:
-            smallest = min(head2.value,head3.value)
-        elif head2 is None:
-            smallest = min(head1.value,head3.value)
-        elif head3 is None:
-            smallest = min(head1.value,head2.value)
+        if head1.val <= head2.val:
+            temp = copy.deepcopy(head1)
+            temp.next = self.mergeTwo(head1.next, head2)
         else:
-            smallest = min(head1.value,head2.value,head3.value)
-        if smallest == head1.value:
-            temp = head1
-            temp.next = self.mergeLists(head1.next,head2,head3)
-        elif smallest == head2.value:
-            temp = head2
-            temp.next = self.mergeLists(head1,head2.next,head3)
-        else:
-            temp = head3
-            temp.next = self.mergeLists(head1,head2,head3.next)
+            temp = copy.deepcopy(head2)
+            temp.next = self.mergeTwo(head1, head2.next)
         return temp
+
+    def mergeKLists(self,lists):
+        for i in range(len(lists)-1):
+            temp = self.mergeTwo(lists[i],lists[i+1])
+            lists[i+1] = temp
+        return lists[-1]
 
 # Q24 Swap Nodes in Pairs
 class Solution:
@@ -611,22 +607,19 @@ if __name__ == "__main__":
 # Q26 Remove Duplicates from Sorted Array
 class Solution:
     def removeDuplicates(self, nums):
-        for i in range(len(nums)-1):
-            while i<len(nums)-1 and nums[i] == nums[i+1]:
-                del nums[i+1]
+        for i in range(len(nums)):
+            while i<len(nums) and nums[i] == nums[i-1]:
+                del nums[i]
         return nums
 
 # Q27 Remove Element
 class Solution:
     def removeElement(self, nums, val):
-        j = 0
-        for i in range(len(nums)-1):
-            if nums[i] != val:
-                nums[j] = nums[i]
-                j += 1
-        while j != len(nums):
-            del nums[j]
-        return len(nums)
+        for i in range(len(nums)):
+            while i<len(nums) and nums[i] == val:
+                #can't do del if use for i in nums
+                del nums[i]
+        return nums
 
 # Q28 Implement strStr()
 class Solution:
@@ -646,9 +639,21 @@ class Solution:
                     index += 1
         return -1
 
+import re
+
+class Solution:
+    def strStr2(self, haystack, needle):
+        try:
+            match = re.search(needle,haystack)
+            #.start() gives you index of match
+            return match.start(),match.end()
+        except:
+            return -1
+
 # Q29 Divide Two Integers
 class Solution:
     def divide(self, dividend, divisor):
+        #can't do xor
         isNegative = True if dividend < 0 or divisor < 0 else False
         count = 0
         dividend, divisor = abs(dividend),abs(divisor)
@@ -689,6 +694,28 @@ class Solution:
 
         return result
 
+class Solution2:
+    def findSubstring(self, s, words):
+
+        result, m, n, k = [], len(s), len(words), len(words[0])
+        if m < n*k:
+            return result
+
+        for i in range(m+1-k*n):
+            setwords = set(words)
+            counter = i
+            temp = s[counter:counter+k]
+            while setwords:
+                if temp in setwords:
+                    setwords.remove(temp)
+                    counter += k
+                    temp = s[counter:counter+k]
+                else:
+                    break
+            else:
+                result.append(i)
+        return result
+
 # Q31 Next Permutation
 class Solution:
     def nextPermutation(self, nums):
@@ -721,27 +748,27 @@ class Solution:
 # Q33 Search in Rotated Sorted Array
 class Solution(object):
     def search(self, nums, target):
-        left, right = 0, len(nums) - 1
+        openParan, closeParan = 0, len(nums) - 1
 
-        while left <= right:
-            mid = left + (right - left) // 2
+        while openParan <= closeParan:
+            mid = openParan + (closeParan - openParan) // 2
 
             if nums[mid] == target:
                 return mid
-            elif (nums[left] <= target < nums[mid]) or (nums[mid] < nums[left] and not (nums[mid] < target <= nums[right])):
-                right = mid - 1
+            elif (nums[openParan] <= target < nums[mid]) or (nums[mid] < nums[openParan] and not (nums[mid] < target <= nums[closeParan])):
+                closeParan = mid - 1
             else:
-                left = mid + 1
+                openParan = mid + 1
         return -1
 
 # Q34 Find First and Last Position of Element in Sorted Array
 class Solution:
     def searchRange(self, nums, target):
-        left = 0
-        right = len(nums)-1
+        openParan = 0
+        closeParan = len(nums)-1
 
-        while left <= right:
-            mid = left + (right-left) // 2
+        while openParan <= closeParan:
+            mid = openParan + (closeParan-openParan) // 2
 
             if nums[mid] == target:
                 i = j = 0
@@ -751,9 +778,9 @@ class Solution:
                     j += 1
                 return (mid-(i-1),mid+(j-1))
             elif nums[mid] < target:
-                left = mid + 1
+                openParan = mid + 1
             else:
-                right = mid - 1
+                closeParan = mid - 1
         return (-1,-1)
 
 # Q35 Search Insert Position
@@ -896,24 +923,24 @@ class Solution:
 # Q42 Trapping Rain Water
 class Solution:
     def trap(self, height):
-        left = 0
-        right = len(height)-1
+        openParan = 0
+        closeParan = len(height)-1
         ans = 0
-        left_max = right_max = 0
+        openParan_max = closeParan_max = 0
 
-        while left < right:
-            if height[left] < height[right]:
-                if height[left] >= left_max:
-                    left_max = height[left]
+        while openParan < closeParan:
+            if height[openParan] < height[closeParan]:
+                if height[openParan] >= openParan_max:
+                    openParan_max = height[openParan]
                 else:
-                    ans += left_max - height[left]
-                left += 1
+                    ans += openParan_max - height[openParan]
+                openParan += 1
             else:
-                if height[right] >= right_max:
-                    right_max = height[right]
+                if height[closeParan] >= closeParan_max:
+                    closeParan_max = height[closeParan]
                 else:
-                    ans += right_max - height[right]
-                right -= 1
+                    ans += closeParan_max - height[closeParan]
+                closeParan -= 1
         return ans
 
 # Q43 Multiply Strings

@@ -173,7 +173,7 @@ class Solution:
                 fact //= i
         return seq
 
-# Q61
+# Q61 Rotate List
 class ListNode:
     def __init__(self, x):
         self.val = x
@@ -205,7 +205,7 @@ head.next.next = ListNode(3)
 head.next.next.next = ListNode(4)
 head.next.next.next.next = ListNode(5)
 
-# Q62
+# Q62 Unique Paths
 class Solution:
     def uniquePaths(self, m, n):
         matrix = [[0]*m for _ in range(n)]
@@ -220,7 +220,7 @@ class Solution:
                 matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
         return matrix
 
-# Q63
+# Q63 Unique Paths II
 class Solution:
     def uniquePathsWithObstacles(self, obstacleGrid):
         n = len(obstacleGrid)
@@ -255,7 +255,7 @@ class Solution:
                     matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
         return matrix
 
-# Q64
+# Q64 Minimum Path Sum
 import copy
 
 class Solution:
@@ -286,7 +286,7 @@ class Solution:
             right = self._minPathFinder(copy.deepcopy(grid),x,y+1,grid[x][y])
             return right
 
-# Q65
+# Q65 Valid Number
 import re
 
 class Solution:
@@ -294,7 +294,7 @@ class Solution:
         #$ is put at the end of thing you want to match
         return bool(re.match('^\s*[\+-]?((\d+(\.\d*)?)|\.\d+)([eE][\+-]?\d+)?\s*$', s))
 
-# Q66
+# Q66 Plus One
 class Solution:
     def plusOne(self, digits):
         n = len(digits)-1
@@ -305,13 +305,158 @@ class Solution:
             n = n-1
         return digits
 
-# Q67
+# Q67 Add Binary
+import itertools
+
+class Solution:
+    def addBinary(self, a, b):
+        a = reversed(a)
+        b = reversed(b)
+        c = []
+        overflow = None
+
+        for x,y in itertools.zip_longest(a,b,fillvalue=0):
+            if overflow:
+                quotient,remainder = divmod(int(x)+int(y)+overflow,2)
+                if not remainder:
+                    overflow = 1
+                else:
+                    overflow = 0
+                c.append(str(remainder))
+            else:
+                quotient,remainder = divmod(int(x)+int(y),2)
+                if not remainder:
+                    overflow = 1
+                else:
+                    overflow = 0
+                c.append(str(remainder))
+        if overflow:
+            c.append('1')
+        #or return ''.join(c[::-1])
+        return ''.join(reversed(c))
+
+# Q68 Text Justification
+class Solution:
+    def fullJustify(self, words, maxWidth):
+
+        def addSpaces(i, spaceCnt, maxWidth, is_last):
+            if i < spaceCnt:
+                return 1 if is_last else (maxWidth // spaceCnt) + int(i < maxWidth % spaceCnt)
+            return 0
+
+        def connect(words, maxWidth, begin, end, length, is_last):
+            s = []
+            n = end - begin
+            for i in range(n):
+                s += words[begin + i],
+                s += ' ' * addSpaces(i, n - 1, maxWidth - length, is_last),
+            line = "".join(s)
+            if len(line) < maxWidth:
+                line += ' ' * (maxWidth - len(line))
+            return line
+
+        res = []
+        begin, length = 0, 0
+        for i in range(len(words)):
+            if length + len(words[i]) + (i - begin) > maxWidth:
+                res += connect(words, maxWidth, begin, i, length, False),
+                begin, length = i, 0
+            length += len(words[i])
+
+        res += connect(words, maxWidth, begin, len(words), length, True),
+        return res
+
+# Q69 Sqrt(x)
+import itertools
+
+class Solution:
+    def mySqrt(self, x):
+
+        if x < 2:
+            return x
+
+        counter = itertools.count()
+        #return next(counter)
+        for i in counter:
+            if i**2 > x:
+                return i-1
+
+# Q70 Climbing Stairs
+class Solution:
+    def climbStairs(self, n):
+        if n == 2:
+            return 2
+        if n == 1:
+            return 1
+
+        return self.climbStairs(n-1)+self.climbStairs(n-2)
+
+    def climbStairs2(self,n):
+        if n == 1:
+            return 1
+
+        dp = [0]*(n)
+        dp[0] = 1
+        dp[1] = 2
+        for i in range(2,n):
+            dp[i] = dp[i - 1] + dp[i - 2]
+        return dp[n-1]
+
+# Q71 Simplify Path
 
 
-# Q68
+# Q72 Edit Distance
 
 
-# Q69
+# Q73 Set Matrix Zeroes
 
 
-# Q70
+# Q74 Search a 2D Matrix
+
+
+# Q75 Sort Colors
+
+
+# Q76 Minimum Window Substring
+
+
+# Q77 Combinations
+
+
+# Q78 Subsets
+
+
+# Q79 Word Search
+
+
+# Q80 Remove Duplicates from Sorted Array II
+
+
+# Q81 Search in Rotated Sorted Array II
+
+
+# Q82 Remove Duplicates from Sorted List II
+
+
+# Q83 Remove Duplicates from Sorted List
+
+
+# Q84 Largest Rectangle in Histogram
+
+
+# Q85 Maximal Rectangle
+
+
+# Q86 Partition List
+
+
+# Q87 Scramble String
+
+
+# Q88 Merge Sorted Array
+
+
+# Q89 Gray Code
+
+
+# Q90 Subsets II
