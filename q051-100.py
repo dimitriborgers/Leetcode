@@ -115,6 +115,7 @@ class Solution(object):
     def insert(self, intervals, newInterval):
         result = []
         i = 0
+        #while statements can have else flows as well
         while i < len(intervals) and newInterval.start > intervals[i].end:
             result += intervals[i],
             i += 1
@@ -618,19 +619,121 @@ class Solution:
         return nums
 
 # Q81 Search in Rotated Sorted Array II
+class Solution:
+    def search(self, nums, target):
+        if not nums:
+            return False
 
+        left, right = 0,len(nums)-1
+
+        while left <= right:
+            mid = left + (right-left)//2
+
+            if nums[mid] == target:
+                return True
+            elif nums[mid] < target and nums[right] < target:
+                right = mid - 1
+            else:
+                left = mid + 1
+        return False
 
 # Q82 Remove Duplicates from Sorted List II
-
+class Solution:
+    def deleteDuplicates(self,head):
+        #Doesn't matter if below variables are before or after _delete_helper definition
+        previous = ListNode(-1)
+        previous.next = head
+        def _delete_helper(head,previous):
+            duplicate = False
+            cur = head
+            while cur.next:
+                if cur.next.val == cur.val:
+                    cur = cur.next
+                    duplicate = True
+                else:
+                    if duplicate:
+                        cur = cur.next
+                        #internal methods don't need self in front of function use
+                        cur.next = _delete_helper(cur.next,previous)
+                        return cur
+                    else:
+                        head.next = _delete_helper(cur.next,head)
+                        return head
+            if duplicate:
+                return None
+            else:
+                return cur
+        return _delete_helper(head,previous)
 
 # Q83 Remove Duplicates from Sorted List
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
 
+    def __repr__(self):
+        return '{} -> {}'.format(self.val,repr(self.next))
+
+class Solution:
+    def deleteDuplicates(self, head):
+        cur = head
+        while cur.next:
+            #if you did cur.next = something, head.next would also change.
+            #This doesn't happen here because just changing cur location.
+            if cur.next.val == cur.val:
+                cur = cur.next
+            else:
+                head.next = self.deleteDuplicates(cur.next)
+                return head
+        return cur
 
 # Q84 Largest Rectangle in Histogram
+class Solution:
+    def largestRectangleArea(self, heights):
+        i,j = 0,len(heights)-1
+        maxArea = 0
 
+        while i <= j:
+            left = heights[i]
+            right = heights[j]
+            width = j - i + 1
+            height = min(heights[i:j+1])
+            maxArea = width * height if width * height > maxArea else maxArea
+            if left < right:
+                i += 1
+            else:
+                j -= 1
+        return maxArea
 
 # Q85 Maximal Rectangle
+class Solution:
+    def maximalRectangle(self, matrix):
+        for i in matrix:
+            for j in range(1,len(i)):
+                i[0] = int(i[0])
+                if int(i[j-1]) > 0 and int(i[j]) > 0:
+                    i[j] = int(i[j]) + int(i[j-1])
+                else:
+                    i[j] = int(i[j])
 
+        maxArea = 0
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                maxArea = matrix[i][j] if matrix[i][j] > maxArea else maxArea
+                if i == 0:
+                    localArea,localAreaList,temp = 0,[],i
+                    while temp < len(matrix):
+                        if matrix[temp][j]:
+                            localAreaList.append(matrix[temp][j])
+                        temp += 1
+                    minimum = min(localAreaList)
+                    #below loop cannot use i because it would interfere with if i == 0 statement
+                    #i would have last value of element in localAreaList
+                    for x in localAreaList:
+                        if x:
+                            localArea += minimum
+                    maxArea = localArea if localArea > maxArea else maxArea
+        return maxArea
 
 # Q86 Partition List
 
