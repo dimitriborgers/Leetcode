@@ -403,34 +403,219 @@ class Solution:
         return dp[n-1]
 
 # Q71 Simplify Path
+class Solution:
+    #str class does not have del method
+    def simplifyPath(self, path):
+        count = 0
 
+        word = []
+        directions = []
+        for i in path[::-1]:
+            if i == '.':
+                directions.append(i)
+                if len(directions) > 1:
+                    count += 1
+                    directions = []
+            elif  i == '/' and directions:
+                directions.pop()
+            elif i.isalpha():
+                word.append(i)
+            elif word and i == '/':
+                if count:
+                    word = []
+                    count -= 1
+                else:
+                    word.append(i)
+                    return ''.join(word[::-1])
+        return '/'
+
+    def simplifyPath2(self, path):
+        stack, tokens = [], path.split("/")
+        for token in tokens:
+            if token == ".." and stack:
+                stack.pop()
+            elif token != ".." and token != "." and token:
+                stack.append(token)
+        return "/" + "/".join(stack)
 
 # Q72 Edit Distance
+class Solution:
+    def minDistance(self, str1, str2,m,n):
+        #algorithm good for finding similar words in dictionary
+        if m==0:
+             return n
+        if n==0:
+            return m
 
+        if str1[m-1]==str2[n-1]:
+            return self.minDistance(str1,str2,m-1,n-1)
+
+        return 1 + min(self.minDistance(str1, str2, m, n-1),    # Insert
+                       self.minDistance(str1, str2, m-1, n),    # Remove
+                       self.minDistance(str1, str2, m-1, n-1))    # Replace
 
 # Q73 Set Matrix Zeroes
+class Solution:
+    def setZeroes(self, matrix):
+        n = len(matrix)
+        m = len(matrix[0])
 
+        new = []
+
+        for i in range(n):
+            for j in range(m):
+                if matrix[i][j] == 0:
+                    new.append((i,j))
+
+        for x,y in new:
+            tempx = x
+            tempx1 = x
+            tempy = y
+            tempy1 = y
+            while tempx < n:
+                matrix[tempx][y] = 0
+                tempx+=1
+            while tempx1 >= 0:
+                matrix[tempx1][y] = 0
+                tempx1-=1
+            while tempy < m:
+                matrix[x][tempy] = 0
+                tempy+=1
+            while tempy1 >= 0:
+                matrix[x][tempy1] = 0
+                tempy1-=1
+        return matrix
 
 # Q74 Search a 2D Matrix
+class Solution:
+    def searchMatrix(self, matrix, target):
+        #always handle errors!
+        if not matrix:
+            return -1
 
+        left,right = 0, len(matrix)-1
+
+        while left <= right:
+            mid = left + ((right-left) // 2)
+            if matrix[mid][0] == target:
+                return matrix[mid][0]
+            elif matrix[mid][0] > target:
+                right = mid - 1
+            else:
+                left = mid + 1
+
+        if matrix[mid][0] < target:
+            row = matrix[mid+1]
+        else:
+            row = matrix[mid-1]
+
+        left,right = 0, len(matrix[0])-1
+
+        while left <= right:
+            mid2 = left + ((right-left) // 2)
+            if row[mid2] == target:
+                return row[mid2]
+            elif row[mid2] > target:
+                right = mid2 - 1
+            else:
+                left = mid2 + 1
+
+        return -1
 
 # Q75 Sort Colors
+class Solution:
+    def sortColors(self, nums):
+        def triPartition(nums, target):
+            i, j, n = 0, 0, len(nums) - 1
 
+            while j <= n:
+                if nums[j] < target:
+                    nums[i], nums[j] = nums[j], nums[i]
+                    i += 1
+                    j += 1
+                elif nums[j] > target:
+                    nums[j], nums[n] = nums[n], nums[j]
+                    n -= 1
+                else:
+                    j += 1
+
+        triPartition(nums, 1)
+        return nums
 
 # Q76 Minimum Window Substring
-
+class Solution:
+    #infinity
+    #minimum = float("inf")
+    def minWindow(self, s, t):
+        i = 0
+        globalWindow = '0'*len(s)
+        while i < len(s)-len(t):
+            if s[i] not in t:
+                i += 1
+            else:
+                seq = set(t)
+                seq.remove(s[i])
+                j = i+1
+                while seq and j < len(s):
+                    if s[j] in seq:
+                        seq.remove(s[j])
+                    j += 1
+                if not seq:
+                    localWindow = s[i:j]
+                else:
+                    localWindow = '0'*len(s)
+                i += 1
+            globalWindow = localWindow if len(localWindow) < len(globalWindow) else globalWindow
+        return globalWindow if globalWindow != '0'*len(s) else ''
 
 # Q77 Combinations
+import itertools
 
+class Solution:
+    def combine(self, n, k):
+        return itertools.combinations(n,k)
 
 # Q78 Subsets
-
+class Solution:
+    def subsets(self, nums):
+        return [[x for (x,pos) in zip(nums,range(len(nums))) if (2**pos) & a]for a in range(2**len(nums))]
 
 # Q79 Word Search
+class Solution:
+    def exist(self, board, word):
+        n = len(board)
+        m = len(board[0])
+        locations = []
+        for i in range(n):
+            for j in range(m):
+                if board[i][j] == word[0]:
+                    locations.append((i,j))
+        for k,v in locations:
+            outcome = self._finder(board,word,0,k,v,m,n)
+            if outcome:
+                return True
+        return False
 
+    def _finder(self,board,word,letter,k,v,m,n):
+        if letter == len(word):
+            return True
+
+        if k < 0 or k >= n or v < 0 or v >= m or board[k][v] != word[letter]:
+            return False
+
+        result = self._finder(board,word,letter+1,k+1,v,m,n) or \
+                self._finder(board,word,letter+1,k-1,v,m,n) or \
+                self._finder(board,word,letter+1,k,v+1,m,n) or \
+                self._finder(board,word,letter+1,k,v-1,m,n)
+        return result
 
 # Q80 Remove Duplicates from Sorted Array II
-
+class Solution:
+    def removeDuplicates(self, nums):
+        for i in range(len(nums)):
+            while i < len(nums)-2 and nums[i+2] == nums[i]:
+                del nums[i+2]
+        return nums
 
 # Q81 Search in Rotated Sorted Array II
 
