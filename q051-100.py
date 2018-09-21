@@ -736,15 +736,122 @@ class Solution:
         return maxArea
 
 # Q86 Partition List
-
+class Solution:
+    def partition(self, head, x):
+        dummy = ListNode(-1)
+        dummy.next = head
+        cur = dummy
+        begin = dummy
+        end = None
+        previous = None
+        while cur.next:
+            if cur.next.val >= x and not end:
+                end = cur.next
+                cur = cur.next
+            elif cur.next.val < x and end:
+                previous = cur
+                temp = cur.next.next
+                dummy.next = cur.next
+                dummy.next.next = end
+                cur.next = temp
+                dummy = dummy.next
+            elif cur.next.val < x and not end:
+                dummy = dummy.next
+                cur = cur.next
+            else:
+                cur = cur.next
+        if cur.val < x:
+            dummy.next = cur
+            cur.next = end
+            previous.next = None
+        return begin.next
 
 # Q87 Scramble String
-
+class Solution:
+    def isScramble(self, s1, s2):
+        def recur(word):
+            if len(word) == 1:
+                return word
+            if len(word) == 2:
+                #str does not support item assignment
+                word = list(word)
+                word[0],word[1] = word[1],word[0]
+                return ''.join(word)
+            mid = len(word) // 2
+            left = word[:mid]
+            right = word[mid:]
+            return recur(left) + recur(right)
+        result = list(recur(s1))
+        outcome = []
+        for i in range(len(result)-1):
+            temp = list(result)
+            j = i+2
+            k = i-1
+            while j < len(result):
+                temp[j] = s1[j]
+                j += 1
+            while k >= 0:
+                temp[k] = s1[k]
+                k -= 1
+            outcome.append(''.join(temp))
+        return True if s2 in outcome else False
 
 # Q88 Merge Sorted Array
-
+class Solution:
+    def merge(self, nums1, m, nums2, n):
+        i = j = 0
+        while i < len(nums1) and j < len(nums2):
+            if nums1[i] <= nums2[j] and nums1[i] != 0:
+                i+=1
+            else:
+                #list.insert(pos, elmnt)
+                nums1.insert(i,nums2[j])
+                del nums1[-1]
+                j+=1
+        return nums1
 
 # Q89 Gray Code
+class Solution:
+    def grayCode(self, n):
+        global result
+        result,binary = [],['0']*n
+        #int('111', 2) converts binary to decimal,bin(255) -> '0b11111111'
+        result.append(int(''.join(binary),2))
+        return self._recur(binary,0)
 
+    def _recur(self,binary,position):
+        for i in range(position,len(binary)):
+            binary[i] = '1'
+            result.append(int(''.join(binary),2))
+            self._recur(list(binary),i+1)
+            binary[i] = '0'
+        return result
+
+class Solution2:
+    def grayCode(self, n):
+        result = [0]
+        for i in range(n):
+            #has to be reversed because as list gets appended, you don't start over for loop until reach end of loop that you started
+            #in second loop, reversed result starts [1,0], but even though 3 is appended, you still complete the loop and reach 0, even if reversed result now looks like [3,1,0].
+            #if you didn't reverse, loop would never end due to appending
+            for x in reversed(result):
+                print(result)
+                print(x)
+                #1 << 1 | 1 == 3 because you do left to right
+                result.append(1 << i | x)
+        return result
 
 # Q90 Subsets II
+class Solution:
+    def subsetsWithDup(self, nums):
+        outcome = [[x for (x,pos) in zip(nums,range(len(nums))) if 2**pos & b]for b in range(2**len(nums))]
+        #you can create a set of frozensets. The only difference between a set and a frozenset is that the latter is immutable
+        result = set()
+        for i in outcome:
+            temp = []
+            for j in i:
+                temp.append(j)
+            #to create a set of lists, you have to change a list into tuples and then add
+            temp = tuple(temp)
+            result.add(temp)
+        return result
