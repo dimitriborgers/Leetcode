@@ -855,3 +855,277 @@ class Solution:
             temp = tuple(temp)
             result.add(temp)
         return result
+
+# Q91 Decode Ways
+class Solution:
+    def numDecodings(self, s):
+        #very similar to fibonacci
+        if len(s) == 0 or s[0] == '0':
+            return 0
+        prev, prev_prev = 1, 0
+        for i in range(len(s)):
+            cur = 0
+            if s[i] != '0':
+                cur = prev
+            #Create an and statement that has two ors in it
+            if i > 0 and (s[i-1] == '1' or (s[i-1] == '2' and s[i] <= '6')):
+                cur += prev_prev
+            prev, prev_prev = cur, prev
+        return prev
+
+# Q92 Reverse Linked List II
+class Solution:
+    def reverseBetween(self, head, m, n):
+        if m == n or not head.next:
+            return head
+        if m > n:
+            m,n = n,m
+
+        dummy = ListNode(-1)
+        dummy.next = head
+        dummy_global = dummy
+        i = j = 1
+        curi = head
+
+        while curi.next and i < m:
+            curi = curi.next
+            dummy = dummy.next
+            i += 1
+            j += 1
+        curj = curi
+        while curj.next and j < n:
+            curj = curj.next
+            j += 1
+
+        while i < j:
+            old_next = curi.next
+            dummy_next = dummy.next
+            dummy.next = old_next
+            curi.next = old_next.next
+            old_next.next = dummy_next
+            head = dummy_global.next
+            i += 1
+
+        return head
+
+# Q93 Restore IP Addresses
+class Solution:
+    def restoreIpAddresses(self, s):
+        result = []
+        self.restoreIpAddressesRecur(result, s, 0, "", 0)
+        return result
+
+    def restoreIpAddressesRecur(self, result, s, start, current, dots):
+        # pruning to improve performance
+        if (4 - dots) * 3 < len(s) - start or (4 - dots) > len(s) - start:
+            return
+
+        if start == len(s) and dots == 4:
+            #if you just write append(current), there is an extra dot at the end
+            result.append(current[:-1])
+        else:
+            for i in xrange(start, start + 3):
+                if len(s) > i and self.isValid(s[start:i + 1]):
+                    current += s[start:i + 1] + '.'
+                    self.restoreIpAddressesRecur(result, s, i + 1, current, dots + 1)
+                    #same thing as creating a temp of current before any changes are made and ressasgning current to it
+                    current = current[:-(i - start + 2)]
+
+    def isValid(self, s):
+        if len(s) == 0 or (s[0] == '0' and s != "0"):
+            return False
+        return int(s) < 256
+
+# Q94 Binary Tree Inorder Traversal
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
+class Solution:
+    def inorderTraversalRec(self,root):
+        global result
+        result = []
+        return self._inorder_helper(root)
+
+    def _inorder_helper(self, root):
+        if root.left:
+            self._inorder_helper(root.left)
+        #can't be append(root) because this would traverse from root every time when you print
+        result.append(root.val)
+        if root.right:
+            self._inorder_helper(root.right)
+        return result
+
+    def inorderTraversalIterative(self, root):
+        result, curr = [], root
+        while curr:
+            if not curr.left:
+                result.append(curr.val)
+                curr = curr.right
+            else:
+                node = curr.left
+                while node.right and node.right != curr:
+                    node = node.right
+
+                if not node.right:
+                    node.right = curr
+                    curr = curr.left
+                else:
+                    result.append(curr.val)
+                    node.right = None
+                    curr = curr.right
+        return result
+
+# Q95 Unique Binary Search Trees II
+class Solution:
+    def numTrees(self, n):
+
+        G = [0]*(n+1)
+        G[0], G[1] = 1, 1
+
+        for i in range(2, n+1):
+            for j in range(1, i+1):
+                G[i] += G[j-1] * G[i-j]
+        return G[n]
+
+# Q96 Unique Binary Search Trees
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
+    def __repr__(self):
+        if self:
+            serial = []
+            queue = [self]
+
+            while queue:
+                cur = queue[0]
+
+                if cur:
+                    serial.append(cur.val)
+                    queue.append(cur.left)
+                    queue.append(cur.right)
+                else:
+                    serial.append("#")
+
+                queue = queue[1:]
+
+            while serial[-1] == "#":
+                serial.pop()
+
+            return repr(serial)
+
+        else:
+            return None
+
+class Solution:
+    def generateTrees(self, n):
+        return self.generateTreesRecu(1, n)
+
+    # Doing this with my normal recursion becomes to complicated
+    def generateTreesRecu(self, low, high):
+        result = []
+        if low > high:
+            result.append(None)
+        for i in range(low, high + 1):
+            left = self.generateTreesRecu(low, i - 1)
+            right = self.generateTreesRecu(i + 1, high)
+            for j in left:
+                for k in right:
+                    cur = TreeNode(i)
+                    cur.left = j
+                    cur.right = k
+                    result.append(cur)
+        return result
+
+# Q97 Interleaving String
+class Solution:
+    def isInterleave(self, s1, s2, s3):
+        self.match = {}
+        if len(s1) + len(s2) != len(s3):
+            return False
+        return self.isInterleaveRecu(s1, s2, s3, 0, 0, 0)
+
+    def isInterleaveRecu(self, s1, s2, s3, a, b, c):
+        if repr([a, b]) in self.match.keys():
+            return self.match[repr([a, b])]
+
+        if c == len(s3):
+            return True
+
+        result = False
+        if a < len(s1) and s1[a] == s3[c]:
+            result = result or self.isInterleaveRecu(s1, s2, s3, a + 1, b, c + 1)
+        if b < len(s2) and s2[b] == s3[c]:
+            result = result or self.isInterleaveRecu(s1, s2, s3, a, b + 1, c + 1)
+
+        self.match[repr([a, b])] = result
+
+        return result
+
+# Q98 Validate Binary Search Tree
+class Solution:
+    def isValidBST(self, root):
+        if not root:
+            return True
+
+        if root.left and root.left.val > root.val:
+            return False
+        if root.right and root.right.val < root.val:
+            return False
+        return self.isValidBST(root.right) and self.isValidBST(root.left)
+
+# Q99 Recover Binary Search Tree
+class Solution:
+    def recoverTree(self, root):
+        return self.MorrisTraversal(root)
+
+    def MorrisTraversal(self, root):
+        if root is None:
+            return
+        broken = [None, None]
+        pre, cur = None, root
+
+        while cur:
+            if cur.left is None:
+                self.detectBroken(broken, pre, cur)
+                pre = cur
+                cur = cur.right
+            else:
+                node = cur.left
+                while node.right and node.right != cur:
+                    node = node.right
+
+                if node.right is None:
+                    node.right =cur
+                    cur = cur.left
+                else:
+                    self.detectBroken(broken, pre, cur)
+                    node.right = None
+                    pre = cur
+                    cur = cur.right
+
+        broken[0].val, broken[1].val = broken[1].val, broken[0].val
+
+        return root
+
+    def detectBroken(self, broken, pre, cur):
+        if pre and pre.val > cur.val:
+            if broken[0] is None:
+                broken[0] = pre
+            broken[1] = cur
+
+# Q100 Same Tree
+class Solution:
+    def isSameTree(self, p, q):
+        if p is None and q is None:
+            return True
+
+        if p is not None and q is not None:
+            return p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+
+        return False
