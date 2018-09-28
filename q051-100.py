@@ -579,6 +579,7 @@ class Solution:
 # Q78 Subsets
 class Solution:
     def subsets(self, nums):
+        #enumerate(nums) can replace zip(range(len(s)),s)
         return [[x for (x,pos) in zip(nums,range(len(nums))) if (2**pos) & a]for a in range(2**len(nums))]
 
 # Q79 Word Search

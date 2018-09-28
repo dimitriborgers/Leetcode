@@ -520,76 +520,340 @@ class Solution:
                 return False
         return True
 
-# Q126
+# Q126 Word Ladder II
+class Solution:
+    def findLadders(self, start, end, dic):
+        dic.add(start)
+        dic.add(end)
+
+        result, cur, visited, found, trace = [], [start], set([start]), False, {word: [] for word in dic}
+
+        while cur and not found:
+            for word in cur:
+                visited.add(word)
+
+            next = set()
+            for word in cur:
+                for i in range(len(word)):
+                    for j in 'abcdefghijklmnopqrstuvwxyz':
+                        candidate = word[:i] + j + word[i + 1:]
+                        if candidate not in visited and candidate in dic:
+                            if candidate == end:
+                                found = True
+                            next.add(candidate)
+                            trace[candidate].append(word)
+            cur = next
+
+        if found:
+            self.backtrack(result, trace, [], end)
+
+        return result
+
+    def backtrack(self, result, trace, path, word):
+        if not trace[word]:
+            result.append([word] + path)
+        else:
+            for prev in trace[word]:
+                self.backtrack(result, trace, [word] + path, prev)
+
+# Q127 Word Ladder
+class Solution:
+    def ladderLength(self, beginWord, endWord, wordList):
+        distance = 0
+        #[beginWord] creates ['hit'], list(beginWord) creates ['h','i','t']
+        cur = [beginWord]
+        visited = set([beginWord])
+        lookup = set(wordList)
+
+        while cur:
+            next_queue = []
+
+            for word in cur:
+                if word == endWord:
+                    return distance + 1
+                for i in range(len(word)):
+                    #Can't do sets() of required letters because you don't know how many sets you would need, which would require making a list of sets
+                    for j in 'abcdefghijklmnopqrstuvwxyz':
+                        #instead of creating a temporary list of word and changing it's value at an index, just concatenate letters
+                        #strs are not considered lists, so you don't have to worry about references
+                        candidate = word[:i] + j + word[i + 1:]
+                        if candidate not in visited and candidate in lookup:
+                            next_queue.append(candidate)
+                            visited.add(candidate)
+            distance += 1
+            cur = next_queue
+        return 0
+
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+#if you have a __init__ method, just put args in Solution brackets
+print(Solution().ladderLength(beginWord,endWord,wordList))
+
+# Q128 Longest Consecutive Sequence
+class Solution:
+    #(n) since you hashSet
+    def longestConsecutive(self, nums):
+        longest_streak = 0
+        num_set = set(nums)
+
+        for num in num_set:
+            if num - 1 not in num_set:
+                current_num = num
+                current_streak = 1
+
+                while current_num + 1 in num_set:
+                    current_num += 1
+                    current_streak += 1
+
+                longest_streak = max(longest_streak, current_streak)
+        return longest_streak
+
+# Q129 Sum Root to Leaf Numbers
+class Solution:
+    result = []
+    def sumNumbers(self, root):
+        if not root:
+            return 0
+        self.sumNumbersRec(root,0)
+        output = 0
+        for i in self.result:
+            output += i
+        return output
+
+    def sumNumbersRec(self,root,cur):
+        if not cur:
+            cur = root.val
+        else:
+            cur = cur*10 + root.val
+
+        if root.left and root.right:
+            self.sumNumbersRec(root.left,cur)
+            self.sumNumbersRec(root.right,cur)
+        elif root.left:
+            self.sumNumbersRec(root.left,cur)
+        elif root.right:
+            self.sumNumbersRec(root.right,cur)
+        else:
+            self.result.append(cur)
+
+# Q130 Surrounded Regions
+class Solution:
+    def solve(self, board):
+        n = len(board)
+        m = len(board[0])
+
+        for i in range(1,n-1):
+            for j in range(1,m-1):
+                if j == 1 and i == 1:
+                    if (board[i][j-1] == 'O' or board[i-1][j] == 'O') and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif j == 1 and i == m - 1:
+                    if (board[i][j-1] == 'O' or board[i+1][j] == 'O') and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif j == m-1 and i == 1:
+                    if (board[i][j+1] == 'O' or board[i-1][j] == 'O') and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif j == m-1 and i == n-1:
+                    if (board[i][j+1] == 'O' or board[i+1][j] == 'O') and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif j == 1:
+                    if board[i][j-1] == 'O' and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif j == m-1:
+                    if board[i][j+1] == 'O' and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif i == 1:
+                    if board[i-1][j] == 'O' and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                elif i == n-1:
+                    if board[i+1][j] == 'O' and board[i][j] == 'O':
+                        continue
+                    else:
+                        board[i][j] = 'X'
+                else:
+                    board[i][j] = 'X'
+        return board
+
+# Q131 Palindrome Partitioning
+class Solution:
+    total = []
+    def partition(self, s):
+        self.recur(s)
+        return self.total
+
+    def recur(self,s,result=None):
+        if len(s) <= 1:
+            return
+        if not result:
+            result = []
+        for i in range(len(s)-1):
+            left = s[:i+1]
+            right = s[i+1:]
+            if not right:
+                return
+            if left == left[::-1]:
+                result.append(left)
+            else:
+                continue
+            if right == right[::-1]:
+                result.append(right)
+                self.total.append(list(result))
+                result.pop()
+            self.recur(right,result)
+            result.pop()
+        return
+
+# Q132 Palindrome Partitioning II
+class Solution:
+    total = []
+    def partition(self, s):
+        self.recur(s)
+        #can't make minimum = float('inf') because len() would not work
+        minimum = self.total[0]
+        for i in self.total:
+           minimum = i if len(i) < len(minimum) else minimum
+        return len(minimum)
+
+    def recur(self,s,result=None):
+        if len(s) <= 1:
+            return
+        if not result:
+            result = []
+        for i in range(len(s)-1):
+            left = s[:i+1]
+            right = s[i+1:]
+            if not right:
+                return
+            if left == left[::-1]:
+                result.append(left)
+            else:
+                continue
+            if right == right[::-1]:
+                result.append(right)
+                self.total.append(list(result))
+                result.pop()
+            self.recur(right,result)
+            result.pop()
+        return
+
+# Q133 Clone Graph
+class UndirectedGraphNode:
+    def __init__(self, x):
+        self.label = x
+        self.neighbors = []
+
+class Solution:
+    def cloneGraph(self, node):
+        if not node:
+            return
+        cloned_node = UndirectedGraphNode(node.label)
+        cloned, queue = {node:cloned_node}, [node]
+
+        while queue:
+            current = queue.pop()
+            #accessing list of neighbors
+            for neighbor in current.neighbors:
+                if neighbor not in cloned:
+                    queue.append(neighbor)
+                    cloned_neighbor = UndirectedGraphNode(neighbor.label)
+                    cloned[neighbor] = cloned_neighbor
+                cloned[current].neighbors.append(cloned[neighbor])
+        return cloned[node]
+
+# Q134 Gas Station
+class Solution:
+    def canCompleteCircuit(self, gas, cost):
+        length = len(gas)
+        for i in range(len(gas)):
+            if cost[i] > gas[i]:
+                continue
+            starting = i
+            current = gas[i]-cost[i]
+            while current >= 0:
+                i+=1
+                if i % length == starting:
+                    return True
+                current += (gas[i%length]-cost[i%length])
+        return False
+
+# Q135 Candy
+class Solution:
+    def candy(self, ratings):
+        result = [0]*len(ratings)
+        result[0] = 1
+        for i in range(1,len(ratings)):
+            print(result)
+            if ratings[i] > ratings[i-1]:
+                result[i] = result[i-1]+1
+            elif ratings[i] < ratings[i-1]:
+                result[i-1] += 1
+                result[i] = 1
+                index = i-2
+                while index >= 0:
+                    if ratings[index] > ratings[index+1]:
+                        result[index] += 1
+                        index -= 1
+                    #putting a continue here would just go one further in the while loop. Continue is used in both while and for loops.
+                    break
+            else:
+                result[i] = 1
+        return result
+
+# Q136 Single Number
 
 
-# Q127
+# Q137 Single Number II
 
 
-# Q128
+# Q138 Copy List with Random Pointer
 
 
-# Q129
+# Q139 Word Break
 
 
-# Q130
+# Q140 Word Break II
 
 
-# Q131
+# Q141 Linked List Cycle
 
 
-# Q132
+# Q142 Linked List Cycle II
 
 
-# Q133
+# Q143 Reorder List
 
 
-# Q134
+# Q144 Binary Tree Preorder Traversal
 
 
-# Q135
+# Q145 Binary Tree Postorder Traversal
 
 
-# Q136
+# Q146 LRU Cache
 
 
-# Q137
+# Q147 Insertion Sort List
 
 
-# Q138
+# Q148 Sort List
 
 
-# Q139
+# Q149 Max Points on a Line
 
 
-# Q140
-
-
-# Q141
-
-
-# Q142
-
-
-# Q143
-
-
-# Q144
-
-
-# Q145
-
-
-# Q146
-
-
-# Q147
-
-
-# Q148
-
-
-# Q149
-
-
-# Q150
+# Q150 Evaluate Reverse Polish Notation
