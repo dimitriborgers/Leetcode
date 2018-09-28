@@ -815,19 +815,85 @@ class Solution:
         return result
 
 # Q136 Single Number
+class Solution:
+    def singleNumber(self, nums):
+        #2∗(a+b+c)−(a+a+b+b+c)=c
+        return 2 * sum(set(nums)) - sum(nums)
 
+    def singleNumber2(self, nums):
+        a = 0
+        for i in nums:
+            #xor
+            #2 xor 3 xor 2 -> 2's cancel each other out, only 3 is left
+            #this only works if max 2 duplicates to cancel out
+            a ^= i
+        return a
 
 # Q137 Single Number II
-
+class Solution:
+    def singleNumber(self, A):
+        one, two = 0, 0
+        for x in A:
+            one, two = (~x & one) | (x & ~one & ~two), (~x & two) | (x & one)
+        return one
 
 # Q138 Copy List with Random Pointer
-
+class Solution:
+    def copyRandomList(self, head):
+        lookup = {}
+        cur = head
+        while cur:
+            if cur not in lookup:
+                new_cur = RandomListNode(cur.label)
+                lookup[cur] = new_cur
+            if cur.next:
+                if cur.next not in lookup:
+                    new_next = RandomListNode(cur.next.label)
+                    lookup[cur.next] = new_next
+                lookup[cur].next = lookup[cur.next]
+            if cur.random:
+                if cur.random not in lookup:
+                    new_random = RandomListNode(cur.random.label)
+                    lookup[cur.random] = new_random
+                lookup[cur].random = lookup[cur.random]
+            cur = cur.next
+        return head
 
 # Q139 Word Break
-
+class Solution:
+    def wordBreak(self, s, wordDict):
+        if s == '':
+            return True
+        for i in wordDict:
+            if len(i) > len(s):
+                continue
+            if s[:len(i)] == i:
+                #Can't return directly since we have to wait for True
+                temp = self.wordBreak(s[len(i):],wordDict)
+                if temp == True:
+                    return True
+        return False
 
 # Q140 Word Break II
+class Solution:
+    output = []
+    def wordBreak(self, s, wordDict):
+        self.wordBreakRec(s,wordDict)
+        return self.output
 
+    def wordBreakRec(self, s, wordDict,result=None):
+        if not result:
+            result = []
+        if s == '':
+            self.output.append(result)
+        for i in wordDict:
+            if len(i) > len(s):
+                continue
+            if s[:len(i)] == i:
+                result.append(i)
+                #if you don't do list(result), then result appended to ouput will have its items removed with pop()
+                self.wordBreakRec(s[len(i):],wordDict,list(result))
+                result.pop()
 
 # Q141 Linked List Cycle
 
