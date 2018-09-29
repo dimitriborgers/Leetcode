@@ -896,30 +896,231 @@ class Solution:
                 result.pop()
 
 # Q141 Linked List Cycle
-
+class Solution:
+    def hasCycle(self, head):
+        #not considered part of space complexity because heap objects are already there
+        fast, slow = head, head
+        while fast and fast.next:
+            fast, slow = fast.next.next, slow.next
+            #use is instead of == because you want to make sure it's the same instance of it as well, not just a copy
+            if fast is slow:
+                return True
+        return False
 
 # Q142 Linked List Cycle II
-
+class Solution:
+    def detectCycle(self, head):
+        fast, slow = head, head
+        while fast and fast.next:
+            fast, slow = fast.next.next, slow.next
+            if fast is slow:
+                fast = head
+                while fast is not slow:
+                    fast, slow = fast.next, slow.next
+                return fast.val
+        return None
 
 # Q143 Reorder List
-
+class Solution:
+    def reorderList(self, head):
+        prev = ListNode(-1)
+        prev.next = cur = dummy = head
+        dummy_next = dummy.next
+        while dummy_next and dummy_next.next:
+            while cur.next:
+                cur = cur.next
+                prev = prev.next
+            if cur != dummy_next:
+                dummy.next = cur
+                prev.next = cur.next
+                cur.next = dummy_next
+                dummy = dummy_next
+                dummy_next = dummy.next
+                cur = dummy_next
+                prev = dummy
+        return head
 
 # Q144 Binary Tree Preorder Traversal
-
+class Solution:
+    output = []
+    def preorderTraversal(self, root):
+        if not root:
+            return
+        self.output.append(root.val)
+        self.preorderTraversal(root.left)
+        self.preorderTraversal(root.right)
+        return self.output
 
 # Q145 Binary Tree Postorder Traversal
-
+class Solution:
+    output = []
+    def postorderTraversal(self, root):
+        if not root:
+            return
+        self.postorderTraversal(root.left)
+        self.postorderTraversal(root.right)
+        self.output.append(root.val)
+        return self.output
 
 # Q146 LRU Cache
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        #Since python 3.7, Python dict is an ordered dict. It puts the most recently added on the right
+        #The popitem()-returns an arbitrary element (key, value) pair from the dictionary
+        self.lookup = {}
+        self.size = 0
 
+    def __repr__(self):
+        output = []
+        for k,v in self.lookup.items():
+            output.append(v)
+        return '{}'.format(output)
+
+    def get(self, key):
+        value = self.lookup[key]
+        del self.lookup[key]
+        self.lookup[key] = value
+        return value
+
+    def put(self, key, value):
+        if key not in self.lookup:
+            if self.size == self.capacity:
+                for k,v in self.lookup.items():
+                    del self.lookup[k]
+                    break
+            self.lookup[key] = value
+            self.size += 1
+        else:
+            del self.lookup[key]
+            self.lookup[key] = value
 
 # Q147 Insertion Sort List
+class Solution:
+    def insertionSortList(self, head):
+        if not head:
+            return -1
+        if not head.next:
+            return head
 
+        dummy = ListNode('A')
+        const = dummy
+        dummy.next = head
+        prev = head
+        cur = head.next
+        while cur.next:
+            if cur.val < prev.val:
+                dummy.next = cur
+                prev.next = cur.next
+                cur.next = prev
+            if dummy.val == 'A':
+                head = dummy.next
+            if dummy.val != 'A' and dummy.val > cur.val:
+                dummy = const
+                prev = head
+                cur = head.next
+            else:
+                dummy = dummy.next
+                prev = dummy.next
+                cur = prev.next
+        return head
 
 # Q148 Sort List
+class Solution:
+    def sortList(self, head):
+        if not head or not head.next:
+            return head
 
+        fast, slow, prev = head, head, None
+        #to reach halfway point, just have one pointer go twice as fast as the previous one
+        while fast and fast.next:
+            prev, fast, slow = slow, fast.next.next, slow.next
+        #cut list in half
+        prev.next = None
+
+        sorted_l1 = self.sortList(head)
+        sorted_l2 = self.sortList(slow)
+
+        return self.mergeTwoLists(sorted_l1, sorted_l2)
+
+    def mergeTwoLists(self, l1, l2):
+        dummy = ListNode(-1)
+
+        #build up from this dummy
+        cur = dummy
+        while l1 and l2:
+            #since you only ever return the head of a list, you can access the value
+            if l1.val <= l2.val:
+                cur.next, cur, l1 = l1, l1, l1.next
+            else:
+                cur.next, cur, l2 = l2, l2, l2.next
+        if l1:
+            cur.next = l1
+        if l2:
+            cur.next = l2
+        return dummy.next
 
 # Q149 Max Points on a Line
+import collections
 
+class Point:
+    def __init__(self, a=0, b=0):
+        self.x = a
+        self.y = b
+
+class Solution:
+    #Take time to think about edge cases. In this case, you had to ask about whether or not points in the same place would count as mutliple
+    def maxPoints(self, points):
+        max_points = 0
+        for i, start in enumerate(points):
+            slope_count, same = collections.defaultdict(int), 1
+            for j in range(i + 1, len(points)):
+                end = points[j]
+                if start.x == end.x and start.y == end.y:
+                    same += 1
+                else:
+                    slope = float("inf")
+                    if start.x - end.x != 0:
+                        slope = (start.y - end.y) * 1.0 / (start.x - end.x)
+                    slope_count[slope] += 1
+
+            current_max = same
+            for slope in slope_count:
+                current_max = max(current_max, slope_count[slope] + same)
+
+            max_points = max(max_points, current_max)
+        return max_points
+
+if __name__ == "__main__":
+    print(Solution().maxPoints([Point(1,1), Point(2,2), Point(3,3)]))
 
 # Q150 Evaluate Reverse Polish Notation
+class Solution:
+    def evalRPN(self, tokens):
+        #make sure you understand examples given before continuing
+        total = 0
+        numbers = []
+        for i in range(len(tokens)):
+            if tokens[i] in '/+-*':
+                if tokens[i] == '/':
+                    denominator = numbers.pop()
+                    numerator = numbers.pop()
+                    # print(6//-12) -> -1 instead of 0
+                    if numerator > 0 and denominator < 0 and abs(denominator)>numerator:
+                        total = 0
+                    else:
+                        total = numbers.pop() // denominator
+                    numbers.append(total)
+                if tokens[i] == '+':
+                    total = numbers.pop() + numbers.pop()
+                    numbers.append(total)
+                if tokens[i] == '-':
+                    denominator = numbers.pop()
+                    total = numbers.pop() - denominator
+                    numbers.append(total)
+                if tokens[i] == '*':
+                    total = numbers.pop() * numbers.pop()
+                    numbers.append(total)
+            else:
+                numbers.append(int(tokens[i]))
+        return total
