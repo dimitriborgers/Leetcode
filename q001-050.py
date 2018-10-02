@@ -11,14 +11,11 @@ class Solution:
         return None
 
 # Q2 Add Two Numbers
-
-# Definition for singly-linked list if only using node
 class ListNode:
     def __init__(self, x):
         self.val = x
         self.next = None
 
-# Implementation of singly-linked list
 import linked_list_mod as ll
 class LinkedList:
     class ListNode:
@@ -104,7 +101,7 @@ class Solution:
             l3.addTail(addition)
             if overflow == 1:
                 l3.addTail(1)
-            print(l3)
+            return (l3)
 
 # Q3 Longest Substring Without Repeating Characters
 class Solution:
@@ -260,13 +257,15 @@ class Solution:
         return True if reverted == x or reverted//10 == x else False
 
 # Q10 Regular Expression Matching
-class Solution(object):
+class Solution:
     def isMatch(self, text, pattern):
         if not pattern:
             return not text
 
+        #make sure there is still text, then check pattern.
         first_match = text and pattern[0] in (text[0], '.')
 
+        #* means 0 or more, that's why would try pattern[2:]
         if len(pattern) >= 2 and pattern[1] == '*':
             return (self.isMatch(text, pattern[2:]) or
                     first_match and self.isMatch(text[1:], pattern))
@@ -372,6 +371,9 @@ class Solution:
                     j += 1
 
         unique_lst = []
+        #count makes sure that there is 0 in the output before adding it
+        #do this instead of adding to a set since these are lists
+        #instead of doing this, you could just add tuples and then create a set of tuples
         [unique_lst.append(sublst) for sublst in output if not unique_lst.count(sublst)]
 
         return unique_lst
@@ -381,7 +383,7 @@ class Solution:
     def threeSumClosest(self, nums, target):
         nums.sort()
         end = len(nums)-1
-        closest = 1000000
+        closest = float('inf')
 
         for i in range(len(nums)-2):
             j = i + 1
@@ -422,7 +424,6 @@ class Solution:
         nums, result, lookup = sorted(nums), [], collections.defaultdict(list)
         for i in range(len(nums)-1):
             for j in range(i + 1, len(nums)):
-                print(lookup)
                 #Can't remove boolean because appending must be done outside below for loop existence
                 is_duplicated = False
                 for x, y in lookup[nums[i] + nums[j]]:
@@ -431,11 +432,13 @@ class Solution:
                         break
                 if not is_duplicated:
                     lookup[nums[i] + nums[j]].append([i, j])
+        #this creates a dictionary, not a set
         ans = {}
         for c in range(2, len(nums)):
             for d in range(c+1, len(nums)):
                 if target - nums[c] - nums[d] in lookup:
                     for [a, b] in lookup[target - nums[c] - nums[d]]:
+                        #check b < c to make sure you don't have duplicates of the same value in an answer
                         if b < c:
                             quad = [nums[a], nums[b], nums[c], nums[d]]
                             quad_hash = " ".join(str(quad))
@@ -447,23 +450,28 @@ class Solution:
 # Q19 Remove Nth Node From End of List
 class Solution:
     def removeNthFromEnd(self, head, n):
-        current = head
-        count = 0
-        while count < n - 1:
-            current = current.next
-            count += 1
-        old_next = current.next
-        current.next = current.next.next
-        old_next.next = None
+        dummy = ListNode(-1)
+        dummy.next = head
+        slow, fast = dummy, dummy
 
-        if __name__ == "__main__":
-            head = ListNode(1)
-            head.next = ListNode(2)
-            head.next.next = ListNode(3)
-            head.next.next.next = ListNode(4)
-            head.next.next.next.next = ListNode(5)
+        for i in range(n):
+            fast = fast.next
 
-            print(Solution().removeNthFromEnd(head, 2))
+        while fast.next:
+            slow, fast = slow.next, fast.next
+
+        slow.next = slow.next.next
+
+        return dummy.next
+
+if __name__ == "__main__":
+    head = ListNode(1)
+    head.next = ListNode(2)
+    head.next.next = ListNode(3)
+    head.next.next.next = ListNode(4)
+    head.next.next.next.next = ListNode(5)
+
+    print(Solution().removeNthFromEnd(head, 2))
 
 # Q20 Valid Parentheses
 class Solution:
@@ -526,6 +534,7 @@ class Solution:
         if head2 is None:
             return head1
         if head1.val <= head2.val:
+            #not actually needed to do deepcopy since you don't care about changing original lists
             temp = copy.deepcopy(head1)
             temp.next = self.mergeTwo(head1.next, head2)
         else:
@@ -565,7 +574,6 @@ class Solution:
 
 # Q25 Reverse Nodes in k-Group
 class Solution:
-
     def reverseKGroup(self, head, k):
         dummy = ListNode(-1)
         dummy.next = head
