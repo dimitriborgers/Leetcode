@@ -1,6 +1,10 @@
 # Q51 N-Queens
-class Solution:
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
 
+class Solution:
     def solveNQueens(self,n):
         board = [[0 for _ in range(n)] for _ in range(n)]
 
@@ -43,7 +47,7 @@ class Solution:
 #Same as Q51
 
 # Q53 Maximum Subarray
-class Solution(object):
+class Solution:
     def maxSubArray(self, nums):
         if max(nums) < 0:
             return max(nums)

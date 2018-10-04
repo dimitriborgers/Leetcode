@@ -282,7 +282,7 @@ class Solution:
         while i != j:
             side = min(height[i],height[j])
             width = j - i
-            maxArea = side*width if side*width > maxArea else maxArea
+            maxArea = max(side*width, maxArea)
             if height[i] < height[j]:
                 i += 1
             else:
@@ -648,13 +648,10 @@ class Solution:
         return -1
 
 import re
-
 class Solution:
     def strStr2(self, haystack, needle):
         try:
-            match = re.search(needle,haystack)
-            #.start() gives you index of match
-            return match.start(),match.end()
+            return re.search(needle,haystack).start()
         except:
             return -1
 
@@ -677,7 +674,6 @@ import collections
 
 class Solution:
     def findSubstring(self, s, words):
-
         result, m, n, k = [], len(s), len(words), len(words[0])
         if m < n*k:
             return result
@@ -704,7 +700,6 @@ class Solution:
 
 class Solution2:
     def findSubstring(self, s, words):
-
         result, m, n, k = [], len(s), len(words), len(words[0])
         if m < n*k:
             return result
@@ -729,12 +724,10 @@ class Solution:
     def nextPermutation(self, nums):
         for i in range(len(nums)-1,0,-1):
             if nums[i] > nums[i-1]:
-                oldNums = nums[i]
-                nums[i] = nums[i-1]
-                nums[i-1] = oldNums
-                #if you just do break, the reference to the list is broken and nothing happens
+                nums[i],nums[i-1] = nums[i-1],nums[i]
                 return nums
         #if you do nums.sort(), it returns None instead because you are not creating a new list
+        #sorted returns a list. reversed returns a generator
         return sorted(nums)
 
 # Q32 Longest Valid Parentheses
@@ -750,33 +743,33 @@ class Solution:
                 if not stack:
                     stack.append(i)
                 else:
+                    #better than doing, length = i - stack[-1] if i - stack[-1] > length else length
                     length = max(length, i - stack[-1])
         return length
 
 # Q33 Search in Rotated Sorted Array
-class Solution(object):
+class Solution:
     def search(self, nums, target):
-        openParan, closeParan = 0, len(nums) - 1
+        left, right = 0, len(nums) - 1
 
-        while openParan <= closeParan:
-            mid = openParan + (closeParan - openParan) // 2
+        while left <= right:
+            mid = left + (right - left) // 2
 
             if nums[mid] == target:
                 return mid
-            elif (nums[openParan] <= target < nums[mid]) or (nums[mid] < nums[openParan] and not (nums[mid] < target <= nums[closeParan])):
-                closeParan = mid - 1
+            elif (nums[left] <= target < nums[mid]) or (nums[mid] < nums[left] and not (nums[mid] < target <= nums[right])):
+                right = mid - 1
             else:
-                openParan = mid + 1
+                left = mid + 1
         return -1
 
 # Q34 Find First and Last Position of Element in Sorted Array
 class Solution:
     def searchRange(self, nums, target):
-        openParan = 0
-        closeParan = len(nums)-1
+        left,right = 0,len(nums)-1
 
-        while openParan <= closeParan:
-            mid = openParan + (closeParan-openParan) // 2
+        while left <= right:
+            mid = left + (right-left) // 2
 
             if nums[mid] == target:
                 i = j = 0
@@ -786,13 +779,14 @@ class Solution:
                     j += 1
                 return (mid-(i-1),mid+(j-1))
             elif nums[mid] < target:
-                openParan = mid + 1
+                left = mid + 1
             else:
-                closeParan = mid - 1
+                right = mid - 1
         return (-1,-1)
 
 # Q35 Search Insert Position
 class Solution:
+    #Using binary search would be faster
     def searchInsert(self, nums, target):
         for i in range(len(nums)):
             if nums[i] > target:
@@ -804,7 +798,7 @@ class Solution:
         return len(nums)
 
 # Q36 Valid Sudoku
-class Solution(object):
+class Solution:
     def isValidSudoku(self, board):
         for i in range(len(board)):
             if not self.isValid([board[i][j] for j in range(len(board))]) or not self.isValid([board[j][i] for j in range(len(board))]):
@@ -814,7 +808,6 @@ class Solution(object):
             for j in range(3):
                 if not self.isValid([board[m][n] for n in range(3 * j, 3 * j + 3) for m in range(3 * i, 3 * i + 3)]):
                     return False
-
         return True
 
     def isValid(self,row):
@@ -825,36 +818,36 @@ class Solution(object):
 # Q37 Sudoku Solver
 class Solution:
     def solveSudoku(self, board):
-        def isValid(board, x, y):
-            for i in xrange(9):
-                if i != x and board[i][y] == board[x][y]:
+        #Inside functions don't have self as argument or in front when they are called.
+        def isValidSudoku(board):
+            for i in range(len(board)):
+                if not isValid([board[i][j] for j in range(len(board))]) or not isValid([board[j][i] for j in range(len(board))]):
                     return False
-            for j in xrange(9):
-                if j != y and board[x][j] == board[x][y]:
-                    return False
-            i = 3 * (x / 3)
-            while i < 3 * (x / 3 + 1):
-                j = 3 * (y / 3)
-                while j < 3 * (y / 3 + 1):
-                    if (i != x or j != y) and board[i][j] == board[x][y]:
+
+            for i in range(3):
+                for j in range(3):
+                    if not isValid([board[m][n] for n in range(3 * j, 3 * j + 3) for m in range(3 * i, 3 * i + 3)]):
                         return False
-                    j += 1
-                i += 1
             return True
 
+        def isValid(row):
+            row = [i for i in row if i != '.']
+            if len(set(row)) == len(row):
+                return True
+
         def solver(board):
-            for i in xrange(len(board)):
-                for j in xrange(len(board[0])):
+            for i in range(len(board)):
+                for j in range(len(board)):
                     if(board[i][j] == '.'):
-                        for k in xrange(9):
+                        for k in range(9):
+                            #how to get a string of an int
                             board[i][j] = chr(ord('1') + k)
-                            if isValid(board, i, j) and solver(board):
+                            #solver(board) cannot be deepcopy of board
+                            if isValidSudoku(board) and solver(board):
                                 return True
                             board[i][j] = '.'
                         return False
             return True
-
-        solver(board)
 
 # Q38 Count and Say
 class Solution:
@@ -877,7 +870,6 @@ class Solution:
 
 # Q39 Combination Sum
 class Solution:
-
     def combinationSum(self, candidates, target):
         result = []
         self.combinationSumRecu(sorted(candidates), result, 0, [], target)
@@ -895,22 +887,18 @@ class Solution:
 
 # Q40 Combination Sum II
 class Solution:
-
     def combinationSum2(self, candidates, target):
         result = []
         self.combinationSumRecu(sorted(candidates), result, 0, [], target)
         return result
 
     def combinationSumRecu(self, candidates, result, start, intermediate, target):
-        if target == 0:
-            result.append(list(intermediate))
-        prev = 0
+        if target == 0 and sorted(intermediate) not in result:
+            result.append(sorted(list(intermediate)))
         while start < len(candidates) and candidates[start] <= target:
-            if prev != candidates[start]:
-                intermediate.append(candidates[start])
-                self.combinationSumRecu(candidates, result, start + 1, intermediate, target - candidates[start])
-                intermediate.pop()
-                prev = candidates[start]
+            intermediate.append(candidates[start])
+            self.combinationSumRecu(candidates, result, start + 1, intermediate, target - candidates[start])
+            intermediate.pop()
             start += 1
 
 # Q41 First Missing Positive
@@ -918,6 +906,7 @@ class Solution:
     def firstMissingPositive(self, A):
         i = 0
         while i < len(A):
+            #This loop will only move elements between 0 and length of list. Therefore, you are putting the small elements in order at front
             if A[i] > 0 and A[i] - 1 < len(A) and A[i] != A[A[i]-1]:
                 A[A[i]-1], A[i] = A[i], A[A[i]-1]
             else:
@@ -931,28 +920,27 @@ class Solution:
 # Q42 Trapping Rain Water
 class Solution:
     def trap(self, height):
-        openParan = 0
-        closeParan = len(height)-1
+        left, right = 0, len(height)-1
         ans = 0
-        openParan_max = closeParan_max = 0
+        left_max = right_max = 0
 
-        while openParan < closeParan:
-            if height[openParan] < height[closeParan]:
-                if height[openParan] >= openParan_max:
-                    openParan_max = height[openParan]
+        while left < right:
+            if height[left] < height[right]:
+                if height[left] >= left_max:
+                    left_max = height[left]
                 else:
-                    ans += openParan_max - height[openParan]
-                openParan += 1
+                    ans += left_max - height[left]
+                left += 1
             else:
-                if height[closeParan] >= closeParan_max:
-                    closeParan_max = height[closeParan]
+                if height[right] >= right_max:
+                    right_max = height[right]
                 else:
-                    ans += closeParan_max - height[closeParan]
-                closeParan -= 1
+                    ans += right_max - height[right]
+                right -= 1
         return ans
 
 # Q43 Multiply Strings
-class Solution(object):
+class Solution:
     def multiply(self, num1, num2):
 
         num1, num2 = num1[::-1], num2[::-1]
@@ -972,14 +960,13 @@ class Solution(object):
         while i > 0 and res[i] == 0:
             i -= 1
 
-        return ''.join(map(str, res[i::-1]))
+        return ''.join(str(x) for x in res[i::-1])
 
 # Q44 Wildcard Matching
 class Solution:
     def isMatch(self, s, p):
         if not p or not s:
             return not s and not p
-        print(p)
         if p[0] != '*':
             if p[0] == s[0] or p[0] == '?':
                 return self.isMatch(s[1:], p[1:])
@@ -994,8 +981,7 @@ class Solution:
             return self.isMatch(s, p[1:])
 
 # Q45 Jump Game II
-class Solution(object):
-
+class Solution:
     def jump(self, A):
         jump_count = 0
         reachable = 0
@@ -1007,6 +993,7 @@ class Solution(object):
                 curr_reachable = reachable
                 jump_count += 1
             reachable = max(reachable, i + length)
+        return jump_count
 
 # Q46 Permutations
 import itertools
@@ -1023,8 +1010,7 @@ class Solution:
         return set(list(itertools.permutations(nums,len(nums))))
 
 # Q48 Rotate Image
-class Solution2:
-
+class Solution:
     def rotate(self, matrix):
         return [list(reversed(x)) for x in zip(*matrix)]
 
@@ -1033,9 +1019,12 @@ import collections
 
 class Solution:
     def groupAnagrams(self, strs):
-        result = collections.defaultdict(list)
-        for i in strs:
-            result[tuple(set(i))].append(i)
+        anagrams_map, result = collections.defaultdict(list), []
+        for s in strs:
+            sorted_str = ("").join(sorted(s))
+            anagrams_map[sorted_str].append(s)
+        for anagram in anagrams_map.values():
+            result.append(anagram)
         return result
 
 # Q50 Pow(x, n)

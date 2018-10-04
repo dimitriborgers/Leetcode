@@ -963,6 +963,13 @@ class Solution:
         return self.output
 
 # Q146 LRU Cache
+"""
+Cache algorithms are optimizing instructions that a computer program can utilize in order to manage a cache of information stored on the computer. Caching improves performance by keeping recent or often-used data items in a memory locations that are faster or computationally cheaper to access than normal memory stores.
+LRU-General implementations of this technique require keeping "age bits" for cache-lines and track the "Least Recently Used" cache-line based on age-bits.
+MRU-When a file is being repeatedly scanned in a [Looping Sequential] reference pattern, MRU is the best replacement algorithm.
+RR-Randomly selects a candidate item and discards it to make space when necessary. This algorithm does not require keeping any information about the access history.
+LFU-Counts how often an item is needed. Those that are used least often are discarded first.
+"""
 class LRUCache:
     def __init__(self, capacity):
         self.capacity = capacity
