@@ -93,17 +93,73 @@ class Solution:
         return False
 
 # Q56 Merge Intervals
+#Time: O(nlogn)
+#Space: O(1) if sorting can be done in place
 class Solution:
     def merge(self, intervals):
         #intervals = intervals.sort(key=lambda x: x[0])
-        intervals = sorted(intervals)
+        intervals.sort(key=lambda x: x.start)
         merged = []
-        for i in intervals:
-            if not merged or merged[-1][1] < i[0]:
-                merged.append(i)
+        for interval in intervals:
+            if not merged or merged[-1].end < interval.start:
+                merged.append(interval)
             else:
-                merged[-1] = [min(min(merged[-1]),min(i)),max(max(i),max(merged[-1]))]
+                merged[-1].end = max(merged[-1].end, interval.end)
         return merged
+
+#Using adjacency list
+class Solution:
+    def overlap(self, a, b):
+        return a.start <= b.end and b.start <= a.end
+
+    # generate graph where there is an undirected edge between intervals u
+    # and v iff u and v overlap.
+    def build_graph(self, intervals):
+        graph = collections.defaultdict(list)
+
+        for i, interval_i in enumerate(intervals):
+            for j in range(i+1, len(intervals)):
+                if self.overlap(interval_i, intervals[j]):
+                    graph[interval_i].append(intervals[j])
+                    graph[intervals[j]].append(interval_i)
+
+        return graph
+
+    # merges all of the nodes in this connected component into one interval.
+    def merge_nodes(self, nodes):
+        min_start = min(node.start for node in nodes)
+        max_end = max(node.end for node in nodes)
+        return Interval(min_start, max_end)
+
+    # gets the connected components of the interval overlap graph.
+    def get_components(self, graph, intervals):
+        visited = set()
+        comp_number = 0
+        nodes_in_comp = collections.defaultdict(list)
+
+        def mark_component_dfs(start):
+            stack = [start]
+            while stack:
+                node = stack.pop()
+                if node not in visited:
+                    visited.add(node)
+                    nodes_in_comp[comp_number].append(node)
+                    stack.extend(graph[node])
+
+        # mark all nodes in the same connected component with the same integer.
+        for interval in intervals:
+            if interval not in visited:
+                mark_component_dfs(interval)
+                comp_number += 1
+
+        return nodes_in_comp, comp_number
+
+    def merge(self, intervals):
+        graph = self.build_graph(intervals)
+        nodes_in_comp, number_of_comps = self.get_components(graph, intervals)
+
+        # all intervals in each connected component must be merged.
+        return [self.merge_nodes(nodes_in_comp[comp]) for comp in range(number_of_comps)]
 
 # Q57 Insert Interval
 class Interval:
