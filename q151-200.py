@@ -280,6 +280,8 @@ class Solution:
 
 # 162 Find Peak Element
 class Solution:
+    #Very important to know what left and right become.
+    #Sometimes it's right = mid + 1, others right = mid
     def findPeakElement(self, nums):
         left, right = 0, len(nums) - 1
 

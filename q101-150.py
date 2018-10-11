@@ -797,7 +797,6 @@ class Solution:
         result = [0]*len(ratings)
         result[0] = 1
         for i in range(1,len(ratings)):
-            print(result)
             if ratings[i] > ratings[i-1]:
                 result[i] = result[i-1]+1
             elif ratings[i] < ratings[i-1]:
@@ -814,8 +813,25 @@ class Solution:
                 result[i] = 1
         return result
 
+    import operator
+    from functools import reduce
+
+    class Solution2:
+        def candy(self, ratings):
+            candies = [1 for _ in range(len(ratings))]
+            for i in range(1, len(ratings)):
+                if ratings[i] > ratings[i - 1]:
+                    candies[i] = candies[i - 1] + 1
+
+            for i in reversed(range(1, len(ratings))):
+                if ratings[i-1] > ratings[i] and candies[i-1] <= candies[i]:
+                    candies[i-1] = candies[i] + 1
+
+            return reduce(operator.add, candies)
+
 # Q136 Single Number
 class Solution:
+    #To do a union/intersection of lists, you first have to turn them into sets
     def singleNumber(self, nums):
         #2∗(a+b+c)−(a+a+b+b+c)=c
         return 2 * sum(set(nums)) - sum(nums)
@@ -828,6 +844,9 @@ class Solution:
             #this only works if max 2 duplicates to cancel out
             a ^= i
         return a
+
+    def singleNumber3(self,nums):
+        return collections.Counter(nums).most_common()[-1][0]
 
 # Q137 Single Number II
 class Solution:
