@@ -69,3 +69,23 @@ class Solution:
 
         #this method can only be called after its definition. Python is interpreted, so it goes line by line.
         return inorderTraversal(root)
+
+#Q 299 Bulls and Cows
+class Solution:
+    def getHint(self, secret, guess):
+        used = []
+        bulls = 0
+        cows = 0
+        for i in range(len(secret)):
+            if secret[i] == guess[i]:
+                bulls += 1
+                used.append(i)
+        for i in used:
+            #str does not have pop() operation
+            secret = secret[:i]+secret[i+1:]
+            guess = guess[:i]+guess[i+1:]
+        for i in secret:
+            if i in guess:
+                cows += 1
+        return '{}A{}B'.format(bulls,cows)
+

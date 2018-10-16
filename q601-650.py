@@ -1,14 +1,17 @@
 #642 Design Search Autocomplete System
 import collections
+import bisect
 
 class TrieNode:
 
     def __init__(self):
+        #A simple trie tree only needs self.leaves to keep track
         self.__TOP_COUNT = 3
         self.infos = []
         self.leaves = {}
 
     def insert(self, s, times):
+        #self represents the current instance of the object TrieNode()
         cur = self
         cur.add_info(s, times)
         for c in s:
@@ -31,6 +34,7 @@ class TrieNode:
 class AutocompleteSystem:
 
     def __init__(self, sentences, times):
+        #can't do print(instanceName.__trie since name mangling with __)
         self.__trie = TrieNode()
         self.__cur_node = self.__trie
         self.__search = []
@@ -55,3 +59,6 @@ class AutocompleteSystem:
                 self.__cur_node = self.__cur_node.leaves[c]
                 result = [p[1] for p in self.__cur_node.infos]
         return result
+
+sentences = ["i love you","island","ironman","i love leetcode"]
+times = [5,3,2,2]

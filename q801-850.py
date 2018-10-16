@@ -30,7 +30,7 @@ class DSU:
         # minus 1 to not count the source itself in the size
         return self.size(len(self.sz) - 1) - 1
 
-class Solution(object):
+class Solution:
     def hitBricks(self, grid, hits):
         R, C = len(grid), len(grid[0])
         def index(r, c):
