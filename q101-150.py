@@ -794,40 +794,16 @@ class Solution:
 # Q135 Candy
 class Solution:
     def candy(self, ratings):
-        result = [0]*len(ratings)
-        result[0] = 1
+        result = [1]*len(ratings)
         for i in range(1,len(ratings)):
             if ratings[i] > ratings[i-1]:
                 result[i] = result[i-1]+1
             elif ratings[i] < ratings[i-1]:
-                result[i-1] += 1
-                result[i] = 1
-                index = i-2
-                while index >= 0:
-                    if ratings[index] > ratings[index+1]:
-                        result[index] += 1
-                        index -= 1
-                    #putting a continue here would just go one further in the while loop. Continue is used in both while and for loops.
-                    break
-            else:
-                result[i] = 1
-        return result
-
-    import operator
-    from functools import reduce
-
-    class Solution2:
-        def candy(self, ratings):
-            candies = [1 for _ in range(len(ratings))]
-            for i in range(1, len(ratings)):
-                if ratings[i] > ratings[i - 1]:
-                    candies[i] = candies[i - 1] + 1
-
-            for i in reversed(range(1, len(ratings))):
-                if ratings[i-1] > ratings[i] and candies[i-1] <= candies[i]:
-                    candies[i-1] = candies[i] + 1
-
-            return reduce(operator.add, candies)
+                index = i
+                while index > 0 and result[index-1]==result[index]:
+                    result[index-1] += 1
+                    index -= 1
+        return sum(result)
 
 # Q136 Single Number
 class Solution:

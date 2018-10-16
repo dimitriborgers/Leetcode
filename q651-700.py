@@ -1,40 +1,33 @@
 # 681 Next Closest Time
 class Solution:
+class Solution:
     def nextClosestTime(self, time):
-        time = [int(i) for i in time if i != ':']
-        seq = set(time)
         #cannot do [::-1] or anything of that sort in set(). It is not suscriptable
-        seq.remove(time[-1])
+        time = [int(i) for i in time if i != ':']
+
         for j in range(time[-1]+1,10):
-            if j in seq:
+            if j in time and j != time[-1]:
                 time[-1] = j
                 time = ''.join(str(i) for i in time)
                 return time[:2]+':'+time[2:]
-        seq.add(time[-1])
 
-        seq.remove(time[-2])
         for j in range(time[-2]+1,6):
-            if j in seq:
+            if j in time and j != time[-2]:
                 time[-2] = j
                 time = ''.join(str(i) for i in time)
                 return time[:2]+':'+time[2:]
-        seq.add(time[-2])
 
-        seq.remove(time[-3])
         for j in range(time[-3]+1,5):
-            if j in seq:
+            if j in time and j != time[-3]:
                 time[-3] = j
                 time = ''.join(str(i) for i in time)
                 return time[:2]+':'+time[2:]
-        seq.add(time[-3])
 
-        seq.remove(time[-4])
         for j in range(time[-4]+1,3):
-            if j in seq:
+            if j in time and j != time[-4]:
                 time[-4] = j
                 time = ''.join(str(i) for i in time)
                 return time[:2]+':'+time[2:]
-        seq.add(time[-4])
 
         minimum = min(time)
         time = [minimum]*4
@@ -47,9 +40,11 @@ class Solution:
         allowed = {int(x) for x in time if x != ':'}
         while True:
             cur = (cur + 1) % (24 * 60)
-            if all(digit in allowed
-                    for block in divmod(cur, 60)
-                    for digit in divmod(block, 10)):
+            #automatic packing if multiple values assigned to one variable
+            #second forloop done first
+            if all(digit in allowed for block in divmod(cur, 60) for digit in divmod(block, 10)):
+                #2 puts two spaces of padding minimum and 0 puts a 0 in front of the number if only 1 is present
+                #d is just for signed integer decimal
                 return "{:02d}:{:02d}".format(*divmod(cur, 60))
 
 # 682
@@ -63,7 +58,6 @@ class Solution:
         days = [0] * len(flowers)
         for day, position in enumerate(flowers, 1):
             days[position - 1] = day
-        print(days)
 
         ans = float('inf')
         left, right = 0, k+1
@@ -91,4 +85,16 @@ class Solution:
                     return day
             #bisect.insort knows where to insert element
             bisect.insort(active,flower)
+        return -1
+
+# Q686 Repeated String Match
+class Solution:
+    def repeatedStringMatch(self, A, B):
+        if len(B) < len(A):
+            return -1
+
+        q = (len(B)-1) // len(A)+1
+        for i in range(2):
+            if B in A * (q+i):
+                return q+i
         return -1

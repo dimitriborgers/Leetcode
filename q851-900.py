@@ -4,7 +4,6 @@ import heapq
 class Solution:
     def mincostToHireWorkers(self, quality, wage, K):
         workers = sorted([[w/q, q] for w, q in zip(wage, quality)])
-        print(workers)
         result = float("inf")
         qsum = 0
         max_heap = []

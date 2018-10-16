@@ -226,7 +226,7 @@ class Solution:
                 i -= 1
             else:
                 lists.append(s[i])
-            output = len(lists) if len(lists) > output else output
+            output = max(output,len(lists))
             i += 1
         return output
 
@@ -643,4 +643,22 @@ WHERE how_many_cnt_in_a_row >= 3
 
 
 # 200 Number of Islands
+class Solution:
+    def numIslands(self, grid):
+        forest = {}
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] and (i,j) not in forest:
+                    forest[(i,j)] = None
+                    self.DFS(i,j,forest,grid)
+        return sum([1 for i in forest.values() if not i])
 
+    def DFS(self,i,j,forest,grid):
+        #doing 'if grid[i][j+1] does not check if you are out of bounds, only if the number that is supposed to be there is 0 or not
+        #to check bounds, you have to do a j < len(grid[0])-1
+        if j < len(grid[0])-1 and grid[i][j+1] and (i,j+1) not in forest:
+            forest[(i,j+1)] = (i,j)
+            self.DFS(i,j+1,forest,grid)
+        if i < len(grid)-1 and grid[i+1][j] and (i+1,j) not in forest:
+            forest[(i+1,j)] = (i,j)
+            self.DFS(i+1,j,forest,grid)

@@ -54,14 +54,14 @@ class Solution:
         maxlength = float('-inf')
         for i in range(len(tree)-1):
             j = i+1
-            basket = [tree[i]]
+            basket = {tree[i]}
             while j < len(tree):
                 if tree[j] not in basket:
-                    basket.append(tree[j])
+                    basket.add(tree[j])
                 if len(basket) > 2:
                     break
                 j += 1
-            maxlength = j-i if j-i > maxlength else maxlength
+            maxlength = max(j-i,maxlength)
         return maxlength
 
 # 905 Sort Array By Parity

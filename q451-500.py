@@ -24,19 +24,18 @@ class Solution:
             robot.turnRight()
             robot.turnRight()
 
-        def dfs(pos, robot, d, lookup):
+        def dfs(pos, robot, lookup):
             if pos in lookup:
                 return
             lookup.add(pos)
 
             robot.clean()
-            for _ in directions:
+            for i in range(len(directions)):
                 if robot.move():
-                    dfs((pos[0]+directions[d][0],
-                         pos[1]+directions[d][1]),
-                        robot, d, lookup)
+                    dfs((pos[0]+directions[i][0],
+                         pos[1]+directions[i][1]),
+                        robot, lookup)
                     goBack(robot)
                 robot.turnRight()
-                d = (d+1) % len(directions)
 
         dfs((0, 0), robot, 0, set())

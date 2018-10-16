@@ -260,6 +260,7 @@ class Solution:
 class Solution:
     def isMatch(self, text, pattern):
         if not pattern:
+            #if there is no pattern and no text, this returns True
             return not text
 
         #make sure there is still text, then check pattern.

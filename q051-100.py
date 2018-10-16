@@ -1148,11 +1148,14 @@ class Solution:
     def MorrisTraversal(self, root):
         if root is None:
             return
+
         broken = [None, None]
+        # pre is the predecessor of current in the type of traversal you are doing (inorder, preorder, postorder)
+        # Since this problem is with BST, we use inorder
         pre, cur = None, root
 
         while cur:
-            if cur.left is None:
+            if not cur.left:
                 self.detectBroken(broken, pre, cur)
                 pre = cur
                 cur = cur.right
@@ -1161,8 +1164,8 @@ class Solution:
                 while node.right and node.right != cur:
                     node = node.right
 
-                if node.right is None:
-                    node.right =cur
+                if not node.right:
+                    node.right = cur
                     cur = cur.left
                 else:
                     self.detectBroken(broken, pre, cur)
