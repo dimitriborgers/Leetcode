@@ -11,7 +11,16 @@
 
 
 # 205 Isomorphic Strings
+import collections
 
+class Solution:
+    def isIsomorphic(self, s, t):
+        seq = collections.defaultdict(set)
+        for i in range(len(s)):
+            seq[s[i]].add(t[i])
+            if len(seq[s[i]]) > 1:
+                return False
+        return True
 
 # 206 Reverse Linked List
 
@@ -131,10 +140,35 @@ class Solution:
         return a_idx, b_idx
 
 # 219 Contains Duplicate II
+class Solution:
+    def containsNearbyDuplicate(self, nums, k):
+        lookup = {}
+        for i, num in enumerate(nums):
+            if num not in lookup:
+                lookup[num] = i
+            else:
+                if i - lookup[num] <= k:
+                    return True
+                lookup[num] = i
+        return False
 
+# 220 Contains Duplicate III
+class Solution:
+    def containsNearbyAlmostDuplicate(self, nums, k, t):
+        if k < 0 or t < 0:
+            return False
 
-# 220 ontains Duplicate III
+        window = dict
+        for n in nums:
+            if len(window) > k:
+                window.popitem(False)
 
+            bucket = n if not t else n // t
+            for m in (window.get(bucket - 1), window.get(bucket), window.get(bucket + 1)):
+                if m is not None and abs(n - m) <= t:
+                    return True
+            window[bucket] = n
+        return False
 
 # 221 aximal Square
 

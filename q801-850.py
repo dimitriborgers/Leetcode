@@ -1,4 +1,4 @@
-# 803 Bricks Falling When Hit
+# Q803 Bricks Falling When Hit
 class DSU:
     def __init__(self, R, C):
         #R * C is the source, and isn't a grid square
@@ -73,7 +73,7 @@ class Solution:
                 ans.append(max(0, dsu.top() - pre_roof - 1))
         return ans[::-1]
 
-# 843 Guess the Word
+# Q843 Guess the Word
 import random
 
 #class Master(object):
@@ -100,7 +100,22 @@ class Solution:
             pool = [ i for i in pool if num_of_same(word,i) == num_same]
         return -1
 
-#844 Backspace string Compare
+# Q833 Find And Replace in String
+class Solution:
+    def findReplaceString(self, S, indexes, sources, targets):
+        original = str(S)
+        updated_str = str(S)
+        starting_index = 0
+
+        for i in zip(sources,indexes,targets):
+            if original[i[1]:i[1]+len(i[0])] == i[0]:
+                updated_str = updated_str[:i[1]+starting_index] + i[2] + updated_str[i[1]+len(i[0])+starting_index:]
+
+                starting_index += len(i[2])-1
+
+        return updated_str
+
+# Q844 Backspace string Compare
 class Solution:
     def backspaceCompare(self, S, T):
 
@@ -117,3 +132,40 @@ class Solution:
             return result[::-1]
 
         return (strip(S) == strip(T))
+
+# Q846 Hand of Straights
+class Solution:
+    def isNStraightHand(self, hand, W):
+        if len(hand) % W:
+            return False
+
+        result = [[] for i in range(W)]
+        hand.sort()
+        while hand:
+            for i in result:
+                i.append(hand[0])
+                tmp = hand[0]
+                del hand[hand.index(tmp)]
+                while len(i) < W:
+                    if tmp + 1 in hand:
+                        i.append(tmp+1)
+                        del hand[hand.index(tmp+1)]
+                        tmp += 1
+                    else:
+                        return False
+
+        return result
+
+# Q849 Maximize Distance to Closest Person
+class Solution:
+    def maxDistToClosest(self, seats):
+        seq = [0]*len(seats)
+        for i in range(len(seq)):
+            if not seats[i]:
+                seq[i] = 1
+        for i in range(1,len(seq)):
+            if seq[i] and seq[i-1]:
+                seq[i] += seq[i-1]
+        if seq[-1] > (max(seq)+1) // 2:
+            return seq[-1]
+        return (max(seq)+1) // 2

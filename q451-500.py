@@ -1,3 +1,35 @@
+# Q465 Optimal Account Balancing
+import collections
+
+class Solution:
+    def minTransfers(self, transactions):
+        lookup = collections.defaultdict(int)
+        for i in transactions:
+            lookup[i[0]] += i[2]
+            lookup[i[1]] += -i[2]
+            if lookup[i[0]] == 0:
+                del lookup[i[0]]
+
+        def recur(lookup):
+            minAcc = min(lookup,key=lookup.get)
+            maxAcc = max(lookup,key=lookup.get)
+
+            if lookup[maxAcc] - abs(lookup[minAcc]) > 0:
+                print('Persion #{} gave person #{} ${}'.format(minAcc,maxAcc,abs(lookup[minAcc])))
+                lookup[maxAcc] -= abs(lookup[minAcc])
+                del lookup[minAcc]
+            elif lookup[maxAcc] - abs(lookup[minAcc]) < 0:
+                print('Persion #{} gave person #{} ${}'.format(minAcc,maxAcc,abs(lookup[maxAcc])))
+                lookup[minAcc] += lookup[maxAcc]
+                del lookup[maxAcc]
+            else:
+                print('Persion #{} gave person #{} ${}'.format(minAcc,maxAcc,abs(lookup[maxAcc])))
+                del lookup[maxAcc]
+                del lookup[minAcc]
+
+        while lookup:
+            recur(lookup)
+
 # Q482 License Key Formatting
 class Solution:
     def licenseKeyFormatting(self, S, K):
