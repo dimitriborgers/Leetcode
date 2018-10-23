@@ -169,3 +169,26 @@ class Solution:
         if seq[-1] > (max(seq)+1) // 2:
             return seq[-1]
         return (max(seq)+1) // 2
+
+# Q850 Rectangle Area II
+import itertools,functools
+
+class Solution:
+    def rectangleArea(self, rectangles):
+        def intersect(rec1, rec2):
+            return [max(rec1[0], rec2[0]),
+                    max(rec1[1], rec2[1]),
+                    min(rec1[2], rec2[2]),
+                    min(rec1[3], rec2[3])]
+
+        def area(rec):
+            dx = max(0, rec[2] - rec[0])
+            dy = max(0, rec[3] - rec[1])
+            return dx * dy
+
+        ans = 0
+        for size in range(1, len(rectangles) + 1):
+            for group in itertools.combinations(rectangles, size):
+                ans += (-1) ** (size + 1) * area(functools.reduce(intersect, group))
+
+        return ans % (10**9 + 7)

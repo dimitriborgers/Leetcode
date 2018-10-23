@@ -1,5 +1,27 @@
-# 681 Next Closest Time
+# Q679 24 Game
+from operator import truediv, mul, add, sub
+
 class Solution:
+    def judgePoint24(self, A):
+        if not A:
+            return False
+        if len(A) == 1:
+            return A[0] - 24 == 0
+
+        for i in range(len(A)):
+            for j in range(len(A)):
+                if i != j:
+                    B = [A[k] for k in range(len(A)) if i != k != j]
+                    for op in (truediv, mul, add, sub):
+                        #Makes sure you don't divide by 0
+                        if op is not truediv or A[j]:
+                            B.append(op(A[i], A[j]))
+                            if self.judgePoint24(B):
+                                return True
+                            B.pop()
+        return False
+
+# Q681 Next Closest Time
 class Solution:
     def nextClosestTime(self, time):
         #cannot do [::-1] or anything of that sort in set(). It is not suscriptable
@@ -47,10 +69,10 @@ class Solution:
                 #d is just for signed integer decimal
                 return "{:02d}:{:02d}".format(*divmod(cur, 60))
 
-# 682
+# Q682
 
 
-# 683 K Empty Slots
+# Q683 K Empty Slots
 import bisect
 
 class Solution:
@@ -80,12 +102,40 @@ class Solution:
             #bisect.bisect tells you where exactly the value would be inserted
             i = bisect.bisect(active, flower)
             #i-(i>0) -> i>0 is 1 if true, 0 if not
+            '''
+            seq = []
+            for i in seq[2:4]
+            This does not give a out of bounds error. It will just skip this loop if the range given does not apply
+            To start loop, the first number must be accurate. Loop exits if reached end or number no longer accurate
+            '''
             for neighbor in active[i-(i>0):i+1]:
                 if abs(neighbor - flower) - 1 == k:
                     return day
             #bisect.insort knows where to insert element
+            #moves element previous at position to the right
             bisect.insort(active,flower)
         return -1
+
+# Q684 Redundant Connection
+import collections
+
+class Solution:
+    def findRedundantConnection(self, edges):
+        graph = collections.defaultdict(set)
+
+        def dfs(source, target):
+            if source not in seen:
+                seen.add(source)
+                if source == target: return True
+                return any(dfs(nei, target) for nei in graph[source])
+
+        for u, v in edges:
+            #notice that seen does not have to be self.seen since dfs is accessing an already created public element
+            seen = set()
+            if u in graph and v in graph and dfs(u, v):
+                return u, v
+            graph[u].add(v)
+            graph[v].add(u)
 
 # Q686 Repeated String Match
 class Solution:

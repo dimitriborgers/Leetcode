@@ -33,3 +33,23 @@ class Solution:
             i += 1
             count += 1
         return count
+
+# Q568 Maximum Vacation Days
+class Solution:
+    def maxVacationDays(self, flights, days):
+
+        for i in range(len(flights)):
+            for j in range(len(flights[0])):
+                if i == j:
+                    flights[i][j] = 1
+
+        def dfs(current,day):
+            if day == -1:
+                return max(dfs(city,day+1) for city,name in enumerate(flights[current]) if name)
+
+            if day == len(days[0])-1:
+                return days[current][day]
+
+            return days[current][day] + max(dfs(city,day+1) for city,name in enumerate(flights[current]) if name)
+
+        return dfs(0,-1)
