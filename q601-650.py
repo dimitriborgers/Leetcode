@@ -52,6 +52,7 @@ class AutocompleteSystem:
             self.__search = []
         else:
             self.__search.append(c)
+            #This check makes sure you stop comparing onces one letter is not in tree
             if self.__cur_node:
                 if c not in self.__cur_node.leaves:
                     self.__cur_node = None
@@ -59,6 +60,3 @@ class AutocompleteSystem:
                 self.__cur_node = self.__cur_node.leaves[c]
                 result = [p[1] for p in self.__cur_node.infos]
         return result
-
-sentences = ["i love you","island","ironman","i love leetcode"]
-times = [5,3,2,2]

@@ -119,14 +119,15 @@ class Solution:
 # Q684 Redundant Connection
 import collections
 
-class Solution:
+class Solution1:
     def findRedundantConnection(self, edges):
         graph = collections.defaultdict(set)
 
         def dfs(source, target):
             if source not in seen:
                 seen.add(source)
-                if source == target: return True
+                if source == target:
+                    return True
                 return any(dfs(nei, target) for nei in graph[source])
 
         for u, v in edges:
@@ -136,6 +137,40 @@ class Solution:
                 return u, v
             graph[u].add(v)
             graph[v].add(u)
+
+class Solution2:
+    def findRedundantConnection(self, edges):
+        dsu = DSU()
+        for edge in edges:
+            if not dsu.union(*edge):
+                return edge
+
+class DSU:
+    def __init__(self):
+        #creates range class, can be accessed by index.
+        #range class is not same as generator, generators are not suscriptable, which means they can't be accessed by index.
+        self.parent = range(1001)
+        self.rank = [0] * 1001
+
+    def find(self, x):
+        if self.parent[x] != x:
+            #path compression
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    #union by rank
+    def union(self, x, y):
+        xr, yr = self.find(x), self.find(y)
+        if xr == yr:
+            return False
+        elif self.rank[xr] < self.rank[yr]:
+            self.parent[xr] = yr
+        elif self.rank[xr] > self.rank[yr]:
+            self.parent[yr] = xr
+        else:
+            self.parent[yr] = xr
+            self.rank[xr] += 1
+        return True
 
 # Q686 Repeated String Match
 class Solution:

@@ -2,56 +2,70 @@
 class DSU:
     def __init__(self, R, C):
         #R * C is the source, and isn't a grid square
-        self.par = range(R*C + 1)
-        self.rnk = [0] * (R*C + 1)
-        self.sz = [1] * (R*C + 1)
+        #self.parent has to be list because range() does not support item assignment, which is needed in union
+        self.parent = [i for i in range(R*C + 1)]
+        self.rank = [0]*(R*C + 1)
+        self.size = [1]*(R*C + 1)
 
     def find(self, x):
-        if self.par[x] != x:
-            self.par[x] = self.find(self.par[x])
-        return self.par[x]
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
 
     def union(self, x, y):
         xr, yr = self.find(x), self.find(y)
-        if xr == yr: return
-        if self.rnk[xr] < self.rnk[yr]:
+        if xr == yr:
+            return
+        #Same as normal DSU. In this case, you always make xr parent, so if it isn't actually bigger, than just switch it with yr
+        if self.rank[xr] < self.rank[yr]:
             xr, yr = yr, xr
-        if self.rnk[xr] == self.rnk[yr]:
-            self.rnk[xr] += 1
+        if self.rank[xr] == self.rank[yr]:
+            self.rank[xr] += 1
 
-        self.par[yr] = xr
-        self.sz[xr] += self.sz[yr]
+        self.parent[yr] = xr
+        self.size[xr] += self.size[yr]
 
     def size(self, x):
-        return self.sz[self.find(x)]
+        return self.size[self.find(x)]
 
     def top(self):
-        # Size of component at ephemeral "source" node at index R*C,
-        # minus 1 to not count the source itself in the size
-        return self.size(len(self.sz) - 1) - 1
+        # Size of component at ephemeral "source" node at index R*C, minus 1 to not count the source itself in the size
+        # All nodes on the top edge are connected to the source node
+        return self.size(len(self.size) - 1) - 1
 
 class Solution:
     def hitBricks(self, grid, hits):
         R, C = len(grid), len(grid[0])
+
+        #converting grid location to array location
         def index(r, c):
             return r * C + c
 
+        #finding all neighbors of a cell in grid
+        #good example of a generator, allows you to for loop through it
+        #very useful help function if need to check all valid neighbors
         def neighbors(r, c):
             for nr, nc in ((r-1, c), (r+1, c), (r, c-1), (r, c+1)):
                 if 0 <= nr < R and 0 <= nc < C:
                     yield nr, nc
 
+        #In this stuation, row[:] acts as list(row)
+        #You could also do this by doing a deepcopy of grid
         A = [row[:] for row in grid]
         for i, j in hits:
             A[i][j] = 0
 
         dsu = DSU(R, C)
+
+        #great way of getting both index and value at same time
         for r, row in enumerate(A):
             for c, val in enumerate(row):
                 if val:
                     i = index(r, c)
                     if r == 0:
-                        dsu.union(i, R*C)
+                        #This is why range has to be R*C+1 in DSU init
+                        #There is an ephemeral source node
+                        dsu.union(R*C,i)
                     if r and A[r-1][c]:
                         dsu.union(i, index(r-1, c))
                     if c and A[r][c-1]:
@@ -60,18 +74,35 @@ class Solution:
         ans = []
         for r, c in reversed(hits):
             pre_roof = dsu.top()
+            #If original grid[r][c] was always 0, then we couldn't have had a meaningful cut - the number of dropped bricks is 0
             if grid[r][c] == 0:
                 ans.append(0)
             else:
+                #Otherwise, we'll look at the size of the new roof after adding this brick at (r, c), and compare them to find the number of dropped bricks
                 i = index(r, c)
                 for nr, nc in neighbors(r, c):
                     if A[nr][nc]:
                         dsu.union(i, index(nr, nc))
                 if r == 0:
-                    dsu.union(i, R*C)
+                    dsu.union(R*C,i)
                 A[r][c] = 1
                 ans.append(max(0, dsu.top() - pre_roof - 1))
         return ans[::-1]
+
+# Q833 Find And Replace in String
+class Solution:
+    def findReplaceString(self, S, indexes, sources, targets):
+        original = str(S)
+        updated_str = str(S)
+        starting_index = 0
+
+        for i in zip(sources,indexes,targets):
+            if original[i[1]:i[1]+len(i[0])] == i[0]:
+                updated_str = updated_str[:i[1]+starting_index] + i[2] + updated_str[i[1]+len(i[0])+starting_index:]
+
+                starting_index += len(i[2])-1
+
+        return updated_str
 
 # Q843 Guess the Word
 import random
@@ -97,23 +128,8 @@ class Solution:
             num_same = master.guess(word)
             if num_same == len(word):
                 return word
-            pool = [ i for i in pool if num_of_same(word,i) == num_same]
+            pool = [i for i in pool if num_of_same(word,i) == num_same]
         return -1
-
-# Q833 Find And Replace in String
-class Solution:
-    def findReplaceString(self, S, indexes, sources, targets):
-        original = str(S)
-        updated_str = str(S)
-        starting_index = 0
-
-        for i in zip(sources,indexes,targets):
-            if original[i[1]:i[1]+len(i[0])] == i[0]:
-                updated_str = updated_str[:i[1]+starting_index] + i[2] + updated_str[i[1]+len(i[0])+starting_index:]
-
-                starting_index += len(i[2])-1
-
-        return updated_str
 
 # Q844 Backspace string Compare
 class Solution:

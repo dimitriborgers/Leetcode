@@ -966,6 +966,7 @@ RR-Randomly selects a candidate item and discards it to make space when necessar
 LFU-Counts how often an item is needed. Those that are used least often are discarded first.
 """
 class LRUCache:
+    #you can't return anything in init method
     def __init__(self, capacity):
         self.capacity = capacity
         #Since python 3.7, Python dict is an ordered dict. It puts the most recently added on the right

@@ -1,5 +1,37 @@
 # Q457 Circular Array Loop
+class Solution:
+    #to find loops, just use one fast and one slow
+    #Each time a possible attempt failed we mark every index on the path by zero, since zero is guaranteed to fail.
+    #Problem asks only forward of backward solution we simply run it for positive indices and negative indices twice.
+    def circularArrayLoop(self, nums):
+        def next_index(nums, i):
+            return (i + nums[i]) % len(nums)
 
+        for i in range(len(nums)):
+            if nums[i] == 0:
+                continue
+
+            slow = fast = i
+            #checking positive or negative
+            #if all are positive, product returns positive. Same for if all are negative
+            while nums[next_index(nums, slow)] * nums[i] > 0 and nums[next_index(nums, fast)] * nums[i] > 0 and nums[next_index(nums, next_index(nums, fast))] * nums[i] > 0:
+                slow = next_index(nums, slow)
+                fast = next_index(nums, next_index(nums, fast))
+                if slow == fast:
+                    #check for loop with only one element
+                    if slow == next_index(nums, slow):
+                        break
+                    return True
+
+            #loop not found, set all element along the way to 0
+            #this is an improvement. can work without.
+            slow, val = i, nums[i]
+            while nums[slow] * val > 0:
+                tmp = next_index(nums, slow)
+                nums[slow] = 0
+                slow = tmp
+
+        return False
 
 # Q465 Optimal Account Balancing
 import collections
@@ -44,7 +76,7 @@ class Solution:
                 S.insert(i,'-')
                 count = -1
             count+=1
-            i-=1
+            i -= 1
         return ''.join(S)
 
 # Q489 Robot Room Cleaner
@@ -59,18 +91,20 @@ class Solution:
             robot.turnRight()
             robot.turnRight()
 
-        def dfs(pos, robot, lookup):
+        def dfs(pos, robot, d, lookup):
             if pos in lookup:
                 return
             lookup.add(pos)
 
             robot.clean()
-            for i in range(len(directions)):
+            for _ in directions:
                 if robot.move():
-                    dfs((pos[0]+directions[i][0],
-                         pos[1]+directions[i][1]),
-                        robot, lookup)
+                    dfs((pos[0]+directions[d][0],
+                         pos[1]+directions[d][1]),
+                        robot, d, lookup)
+                    #move() method automatically moves you, so you have to go back to original location to continue turning.
                     goBack(robot)
                 robot.turnRight()
+                d = (d+1) % len(directions)
 
         dfs((0, 0), robot, 0, set())

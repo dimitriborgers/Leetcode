@@ -4,7 +4,6 @@ class Solution:
     def crackSafe(self, n, k):
         seen = set()
         ans = []
-        #This is a simple way to get all permutations
         #To change to combinations, just make sure set isn't already in seen, this works since {1,2,3} == {1,3,2} (order does not matter)
         def dfs(node):
             #notice how you can use k here since sub-routines can access caller routine variables
@@ -40,4 +39,73 @@ class Solution:
         return lo
 
 # Q776 Split BST
+class Solution1:
+    #Recursion is a good way to be able to change cur.left and cur.right without having a parent pointer
+    def splitBST(self, root, V):
+        if not root:
+            return None, None
+        elif root.val <= V:
+            result = self.splitBST(root.right, V)
+            root.right = result[0]
+            return root, result[1]
+        else:
+            result = self.splitBST(root.left, V)
+            root.left = result[1]
+            return result[0], root
 
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+        self.parent = None
+
+class Solution2:
+    def splitBST(self, root, V):
+        if not root:
+            return None,None
+
+        cur = root
+        direction = None
+
+        while cur:
+            if cur.val > V:
+                if not direction:
+                    direction = 'L'
+                temp = cur
+                cur = cur.left
+                cur.parent = temp
+            elif cur.val < V:
+                if not direction:
+                    direction = 'R'
+                temp = cur
+                cur = cur.right
+                cur.parent = temp
+            else:
+                break
+
+        if direction == 'R':
+            if cur.left:
+                cur.parent.right = cur.left
+                cur.left = None
+                return cur,root
+            else:
+                if cur == cur.parent.right:
+                    cur.parent.right = None
+                    return cur,root
+                else:
+                    cur.parent.parent.right = cur
+                    cur.parent.left = None
+                    return cur.parent,root
+        else:
+            if cur.right:
+                cur.parent.left = cur.right
+                cur.right = None
+                return cur,root
+            else:
+                if cur == cur.parent.left:
+                    cur.parent.left = None
+                    return cur,root
+                else:
+                    cur.parent.parent.left = None
+                    return cur,root

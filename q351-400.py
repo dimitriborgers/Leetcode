@@ -30,6 +30,7 @@ class Solution:
                 if k not in visited:
                     visited.add(k)
                     tmp = check(k, down, lookup, visited)
+                    #this check of tmp[0] prevents the function from returning too quickly. It allows all steps in loop
                     if tmp[0]:
                         return (True, v * tmp[1])
             return (False, 0)
@@ -44,5 +45,6 @@ class Solution:
         for q in query:
             visited = set()
             tmp = check(q[0], q[1], lookup, visited)
+            #can put a conditional statement in an append() statement
             result.append(tmp[1] if tmp[0] else -1)
         return result

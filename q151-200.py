@@ -191,6 +191,7 @@ class Solution:
                 i += 1
                 self.__i4 += 1
             else:
+                #new 4 letters must be requested
                 self.__n4 = read4(self.__buf4)  # Read more characters.
                 if self.__n4:
                     self.__i4 = 0
@@ -201,9 +202,9 @@ class Solution:
 
 if __name__ == "__main__":
     global file_content
-    sol = Solution()
-    buf = ['' for _ in xrange(100)]
     file_content = "ab"
+    sol = Solution()
+    buf = ['' for _ in range(100)]
     print(buf[:sol.read(buf, 1)])
     print(buf[:sol.read(buf, 2)])
 
