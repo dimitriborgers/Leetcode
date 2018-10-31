@@ -89,6 +89,8 @@ class Solution:
                 ans.append(max(0, dsu.top() - pre_roof - 1))
         return ans[::-1]
 
+# Q818 Race Car
+
 # Q833 Find And Replace in String
 class Solution:
     def findReplaceString(self, S, indexes, sources, targets):

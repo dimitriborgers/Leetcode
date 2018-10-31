@@ -22,8 +22,6 @@ class Solution:
             self.recur(index,sentence[self.word_counter],length)
 
 # Q428 Serialize and Deserialize N-ary Tree
-from collections import defaultdict
-
 class Node:
     def __init__(self, val, children):
         self.val = val
@@ -31,28 +29,33 @@ class Node:
 
 class Codec:
 
+    #store an ‘end of children’ marker with every node.
     def serialize(self, root):
-        def dfs(node, vals):
+        def dfs(node):
             if not node:
                 return
             vals.append(str(node.val))
             for child in node.children:
-                dfs(child, vals)
+                dfs(child)
             vals.append("#")
 
         vals = []
-        dfs(root, vals)
+        dfs(root)
         return " ".join(vals)
 
 
     def deserialize(self, data):
+        #split is not actually needed
+        #to not use it, remove the ' ' (space) in between the numbers in the serialized data, and then just call on: return dfs(iter(data))
         def isplit(source, sep):
             sepsize = len(sep)
             start = 0
             while True:
                 idx = source.find(sep, start)
+                #find returns -1 if not found
                 if idx == -1:
                     yield source[start:]
+                    #return statement acts as a stop iteration
                     return
                 yield source[start:idx]
                 start = idx + sepsize
@@ -71,4 +74,6 @@ class Codec:
         if not data:
             return None
 
+        #iter creates an iterator from iterable
+        #iter can make an iterator from a string
         return dfs(iter(isplit(data, ' ')))
