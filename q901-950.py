@@ -1,4 +1,25 @@
-# 901 Online Stock Span - Didn't understand
+# Q900 RLEIterator
+class RLEIterator:
+
+    def __init__(self, A):
+        self.seq = []
+        self.index = -1
+        for i in range(len(A)-1):
+            if not i % 2:
+                self.seq.extend([A[i+1]]*A[i])
+        self.remainder = len(self.seq)
+
+    def next(self, n):
+        if n > self.remainder:
+            self.index += n
+            self.remainder -= n
+            return -1
+
+        self.index += n
+        self.remainder -= n
+        return self.seq[self.index]
+
+# Q901 Online Stock Span - Didn't understand
 class StockSpanner:
 
     def __init__(self):
@@ -11,7 +32,7 @@ class StockSpanner:
         self.__s.append([price, result])
         return result
 
-# 902 Numbers At Most N Given Digit Set
+# Q902 Numbers At Most N Given Digit Set
 import itertools
 
 class Solution:
@@ -48,7 +69,7 @@ class Solution:
 
         return sum(dp(N, j) for j in range(N+1)) % MOD
 
-# 904 Fruit Into Baskets
+# Q904 Fruit Into Baskets
 class Solution:
     def totalFruit(self, tree):
         maxlength = float('-inf')
@@ -64,7 +85,7 @@ class Solution:
             maxlength = max(j-i,maxlength)
         return maxlength
 
-# 905 Sort Array By Parity
+# Q905 Sort Array By Parity
 class Solution:
     def sortArrayByParity2(self, A):
         #in place sort using 2 pointers
@@ -84,7 +105,7 @@ class Solution:
         return ([x for x in A if x % 2 == 0] +
                 [x for x in A if x % 2 == 1])
 
-# 906 Super Palindromes
+# Q906 Super Palindromes
 class Solution:
     def superpalindromesInRange(self, L, R):
         result = []
@@ -95,21 +116,21 @@ class Solution:
                 break
         return result
 
-# 907 Sum of Subarray Minimums
+# Q907 Sum of Subarray Minimums
 class Solution:
     def sumSubarrayMins(self, A):
         #to make the subsets hashable, you have to make them tuples. However, to do this you have to do tuple(). just using () will make it a generator, not a tuple
         return [tuple(x for (pos,x) in enumerate(A) if (2**pos) & a)for a in range(2**len(A))]
 
-# 908 Smallest Range I
+# Q908 Smallest Range I
 class Solution:
     def smallestRangeI(self, A, K):
         return max(0, max(A) - min(A) - 2*K)
 
-# 909 Snakes and Ladders
+# Q909 Snakes and Ladders
 
 
-# 910 Smallest Range II
+# Q910 Smallest Range II
 class Solution:
     def smallestRangeII(self, A, K):
         A.sort()
@@ -120,7 +141,7 @@ class Solution:
             ans = min(ans, max(ma-K, a+K) - min(mi+K, b-K))
         return ans
 
-# 911 Online Election - Didn't understand
+# Q911 Online Election - Didn't understand
 class TopVotedCandidate:
 
     def __init__(self, persons, times):

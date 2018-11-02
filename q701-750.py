@@ -1,3 +1,22 @@
+# Q727 Minimum Window Subsequence
+class Solution:
+    def minWindow(self, S, T):
+        start = 0
+        length = []
+        while start < len(S):
+            indexes = []
+            for i in T:
+                tmp = S.find(i,start)
+                if tmp == -1:
+                    break
+                else:
+                    indexes.append(tmp)
+                    start = tmp+1
+            if tmp == -1:
+                break
+            length.append((indexes[2]-indexes[0]+1,indexes[0],indexes[2]))
+        return S[min(length)[1]:min(length)[2]+1]
+
 # Q731 My Calendar II
 from collections import defaultdict
 

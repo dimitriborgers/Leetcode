@@ -1,6 +1,8 @@
 # Q753 Cracking the Safe
 class Solution:
     #Hierholzer's Algorithm
+    #A node plus edge represents a complete edge
+    #Because the in-degrees and out-degrees of each node are equal, we can only get stuck at u, which forms a cycle.
     def crackSafe(self, n, k):
         seen = set()
         ans = []

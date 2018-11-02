@@ -1,3 +1,28 @@
+# Q403 Frog Jump
+class Solutionr:
+    def canCross(self, stones):
+        destination = stones[-1]
+
+        def possibilities(cur,k):
+            if cur > len(stones):
+                return False
+
+            if stones[cur] == destination:
+                return True
+
+            for jump in range(k-1,k+2):
+                nxt = stones[cur] + jump
+                if nxt in stones[cur+1:]:
+                    #second argument let's you start search at an index
+                    location = stones.index(nxt,cur)
+                    result = possibilities(location,jump)
+                    if result:
+                        return True
+
+            return False
+
+        return possibilities(stones[0],0)
+
 # Q418 Sentence Screen Fitting
 class Solution:
     def wordsTyping(self, sentence, rows, cols):

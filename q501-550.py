@@ -12,6 +12,24 @@ class Solution:
         length = max(result,key=lambda x:x[0])[0]
         return min([word for num,word in result if num == length])
 
+
+# Q528 Random Pick with Weight
+#Space: O(1)   Time: O(n)
+import random
+import bisect
+
+class Solution:
+
+    def __init__(self, w):
+        self.__prefix_sum = list(w)
+        for i in range(1, len(w)):
+            self.__prefix_sum[i] += self.__prefix_sum[i-1]
+
+    def pickIndex(self):
+        target = random.randint(0, self.__prefix_sum[-1]-1)
+        #gives the index
+        return bisect.bisect_right(self.__prefix_sum, target)
+
 # Q539 Minimum Time Difference
 class Solution:
     def findMinDifference(self, timePoints):

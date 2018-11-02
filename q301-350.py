@@ -51,3 +51,29 @@ class Solution:
                 sums[cur_sum] = i
         return max_len
 
+# Q340 Longest Substring with At Most K Distinct Characters
+from collections import defaultdict
+
+class Solution:
+    def lengthOfLongestSubstringKDistinct(self, s, k):
+        used_dict = defaultdict(int)
+        length = float('-inf')
+        i = j = 0
+
+        while i < len(s):
+            if s[i] not in used_dict:
+                if len(used_dict) < k:
+                    used_dict[s[i]] += 1
+                else:
+                    while len(used_dict) == k:
+                        used_dict[s[j]] -= 1
+                        if not used_dict[s[j]]:
+                            del used_dict[s[j]]
+                            i -= 1
+                        j += 1
+            else:
+                used_dict[s[i]] += 1
+            i += 1
+            length = max(length,i-j)
+
+        return length

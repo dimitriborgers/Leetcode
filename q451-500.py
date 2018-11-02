@@ -65,6 +65,9 @@ class Solution:
         while lookup:
             recur(lookup)
 
+# Q475 Heaters
+
+
 # Q482 License Key Formatting
 class Solution:
     def licenseKeyFormatting(self, S, K):

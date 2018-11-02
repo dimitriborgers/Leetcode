@@ -89,7 +89,152 @@ class Solution:
                 ans.append(max(0, dsu.top() - pre_roof - 1))
         return ans[::-1]
 
+# Q815 Bus Routes
+from collections import defaultdict
+
+class Solution:
+    #Using DFS, may not be quickest path
+    def numBusesToDestination(self, routes, S, T):
+        lookup_stops = defaultdict(list)
+        lookup_buses = defaultdict(list)
+        set_stops = set()
+        set_buses = set()
+
+        for r,row in enumerate(routes):
+            for c,val in enumerate(row):
+                lookup_stops[val].append(r)
+                lookup_buses[r].append(val)
+
+        start = lookup_stops[S]
+        def dfs(buses):
+            for bus in buses:
+                if bus not in set_buses:
+                    set_buses.add(bus)
+                    for stop in lookup_buses[bus]:
+                        if stop == T:
+                            return (True,1)
+                        if stop not in set_stops:
+                            set_stops.add(stop)
+                            tmp = dfs(lookup_stops[stop])
+                            if tmp[0]:
+                                return (True,tmp[1]+1)
+            return (False,0)
+
+        tmp = dfs(start)
+        return tmp[1] if tmp[0] else -1
+
+from collections import defaultdict,deque
+
+class Solution1:
+    #Using BFS
+    def numBusesToDestination(self, routes, S, T):
+        lookup_stops = defaultdict(list)
+        lookup_buses = defaultdict(list)
+        set_stops = set()
+        set_buses = set()
+        queue_stops = deque()
+        queue_buses = deque()
+
+        for r,row in enumerate(routes):
+            for c,val in enumerate(row):
+                lookup_stops[val].append(r)
+                lookup_buses[r].append(val)
+
+        start = lookup_stops[S]
+        count = 0
+        queue_buses.extend(start)
+
+        while queue_buses:
+            bus = queue_buses.popleft()
+            if bus not in set_buses:
+                count += 1
+                set_buses.add(bus)
+                queue_stops.extend(lookup_buses[bus])
+                while queue_stops:
+                    stop = queue_stops.popleft()
+                    if stop == T:
+                        return count
+                    if stop not in set_stops:
+                        set_stops.add(stop)
+                        queue_buses.extend(lookup_stops[stop])
+        return -1
+
 # Q818 Race Car
+import heapq
+from collections import deque
+
+class Solution:
+    #BFS algorithm- for each position we have two choices: either accelerate or reverse.
+    def racecar(self, target):
+        queue = deque()
+        #start at position 0 with speed 1
+        queue.append((0,1))
+
+        visited = set()
+        visited.add((0,1))
+
+        #level represents how many commands it takes to reach target
+        level = 0
+        while queue:
+            #this limits the amount of times you run the loop (since you are adding elements to queue)
+            for _ in range(len(queue)):
+                cur = queue.popleft()
+
+                if cur[0] == target:
+                    return level
+
+                #cur[0]+cur[1] -> position += speed
+                #cur[1] << 1 -> speed *= 2
+                nxt = (cur[0]+cur[1],cur[1] << 1)
+                key = (nxt[0],nxt[1])
+
+                #Command A
+                if key not in visited and nxt[0] > 0 and nxt[0] < (target << 1):
+                    queue.append(nxt)
+                    visited.add(key)
+
+                nxt = (cur[0],-1 if cur[1] > 0 else 1)
+                key = (nxt[0],nxt[1])
+
+                #Command R
+                if key not in visited and nxt[0] > 0 and nxt[0] < (target << 1):
+                    queue.append(nxt)
+                    visited.add(key)
+                queue.append(nxt)
+                visited.add(key)
+
+            level += 1
+        return -1
+
+class Solution1:
+    #Using Dijkstra's Algorithm
+    def racecar(self, target):
+        #bit_length(): Return the number of bits necessary to represent an integer in binary, excluding the sign and leading zeros
+        K = target.bit_length() + 1
+        #multiplies 1 to the power of the length of K in binary
+        barrier = 1 << K
+        pq = [(0, target)]
+        #max 2 * barrier + 1 number of nodes in pq
+        dist = [float('inf')] * (2 * barrier + 1)
+        dist[target] = 0
+
+        while pq:
+            steps, targ = heapq.heappop(pq)
+            if dist[targ] > steps:
+                continue
+
+            for k in range(K+1):
+                #multiply by k
+                walk = (1 << k) - 1
+                steps2, targ2 = steps + k + 1, walk - targ
+                if walk == targ:
+                    steps2 -= 1 #No "R" command if already exact
+
+                if abs(targ2) <= barrier and steps2 < dist[targ2]:
+                    heapq.heappush(pq, (steps2, targ2))
+                    dist[targ2] = steps2
+
+        return dist[0]
 
 # Q833 Find And Replace in String
 class Solution:
@@ -191,6 +336,9 @@ class Solution:
 # Q850 Rectangle Area II
 import itertools,functools
 
+#∣A∪B∪C∣=∣A∣+∣B∣+∣C∣−∣A∩B∣−∣A∩C∣−∣B∩C∣+∣A∩B∩C∣
+#|𝐴∪𝐵∪𝐶∪𝐷|=(|𝐴|+|𝐵|+|𝐶|+|𝐷|)−(|𝐴∩𝐵|+|𝐴∩𝐶|+|𝐴∩𝐷|+|𝐵∩𝐶|+|𝐵∩𝐷|+|𝐶∩𝐷|)+(|𝐴∩𝐵∩𝐶|+|𝐴∩𝐵∩𝐷|+|𝐴∩𝐶∩𝐷|+|𝐵∩𝐶∩𝐷|)−(|𝐴∩𝐵∩𝐶∩𝐷|)
+#odds are added, evens are removed
 class Solution:
     def rectangleArea(self, rectangles):
         def intersect(rec1, rec2):
@@ -206,7 +354,11 @@ class Solution:
 
         ans = 0
         for size in range(1, len(rectangles) + 1):
+            #since rectangles is a 2D array, the combinations are combinations or the inner lists, not the items within the inner lists
+            #this is how you create the ∣A∪B∪C∣=∣A∣+∣B∣+∣C∣−∣A∩B∣−∣A∩C∣−∣B∩C∣+∣A∩B∩C∣
             for group in itertools.combinations(rectangles, size):
+                #(-1) ** (size + 1) decides if you're adding or subtracting
                 ans += (-1) ** (size + 1) * area(functools.reduce(intersect, group))
 
+        #return it modulo 10^9 + 7
         return ans % (10**9 + 7)
