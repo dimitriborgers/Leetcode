@@ -1,4 +1,15 @@
 # Q393 UTF-8 Validation
+#0b is like 0x - it indicates the number is formatted in binary (0x indicates the number is in hex).
+#bin(30)[2:].zfill(8) //if bin(30) is less than 8 digits, it fills the left side with 0s.
+#bin() // returns a string
+#print(1 == 0b1) //returns True
+#print('{:08b}'.format(2)) //adds 0s to the left of digit inputted
+#print('{:8b}'.format(2)) //adds space to the left of digit inputted
+#print('{:8b}'.format(2)) will output 2 in binary
+#print('{:8d}'.format(2)) will output 2 in decimal
+#bin(128) //10000000 (1 + 7*0)
+#bin(255) //11111111 (8*1)
+#int(binary_number,2) //converts binary to decimal
 class Solution:
     def validUtf8(self, data):
         count = 0

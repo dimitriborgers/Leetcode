@@ -66,7 +66,24 @@ class Solution:
             recur(lookup)
 
 # Q475 Heaters
+class Solution:
+    def findRadius(self, houses, heaters):
+        houses.sort()
+        heaters.sort()
 
+        left = heaters[0]-1
+        right = len(houses) - heaters[-1]
+        middle = 0
+
+        if len(heaters) > 1:
+            i = 0
+            j = 1
+            while j < len(heaters):
+                middle = max(middle,(heaters[j]-heaters[i])//2)
+                i += 1
+                j += 1
+
+        return max(middle,left,right)
 
 # Q482 License Key Formatting
 class Solution:

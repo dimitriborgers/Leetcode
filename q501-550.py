@@ -41,3 +41,29 @@ class Solution:
         #list1 += list2 extends original list
         #list1 = list1 + list2 reassigns list1 to new list
         return min((y - x) % (24 * 60) for x, y in zip(minutes, minutes[1:] + minutes[:1]))
+
+# Q549 Binary Tree Longest Consecutive Sequence II
+class Solution:
+    def longestConsecutive(self, root):
+        def longestConsecutiveHelper(root):
+            if not root:
+                return 0, 0
+            left_len = longestConsecutiveHelper(root.left)
+            right_len = longestConsecutiveHelper(root.right)
+            cur_inc_len, cur_dec_len = 1, 1
+            if root.left:
+                if root.left.val == root.val + 1:
+                    cur_inc_len = max(cur_inc_len, left_len[0] + 1)
+                elif root.left.val == root.val - 1:
+                    cur_dec_len = max(cur_dec_len, left_len[1] + 1)
+            if root.right:
+                if root.right.val == root.val + 1:
+                    cur_inc_len = max(cur_inc_len, right_len[0] + 1)
+                elif root.right.val == root.val - 1:
+                    cur_dec_len = max(cur_dec_len, right_len[1] + 1)
+            self.max_len = max(self.max_len, cur_dec_len + cur_inc_len - 1)
+            return cur_inc_len, cur_dec_len
+
+        self.max_len = 0
+        longestConsecutiveHelper(root)
+        return self.max_len

@@ -94,13 +94,14 @@ class Solution:
 
 # Q56 Merge Intervals
 #Time: O(nlogn)
-#Space: O(1) if sorting can be done in place
+#Space: O(1) if you mutate given array instead of creating merged[]
 class Solution:
     def merge(self, intervals):
         #intervals = intervals.sort(key=lambda x: x[0])
         intervals.sort(key=lambda x: x.start)
         merged = []
         for interval in intervals:
+            #sequence[-1] great way to get last element in list
             if not merged or merged[-1].end < interval.start:
                 merged.append(interval)
             else:

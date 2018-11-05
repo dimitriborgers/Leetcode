@@ -1,4 +1,6 @@
 # Q679 24 Game
+#self-made classes naturally have __hash__ function made for them
+#heapq methods don't work with self-made classes, unless you define le,lt,etc.
 from operator import truediv, mul, add, sub
 
 class Solution:

@@ -302,6 +302,7 @@ class Solution:
             if nums[i+1] - nums[i] == 2:
                 output.append(str(nums[i]+1))
             elif nums[i+1] - nums[i] > 1:
+                #can do output.append('{}->{}'.format(nums[i]+1,nums[i+1]-1)
                 output.append(str(nums[i]+1)+'->'+str(nums[i+1]-1))
             else:
                 continue
