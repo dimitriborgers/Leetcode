@@ -10,6 +10,8 @@
 #bin(128) //10000000 (1 + 7*0)
 #bin(255) //11111111 (8*1)
 #int(binary_number,2) //converts binary to decimal
+#print(int(bin(a)[a.bit_length()-6:],2))  -> get 8 least sig bits
+#bit_length() does not include 0b
 class Solution:
     def validUtf8(self, data):
         count = 0

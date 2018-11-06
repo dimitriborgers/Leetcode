@@ -423,21 +423,9 @@ class Solution:
                         compare = result
         return result
 
-# Q121
+# Q121 Best Time to Buy and Sell Stock
 class Solution:
     def maxProfit(self, prices):
-        left,right = 0,len(prices)-1
-        least,most = prices[left],prices[right]
-        while left != right:
-            if prices[left] >= prices[right]:
-                left += 1
-            else:
-                right -= 1
-            least = prices[left] if prices[left] < least else least
-            most = prices[right] if prices[right] > most else most
-        return most-least if most>least else None
-
-    def maxProfit2(self, prices):
         #how to create infinity
         max_profit, min_price = 0, float("inf")
         for price in prices:
@@ -445,7 +433,7 @@ class Solution:
             max_profit = max(max_profit, price - min_price)
         return max_profit
 
-# Q122
+# Q122 Best Time to Buy and Sell Stock II
 class Solution:
      def maxProfit(self, prices):
         profit = 0
@@ -453,7 +441,7 @@ class Solution:
             profit += max(0, prices[i + 1] - prices[i])
         return profit
 
-# Q123
+# Q123 Best Time to Buy and Sell Stock III
 class Solution:
     #list.sort() has to be on its own. You can't combine it with other functions
     #reversed() creates a generator. If you don't want that, use list[::-1]
@@ -486,7 +474,7 @@ class Solution:
             hold1 = max(hold1, -i)
         return release2
 
-# Q124
+# Q124 Binary Tree Maximum Path Sum
 class Solution:
     maxSum = float("-inf")
 
@@ -502,7 +490,7 @@ class Solution:
         self.maxSum = max(self.maxSum, root.val + left + right)
         return root.val + max(left, right)
 
-# Q125
+# Q125 Valid Palindrome
 class Solution:
     def isPalindrome(self, s):
         #a.isalnum() returns true if all characters in the string are alphanumeric or numbers and there is at least one character.

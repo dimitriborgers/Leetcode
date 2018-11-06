@@ -37,6 +37,8 @@ class Solution:
         minutes.sort()
         #modulo returns positive if negative % positive
         #ie. -1249 % 1440 = 191
+        #when x in -x % y = ..., modulo does opposite. instead of remainder, it returns the number needed to reach next full value
+        #when x in x % -y = ..., instead of remainder, it returns the negative value of -x % y
         #list1 + list2 adds the two together
         #list1 += list2 extends original list
         #list1 = list1 + list2 reassigns list1 to new list

@@ -59,85 +59,33 @@ class Solution:
 
 
 # 218 The Skyline Problem
-start, end, height = 0, 1, 2
+import heapq
+
 class Solution:
+    #When going through buildings, find all critical points (coordinates of where building starts/ends) and label each with start or end of building, so you should just have x,h for each point. Always take the top of the building for both starters and enders heights.
+    #For starters, if starter_height > heap.max(), add x,y to skyline
+    #For enders, remove ender_height from heap. If heap.max() changes, add x,heap.max() to skyline
+    #for each critical point c:
+    #for each rectangle r above c (not including the right edge of rectangles):
+    #c.y gets the max of r.height and the previous value of c.y
     def getSkyline(self, buildings):
-        intervals = self.ComputeSkylineInInterval(buildings, 0, len(buildings))
-
-        res = []
-        last_end = -1
-        for interval in intervals:
-            if last_end != -1 and last_end < interval[start]:
-                res.append([last_end, 0])
-            res.append([interval[start], interval[height]])
-            last_end = interval[end]
-        if last_end != -1:
-            res.append([last_end, 0])
-
-        return res
-
-    # Divide and Conquer.
-    def ComputeSkylineInInterval(self, buildings, left_endpoint, right_endpoint):
-        if right_endpoint - left_endpoint <= 1:
-            return buildings[left_endpoint:right_endpoint]
-        mid = left_endpoint + ((right_endpoint - left_endpoint) / 2)
-        left_skyline = self.ComputeSkylineInInterval(buildings, left_endpoint, mid)
-        right_skyline = self.ComputeSkylineInInterval(buildings, mid, right_endpoint)
-        return self.MergeSkylines(left_skyline, right_skyline)
-
-    # Merge Sort.
-    def MergeSkylines(self, left_skyline, right_skyline):
-        i, j = 0, 0
-        merged = []
-
-        while i < len(left_skyline) and j < len(right_skyline):
-            if left_skyline[i][end] < right_skyline[j][start]:
-                merged.append(left_skyline[i])
-                i += 1
-            elif right_skyline[j][end] < left_skyline[i][start]:
-                merged.append(right_skyline[j])
-                j += 1
-            elif left_skyline[i][start] <= right_skyline[j][start]:
-                i, j = self.MergeIntersectSkylines(merged, left_skyline[i], i,\
-                                                   right_skyline[j], j)
-            else: # left_skyline[i][start] > right_skyline[j][start].
-                j, i = self.MergeIntersectSkylines(merged, right_skyline[j], j, \
-                                                   left_skyline[i], i)
-
-        # Insert the remaining skylines.
-        merged += left_skyline[i:]
-        merged += right_skyline[j:]
-        return merged
-
-    # a[start] <= b[start]
-    def MergeIntersectSkylines(self, merged, a, a_idx, b, b_idx):
-        if a[end] <= b[end]:
-            if a[height] > b[height]:   # |aaa|
-                if b[end] != a[end]:    # |abb|b
-                    b[start] = a[end]
-                    merged.append(a)
-                    a_idx += 1
-                else:             # aaa
-                    b_idx += 1    # abb
-            elif a[height] == b[height]:  # abb
-                b[start] = a[start]       # abb
-                a_idx += 1
-            else:  # a[height] < b[height].
-                if a[start] != b[start]:                            #    bb
-                    merged.append([a[start], b[start], a[height]])  # |a|bb
-                a_idx += 1
-        else:  # a[end] > b[end].
-            if a[height] >= b[height]:  # aaaa
-                b_idx += 1              # abba
+        buildings.sort()
+        index, length = 0, len(buildings)
+        heapBuildings, skyline = [], []
+        while index < length or len(heapBuildings) > 0:
+            if len(heapBuildings) == 0 or (index < length and buildings[index][0] <= -heapBuildings[0][1]):
+                start = buildings[index][0]
+                while index < length and buildings[index][0] == start:
+                    heapq.heappush(heapBuildings, [-buildings[index][2], -buildings[index][1]])
+                    index += 1
             else:
-                #    |bb|
-                # |a||bb|a
-                if a[start] != b[start]:
-                    merged.append([a[start], b[start], a[height]])
-                a[start] = b[end]
-                merged.append(b)
-                b_idx += 1
-        return a_idx, b_idx
+                start = -heapBuildings[0][1]
+                while len(heapBuildings) > 0 and -heapBuildings[0][1] <= start:
+                    heapq.heappop(heapBuildings)
+            height = len(heapBuildings) and -heapBuildings[0][0]
+            if len(skyline) == 0 or skyline[-1][1] != height:
+                skyline.append([start, height])
+        return skyline
 
 # 219 Contains Duplicate II
 class Solution:
@@ -154,20 +102,27 @@ class Solution:
 
 # 220 Contains Duplicate III
 class Solution:
+    #For a given element x, is there an item in the window that is within the range of [x-t, x+t]?
     def containsNearbyAlmostDuplicate(self, nums, k, t):
-        if k < 0 or t < 0:
+        if t < 0 or not nums or k <= 0:
             return False
+        buckets = {}
+        #add 1 so that you don't divide by 0
+        #width is just dividing up numbers into buckets
+        width = t + 1
 
-        window = dict
-        for n in nums:
-            if len(window) > k:
-                window.popitem(False)
-
-            bucket = n if not t else n // t
-            for m in (window.get(bucket - 1), window.get(bucket), window.get(bucket + 1)):
-                if m is not None and abs(n - m) <= t:
+        for pos, element in enumerate(nums):
+            bucket = element // width
+            if bucket in buckets:
+                return True
+            else:
+                buckets[bucket] = element
+                if bucket - 1 in buckets and element - buckets[bucket-1] <= t:
                     return True
-            window[bucket] = n
+                if bucket + 1 in buckets and buckets[bucket+1] - element <= t:
+                    return True
+                if pos >= k:
+                    del buckets[nums[pos-k] // width]
         return False
 
 # 221 aximal Square
