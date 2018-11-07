@@ -56,7 +56,21 @@ class Solution:
 
 
 # 217 Contains Duplicate
+class Solution:
+    def containsDuplicate1(self, nums):
+        lookup = {}
+        for i in nums:
+            if i in lookup:
+                return True
+            lookup[i] = i
+        return False
 
+    def containsDuplicate2(self, nums):
+        nums.sort()
+        for i in range(1,len(nums)):
+            if nums[i] == nums[i-1]:
+                return True
+        return False
 
 # 218 The Skyline Problem
 import heapq

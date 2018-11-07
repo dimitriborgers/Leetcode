@@ -1,3 +1,55 @@
+# Q1 Two Sum
+class Solution:
+    def twoSum(self, nums, target):
+        counter = {}
+        for i in nums:
+            if i in counter:
+                return i,counter[i]
+            else:
+                complement = target - i
+                counter[complement] = i
+        return None
+
+#------------------------------------------------------------------------------
+
+# Q10 Regular Expression Matching
+class Solution:
+    def isMatch(self, text, pattern):
+        if not pattern:
+            #if there is no pattern and no text, this returns True
+            return not text
+
+        #make sure there is still text, then check pattern.
+        first_match = text and pattern[0] in (text[0], '.')
+
+        #* means 0 or more, that's why would try pattern[2:]
+        if len(pattern) >= 2 and pattern[1] == '*':
+            return (self.isMatch(text, pattern[2:]) or
+                    first_match and self.isMatch(text[1:], pattern))
+        else:
+            return first_match and self.isMatch(text[1:], pattern[1:])
+
+#------------------------------------------------------------------------------
+
+# Q11 Container With Most Water
+class Solution:
+    def maxArea(self, height):
+        i = 0
+        j = len(height) - 1
+        maxArea = 0
+
+        while i != j:
+            side = min(height[i],height[j])
+            width = j - i
+            maxArea = max(side*width, maxArea)
+            if height[i] < height[j]:
+                i += 1
+            else:
+                j -= 1
+        return maxArea
+
+#------------------------------------------------------------------------------
+
 # Q33 Search in Rotated Sorted Array
 class Solution:
     def search(self, nums, target):
@@ -13,6 +65,30 @@ class Solution:
             else:
                 left = mid + 1
         return -1
+
+#------------------------------------------------------------------------------
+
+# Q42 Trapping Rain Water
+class Solution:
+    def trap(self, height):
+        left, right = 0, len(height)-1
+        ans = 0
+        left_max = right_max = 0
+
+        while left < right:
+            if height[left] < height[right]:
+                if height[left] >= left_max:
+                    left_max = height[left]
+                else:
+                    ans += left_max - height[left]
+                left += 1
+            else:
+                if height[right] >= right_max:
+                    right_max = height[right]
+                else:
+                    ans += right_max - height[right]
+                right -= 1
+        return ans
 
 #------------------------------------------------------------------------------
 
@@ -116,13 +192,163 @@ class Solution2:
 
 #------------------------------------------------------------------------------
 
-# Q122 Best Time to Buy and Sell Stock II
+# Q94 Binary Tree Inorder Traversal
+class Solution:
+    def inorderTraversalRec(self,root):
+        self.result = []
+        return self._inorder_helper(root)
 
+    def _inorder_helper(self, root):
+        if root.left:
+            self._inorder_helper(root.left)
+        #can't be append(root) because this would traverse from root every time when you print
+        self.result.append(root.val)
+        if root.right:
+            self._inorder_helper(root.right)
+        return result
+
+    def inorderTraversalIterative(self, root):
+        result, curr = [], root
+        while curr:
+            if not curr.left:
+                result.append(curr.val)
+                curr = curr.right
+            else:
+                node = curr.left
+                while node.right and node.right != curr:
+                    node = node.right
+
+                if not node.right:
+                    node.right = curr
+                    curr = curr.left
+                else:
+                    result.append(curr.val)
+                    node.right = None
+                    curr = curr.right
+        return result
+
+#------------------------------------------------------------------------------
+
+# Q99 Recover Binary Search Tree
+class Solution:
+    def recoverTree(self, root):
+        return self.MorrisTraversal(root)
+
+    def MorrisTraversal(self, root):
+        if root is None:
+            return
+
+        broken = [None, None]
+        # pre is the predecessor of current in the type of traversal you are doing (inorder, preorder, postorder)
+        # Since this problem is with BST, we use inorder
+        pre, cur = None, root
+
+        while cur:
+            if not cur.left:
+                self.detectBroken(broken, pre, cur)
+                pre = cur
+                cur = cur.right
+            else:
+                node = cur.left
+                while node.right and node.right != cur:
+                    node = node.right
+
+                if not node.right:
+                    node.right = cur
+                    cur = cur.left
+                else:
+                    self.detectBroken(broken, pre, cur)
+                    node.right = None
+                    pre = cur
+                    cur = cur.right
+
+        broken[0].val, broken[1].val = broken[1].val, broken[0].val
+
+        return root
+
+    def detectBroken(self, broken, pre, cur):
+        if pre and pre.val > cur.val:
+            if broken[0] is None:
+                broken[0] = pre
+            broken[1] = cur
+
+#------------------------------------------------------------------------------
+
+# Q122 Best Time to Buy and Sell Stock II
+class Solution:
+     def maxProfit(self, prices):
+        profit = 0
+        for i in range(len(prices) - 1):
+            profit += max(0, prices[i + 1] - prices[i])
+        return profit
 
 #------------------------------------------------------------------------------
 
 # Q123 Best Time to Buy and Sell Stock III
+class Solution:
+    #list.sort() has to be on its own. You can't combine it with other functions
+    #reversed() creates a generator. If you don't want that, use list[::-1]
+    def maxProfit(self, prices):
+        result = []
+        i,j = 0,1
+        while i < len(prices)-1:
+            if prices[i] < prices[j]:
+                for k in range(j,len(prices)):
+                    if prices[k] > prices[i]:
+                        result.append([(i,k),prices[k]-prices[i]])
+            i+=1;j+=1
+        if not result:
+            return 0
+        #How to sort by second element
+        result = sorted(result,key = lambda x: int(x[1]))[::-1]
+        for l in range(len(result)-1):
+            if result[l][0][0] > result[l+1][0][1]:
+                return(result[l][1]+result[l+1][1])
+        return result[0][1]
 
+    def maxProfit2(self, prices):
+        #how to do negative infinity
+        hold1, hold2 = float("-inf"), float("-inf")
+        release1, release2 = 0, 0
+        for i in prices:
+            release2 = max(release2, hold2 + i)
+            hold2 = max(hold2, release1 - i)
+            release1 = max(release1, hold1 + i)
+            hold1 = max(hold1, -i)
+        return release2
+
+#------------------------------------------------------------------------------
+
+# Q135 Candy
+class Solution:
+    def candy(self, ratings):
+        result = [1]*len(ratings)
+        for i in range(1,len(ratings)):
+            if ratings[i] > ratings[i-1]:
+                result[i] = result[i-1]+1
+            elif ratings[i] < ratings[i-1]:
+                index = i
+                while index > 0 and result[index-1] == result[index]:
+                    result[index-1] += 1
+                    index -= 1
+        return sum(result)
+
+#------------------------------------------------------------------------------
+
+# Q136 Single Number
+class Solution:
+    def singleNumber(self, nums):
+        #2∗(a+b+c)−(a+a+b+b+c)=c
+        return 2 * sum(set(nums)) - sum(nums)
+
+    def singleNumber2(self, nums):
+        a = 0
+        for i in nums:
+            a ^= i
+        return a
+
+    def singleNumber3(self,nums):
+        return collections.Counter(nums).most_common()[-1][0]
 
 #------------------------------------------------------------------------------
 
@@ -162,6 +388,11 @@ class LRUCache:
 
 #------------------------------------------------------------------------------
 
+# Q162 Find Peak Element
+
+
+#------------------------------------------------------------------------------
+
 # Q200 Number of Islands
 class Solution:
     def numIslands(self, grid):
@@ -182,6 +413,25 @@ class Solution:
         if i < len(grid)-1 and grid[i+1][j] and (i+1,j) not in forest:
             forest[(i+1,j)] = (i,j)
             self.DFS(i+1,j,forest,grid)
+
+#------------------------------------------------------------------------------
+
+# Q217 Contains Duplicate
+class Solution:
+    def containsDuplicate1(self, nums):
+        lookup = {}
+        for i in nums:
+            if i in lookup:
+                return True
+            lookup[i] = i
+        return False
+
+    def containsDuplicate2(self, nums):
+        nums.sort()
+        for i in range(1,len(nums)):
+            if nums[i] == nums[i-1]:
+                return True
+        return False
 
 #------------------------------------------------------------------------------
 
@@ -216,6 +466,19 @@ class Solution:
 
 #------------------------------------------------------------------------------
 
+# Q220 Contains Duplicate II
+class Solution:
+    def containsNearbyDuplicate(self, nums,k):
+        lookup = {}
+        for pos,e in enumerate(nums):
+            if e in lookup:
+                if abs(lookup[e]-pos) <= k:
+                    return True
+            lookup[e] = pos
+        return False
+
+#------------------------------------------------------------------------------
+
 # Q220 Contains Duplicate III
 class Solution:
     #For a given element x, is there an item in the window that is within the range of [x-t, x+t]?
@@ -240,6 +503,26 @@ class Solution:
                 if pos >= k:
                     del buckets[nums[pos-k] // width]
         return False
+
+#------------------------------------------------------------------------------
+
+# Q271 Encode and Decode Strings
+class Codec:
+
+    def encode(self, strs):
+        encoded_str = ''
+        for s in strs:
+            encoded_str +=  '0000000' + str(len(s)) + s
+        return encoded_str
+
+    def decode(self, s):
+        i = 0
+        strs = []
+        while i < len(s):
+            l = int(s[i+7])
+            strs.append(s[i+8:i+8+l])
+            i += 8+l
+        return strs
 
 #------------------------------------------------------------------------------
 
@@ -276,6 +559,58 @@ class Solution:
         if num in lookup:
             return lookup[num]
         return lookup[(num // 10) * 10] + " " + lookup[num % 10]
+
+#------------------------------------------------------------------------------
+
+# Q285 Inorder Successor in BST
+class Solution1:
+    def inorderSuccessor(self, root, p):
+        self.p = p
+        self.found = False
+
+        def inorderTraversal(root):
+            if root.left:
+                inorderTraversal(root.left)
+            if root.val == self.p:
+                self.found = True
+            #since it uses self.found, it acts like a global variable
+            if self.found:
+                return root.val
+            if root.right:
+                inorderTraversal(root.right)
+
+        #this method can only be called after its definition. Python is interpreted, so it goes line by line.
+        return inorderTraversal(root)
+
+class Solution2:
+    def inorderSuccessor(self, root, p):
+        # If it has right subtree.
+        if p and p.right:
+            p = p.right
+            while p.left:
+                p = p.left
+            return p
+
+        # Search from root.
+        successor = None
+        while root and root != p:
+            if root.val > p.val:
+                successor = root
+                root = root.left
+            else:
+                root = root.right
+
+        return successor
+
+#------------------------------------------------------------------------------
+
+# Q303 Range Sum Query - Immutable
+
+
+#------------------------------------------------------------------------------
+
+# Q325 Maximum Size Subarray Sum Equals k
+
 
 #------------------------------------------------------------------------------
 
