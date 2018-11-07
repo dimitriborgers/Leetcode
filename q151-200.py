@@ -1,9 +1,9 @@
-# 151 Reverse Words in a String
+# Q151 Reverse Words in a String
 class Solution:
     def reverseWords(self, s):
         return ' '.join(s.split(' ')[::-1])
 
-# 152 Maximum Product Subarray
+# Q152 Maximum Product Subarray
 class Solution:
     #local and global max/min is often useful
     def maxProduct(self, A):
@@ -18,7 +18,7 @@ class Solution:
             global_max = max(global_max, local_max)
         return global_max
 
-# 153 Find Minimum in Rotated Sorted Array
+# Q153 Find Minimum in Rotated Sorted Array
 class Solution:
     def findMin(self, nums):
         minimum,left,right = nums[0],0,len(nums)-1
@@ -34,7 +34,7 @@ class Solution:
             minimum = nums[right]
         return minimum
 
-# 154 Find Minimum in Rotated Sorted Array II
+# Q154 Find Minimum in Rotated Sorted Array II
 class Solution:
     #same as without duplicates
     def findMin(self, nums):
@@ -52,7 +52,7 @@ class Solution:
             minimum = nums[right]
         return minimum
 
-# 155 Min Stack
+# Q155 Min Stack
 class MinStack:
 
     def __init__(self):
@@ -78,7 +78,7 @@ class MinStack:
             return 'Empty stack'
         return self.min
 
-# 156 Binary Tree Upside Down
+# Q156 Binary Tree Upside Down
 class TreeNode:
     def __init__(self, x):
         self.val = x
@@ -127,7 +127,7 @@ class Solution:
             prev,cur = prev,prev.left
         return root
 
-# 157 Read N Characters Given Read4
+# Q157 Read N Characters Given Read4
 def read4(buf):
     global file_content
     i = 0
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     file_content = "abcdefghijklmnop"
     print(buf[:Solution().read(buf, 9)])
 
-# 158 Read N Characters Given Read4 II - Call multiple times
+# Q158 Read N Characters Given Read4 II - Call multiple times
 def read4(buf):
     global file_content
     i = 0
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     print(buf[:sol.read(buf, 1)])
     print(buf[:sol.read(buf, 2)])
 
-# 159 Longest Substring with At Most Two Distinct Characters
+# Q159 Longest Substring with At Most Two Distinct Characters
 class Solution:
     def lengthOfLongestSubstringTwoDistinct(self, s):
         output = float('-inf')
@@ -231,7 +231,7 @@ class Solution:
             i += 1
         return output
 
-# 160 Intersection of Two Linked Lists
+# Q160 Intersection of Two Linked Lists
 class Solution:
     def getIntersectionNode(self, headA, headB):
         curA, curB = headA, headB
@@ -260,7 +260,7 @@ class Solution:
 
         return begin
 
-# 161 One Edit Distance
+# Q161 One Edit Distance
 class Solution:
     def isOneEditDistance(self, s, t):
         m, n = len(s), len(t)
@@ -279,7 +279,7 @@ class Solution:
 
         return i == m
 
-# 162 Find Peak Element
+# Q162 Find Peak Element
 class Solution:
     #Very important to know what left and right become.
     #Sometimes it's right = mid + 1, others right = mid
@@ -294,7 +294,7 @@ class Solution:
                 left = mid + 1
         return left
 
-# 163 Missing Ranges
+# Q163 Missing Ranges
 class Solution:
     def findMissingRanges(self, nums, lower, upper):
         output = []
@@ -310,7 +310,7 @@ class Solution:
             output.append(str(nums[-1]+1)+'->'+str(upper))
         return output
 
-# 164 Maximum Gap
+# Q164 Maximum Gap
 class Solution:
     #sets() do not keep things in sorted order. You can iterate through set.
     #Radix Sort uses counting sort for each significant digit
@@ -354,7 +354,7 @@ class Solution:
             exp *= 10
         return arr
 
-# 165 Compare Version Numbers
+# Q165 Compare Version Numbers
 class Solution:
     def compareVersion(self, version1, version2):
         if len(version1) < len(version2):
@@ -373,7 +373,7 @@ class Solution:
         if len(version1) > len(version2):
             return 1
 
-# 166 Fraction to Recurring Decimal
+# Q166 Fraction to Recurring Decimal
 class Solution:
     def fractionToDecimal(self, numerator, denominator):
         result = ""
@@ -399,7 +399,7 @@ class Solution:
 
         return result
 
-# 167 Two Sum II - Input array is sorted
+# Q167 Two Sum II - Input array is sorted
 class Solution:
     def twoSum(self, numbers, target):
         i,j = 0,len(numbers)-1
@@ -412,7 +412,7 @@ class Solution:
                 return (i,j)
         return -1
 
-# 168 Excel Sheet Column Title
+# Q168 Excel Sheet Column Title
 class Solution:
     def convertToTitle(self, n):
         result, dvd = "", n
@@ -430,14 +430,14 @@ class Solution:
             result += chr(n - 1 + ord('A'))
         return result
 
-# 169 Majority Element
+# Q169 Majority Element
 class Solution:
     def majorityElement(self, nums):
         for i in nums:
             if nums.count(i) > len(nums)//2:
                 return i
 
-# 170 Two Sum III - Data structure design
+# Q170 Two Sum III - Data structure design
 class TwoSum:
     def __init__(self):
         self.seq = []
@@ -462,7 +462,7 @@ class TwoSum:
                 return True
         return False
 
-# 171 Excel Sheet Column Number
+# Q171 Excel Sheet Column Number
 class Solution:
     def titleToNumber(self, s):
         result = 0
@@ -470,7 +470,7 @@ class Solution:
             result += result*25 + (ord(i)+1-ord('A'))
         return result
 
-# 172 Factorial Trailing Zeroes
+# Q172 Factorial Trailing Zeroes
 import math
 
 class Solution:
@@ -482,7 +482,7 @@ class Solution:
             n //= 10
         return result
 
-# 173 Binary Search Tree Iterator
+# Q173 Binary Search Tree Iterator
 class TreeNode:
     def __init__(self, x):
         self.val = x
@@ -509,7 +509,7 @@ class BSTIterator:
 
         return node.val
 
-# 174 Dungeon Game
+# Q174 Dungeon Game
 import copy
 
 class Solution:
@@ -540,15 +540,15 @@ class Solution:
 
         return max(right,bottom)
 
-# 175 Combine Two Tables
+# Q175 Combine Two Tables
 SELECT P.FirstName, P.LastName,A.City,A.State
     FROM Person AS P, Address AS A
     WHERE P.PersonId = A.PersonId;
 
-# 176 Second Highest Salary
+# Q176 Second Highest Salary
 SELECT (SELECT MAX(Salary) FROM Employee WHERE Salary NOT IN (SELECT MAX(Salary) FROM Employee)) SecondHighestSalary;
 
-# 177 Nth Highest Salary
+# Q177 Nth Highest Salary
 CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
 BEGIN
   RETURN (
@@ -562,7 +562,7 @@ BEGIN
   );
 END
 
-# 178 Rank Scores
+# Q178 Rank Scores
 SELECT Ranks.Score, Ranks.Rank FROM Scores LEFT JOIN
        ( SELECT r.Score, @curRow := @curRow + 1  Rank
             FROM (SELECT DISTINCT(Score), (SELECT @curRow := 0)
@@ -571,12 +571,12 @@ SELECT Ranks.Score, Ranks.Rank FROM Scores LEFT JOIN
        ON Scores.Score = Ranks.Score
        ORDER by Score DESC
 
-# 179 Largest Number
+# Q179 Largest Number
 class Solution:
     def largestNumber(self, nums):
         return ''.join(str(i) for i in sorted(nums, key=str, reverse=True))
 
-# 180 Consecutive Numbers
+# Q180 Consecutive Numbers
 SELECT DISTINCT(Num) AS ConsecutiveNums
 FROM (
     SELECT
@@ -587,64 +587,64 @@ FROM (
 ) sq
 WHERE how_many_cnt_in_a_row >= 3
 
-# 181 E ployees Earning More Than Their Managers
+# Q181 E ployees Earning More Than Their Managers
 
 
-# 182 Duplicate Emails
+# Q182 Duplicate Emails
 
 
-# 183 Customers Who Never Order
+# Q183 Customers Who Never Order
 
 
-# 184 Department Highest Salary
+# Q184 Department Highest Salary
 
 
-# 185 Department Top Three Salaries
+# Q185 Department Top Three Salaries
 
 
-# 186 Reverse Words in a String II
+# Q186 Reverse Words in a String II
 
 
-# 187 Repeated DNA Sequences
+# Q187 Repeated DNA Sequences
 
 
-# 188 Best Time to Buy and Sell Stock IV
+# Q188 Best Time to Buy and Sell Stock IV
 
 
-# 189 Rotate Array
+# Q189 Rotate Array
 
 
-# 190 Reverse Bits
+# Q190 Reverse Bits
 
 
-# 191 N mber of 1 Bits
+# Q191 N mber of 1 Bits
 
 
-# 19 Word Frequency
+# Q192 Word Frequency
 
 
-# 193 Valid Phone Numbers
+# Q193 Valid Phone Numbers
 
 
-# 194 Transpose File
+# Q194 Transpose File
 
 
-# 195 Tenth Line
+# Q195 Tenth Line
 
 
-# 196 Delete Duplicate Emails
+# Q196 Delete Duplicate Emails
 
 
-# 197 Rising Temperature
+# Q197 Rising Temperature
 
 
-# 198 House Robber
+# Q198 House Robber
 
 
-# 199 Binary Tree Right Side View
+# Q199 Binary Tree Right Side View
 
 
-# 200 Number of Islands
+# Q200 Number of Islands
 class Solution:
     def numIslands(self, grid):
         forest = {}

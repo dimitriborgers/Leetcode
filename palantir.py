@@ -69,7 +69,7 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q42 Trapping Rain Water
-class Solution:
+class Solution1:
     def trap(self, height):
         left, right = 0, len(height)-1
         ans = 0
@@ -89,6 +89,28 @@ class Solution:
                     ans += right_max - height[right]
                 right -= 1
         return ans
+
+class Solution2:
+    def trap(self, height):
+        leftmax,rightmax = height[0],height[-1]
+        lefti,righti = 0,len(height)-1
+        total = 0
+
+        while lefti < righti:
+            if height[lefti] <= height[righti]:
+                total = self._check(leftmax,rightmax,height,lefti,total)
+                lefti += 1
+                leftmax = max(leftmax,height[lefti])
+            else:
+                total = self._check(leftmax,rightmax,height,righti,total)
+                righti -= 1
+                rightmax = max(rightmax,height[righti])
+        return total
+
+    def _check(self,leftmax,rightmax,height,pos,total):
+        if leftmax and rightmax and height[pos] < leftmax and height[pos] < rightmax:
+            total += min(leftmax,rightmax) - height[pos]
+        return total
 
 #------------------------------------------------------------------------------
 
@@ -389,7 +411,19 @@ class LRUCache:
 #------------------------------------------------------------------------------
 
 # Q162 Find Peak Element
+class Solution:
+    #Very important to know what left and right become.
+    #Sometimes it's right = mid + 1, others right = mid
+    def findPeakElement(self, nums):
+        left, right = 0, len(nums) - 1
 
+        while left < right:
+            mid = left + (right - left) // 2
+            if nums[mid] > nums[mid + 1]:
+                right = mid
+            else:
+                left = mid + 1
+        return left
 
 #------------------------------------------------------------------------------
 
@@ -605,12 +639,47 @@ class Solution2:
 #------------------------------------------------------------------------------
 
 # Q303 Range Sum Query - Immutable
+from itertools import accumulate
 
+class NumArray:
+
+    def __init__(self, nums):
+        self.nums = list(accumulate([0]+nums))
+
+    def sumRange(self, i, j):
+        return self.nums[j+1] - self.nums[i]
 
 #------------------------------------------------------------------------------
 
 # Q325 Maximum Size Subarray Sum Equals k
+class Solution1:
+    def maxSubArrayLen(self, nums, k):
+        sums = {}
+        cur_sum, max_len = 0, 0
+        for i in range(len(nums)):
+            cur_sum += nums[i]
+            if cur_sum == k:
+                max_len = i + 1
+            elif cur_sum - k in sums:
+                max_len = max(max_len, i - sums[cur_sum - k])
+            if cur_sum not in sums:
+                sums[cur_sum] = i
+        return max_len
 
+from itertools import accumulate
+
+class Solution2:
+    def maxSubArrayLen(self, nums, k):
+        lookup = {}
+        length = 0
+        nums = list(accumulate([0] + nums))
+        for pos,e in enumerate(nums):
+            if (e - k) in lookup:
+                length = max(length,pos - lookup[(e - k)])
+            else:
+                if e not in lookup:
+                    lookup[e] = pos
+        return length
 
 #------------------------------------------------------------------------------
 
