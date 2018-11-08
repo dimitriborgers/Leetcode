@@ -77,12 +77,17 @@ import heapq
 
 class Solution:
     #When going through buildings, find all critical points (coordinates of where building starts/ends) and label each with start or end of building, so you should just have x,h for each point. Always take the top of the building for both starters and enders heights.
-    #For starters, if starter_height > heap.max(), add x,y to skyline
+    #For starters, if starter_height > heap.max(), add x,y to skyline, then add x,y to heap
     #For enders, remove ender_height from heap. If heap.max() changes, add x,heap.max() to skyline
     #for each critical point c:
     #for each rectangle r above c (not including the right edge of rectangles):
     #c.y gets the max of r.height and the previous value of c.y
+    #if two buildings start at same spot, iterate through taller one first
+    #if two buildings end at same point, iterate through the lower one first
+    #if two buildings are side-by-side, then the next building start should be iterated through before the end of the first building
     def getSkyline(self, buildings):
+        #list.sort(key=lambda x: (x[0], x[2]))
+        #This sorts list by x[0] first, and then x[2] where x[0] is the same
         buildings.sort()
         index, length = 0, len(buildings)
         heapBuildings, skyline = [], []
@@ -96,6 +101,10 @@ class Solution:
                 start = -heapBuildings[0][1]
                 while len(heapBuildings) > 0 and -heapBuildings[0][1] <= start:
                     heapq.heappop(heapBuildings)
+            #Two numbers with an 'and' in between
+            #Left of 'and' must evaluate to True
+                #if it evaluates to True, then variable is assigned value of right of 'and'
+                #if it evaluates to False, then variable is assigned False
             height = len(heapBuildings) and -heapBuildings[0][0]
             if len(skyline) == 0 or skyline[-1][1] != height:
                 skyline.append([start, height])

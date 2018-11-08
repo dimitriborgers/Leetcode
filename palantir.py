@@ -186,34 +186,6 @@ class Solution:
 
 #------------------------------------------------------------------------------
 
-# Q121 Best Time to Buy and Sell Stock
-class Solution1:
-    def maxProfit(self, prices):
-        #how to create infinity
-        max_profit, min_price = 0, float("inf")
-        for price in prices:
-            min_price = min(min_price, price)
-            max_profit = max(max_profit, price - min_price)
-        return max_profit
-
-class Solution2:
-    def maxProfit(self, prices):
-        localmin = localmax = prices[0]
-        profit = 0
-
-        for i in range(1,len(prices)):
-            if localmin == localmax and prices[i] < localmin:
-                localmin = localmax = prices[i]
-            elif prices[i] > localmax:
-                localmax = prices[i]
-            elif prices[i] < localmin:
-                localmin = localmax = prices[i]
-            profit = max(profit,localmax-localmin)
-
-        return profit
-
-#------------------------------------------------------------------------------
-
 # Q94 Binary Tree Inorder Traversal
 class Solution:
     def inorderTraversalRec(self,root):
@@ -293,6 +265,33 @@ class Solution:
             if broken[0] is None:
                 broken[0] = pre
             broken[1] = cur
+#------------------------------------------------------------------------------
+
+# Q121 Best Time to Buy and Sell Stock
+class Solution1:
+    def maxProfit(self, prices):
+        #how to create infinity
+        max_profit, min_price = 0, float("inf")
+        for price in prices:
+            min_price = min(min_price, price)
+            max_profit = max(max_profit, price - min_price)
+        return max_profit
+
+class Solution2:
+    def maxProfit(self, prices):
+        localmin = localmax = prices[0]
+        profit = 0
+
+        for i in range(1,len(prices)):
+            if localmin == localmax and prices[i] < localmin:
+                localmin = localmax = prices[i]
+            elif prices[i] > localmax:
+                localmax = prices[i]
+            elif prices[i] < localmin:
+                localmin = localmax = prices[i]
+            profit = max(profit,localmax-localmin)
+
+        return profit
 
 #------------------------------------------------------------------------------
 
@@ -474,12 +473,17 @@ import heapq
 
 class Solution:
     #When going through buildings, find all critical points (coordinates of where building starts/ends) and label each with start or end of building, so you should just have x,h for each point. Always take the top of the building for both starters and enders heights.
-    #For starters, if starter_height > heap.max(), add x,y to skyline
+    #For starters, if starter_height > heap.max(), add x,y to skyline, then add x,y to heap
     #For enders, remove ender_height from heap. If heap.max() changes, add x,heap.max() to skyline
     #for each critical point c:
     #for each rectangle r above c (not including the right edge of rectangles):
     #c.y gets the max of r.height and the previous value of c.y
+    #if two buildings start at same spot, iterate through taller one first
+    #if two buildings end at same point, iterate through the lower one first
+    #if two buildings are side-by-side, then the next building start should be iterated through before the end of the first building
     def getSkyline(self, buildings):
+        #list.sort(key=lambda x: (x[0], x[2]))
+        #This sorts list by x[0] first, and then x[2] where x[0] is the same
         buildings.sort()
         index, length = 0, len(buildings)
         heapBuildings, skyline = [], []
@@ -493,6 +497,10 @@ class Solution:
                 start = -heapBuildings[0][1]
                 while len(heapBuildings) > 0 and -heapBuildings[0][1] <= start:
                     heapq.heappop(heapBuildings)
+            #Two numbers with an 'and' in between
+            #Left of 'and' must evaluate to True
+                #if it evaluates to True, then variable is assigned value of right of 'and'
+                #if it evaluates to False, then variable is assigned False
             height = len(heapBuildings) and -heapBuildings[0][0]
             if len(skyline) == 0 or skyline[-1][1] != height:
                 skyline.append([start, height])
@@ -500,7 +508,7 @@ class Solution:
 
 #------------------------------------------------------------------------------
 
-# Q220 Contains Duplicate II
+# Q219 Contains Duplicate II
 class Solution:
     def containsNearbyDuplicate(self, nums,k):
         lookup = {}
@@ -515,6 +523,7 @@ class Solution:
 
 # Q220 Contains Duplicate III
 class Solution:
+    #bisect.bisect adds element after all equivalent elements in list: [1,1,1], another 1 would be added at index 3
     #For a given element x, is there an item in the window that is within the range of [x-t, x+t]?
     def containsNearbyAlmostDuplicate(self, nums, k, t):
         if t < 0 or not nums or k <= 0:
