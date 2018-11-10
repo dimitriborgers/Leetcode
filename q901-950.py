@@ -141,25 +141,32 @@ class Solution:
             ans = min(ans, max(ma-K, a+K) - min(mi+K, b-K))
         return ans
 
-# Q911 Online Election - Didn't understand
+# Q911 Online Election
+import bisect
+
 class TopVotedCandidate:
 
     def __init__(self, persons, times):
-        self.A = []
-        self.count = collections.Counter()
-        for p, t in zip(persons, times):
-            self.count[p] = c = self.count[p] + 1
-            while len(self.A) <= c: self.A.append([])
-            self.A[c].append((t, p))
+        self.persons = persons
+        self.times = times
+        self.winners = []
+        winner = persons[0],0
+        for pos,e in enumerate(persons):
+            winner = (winner[0],winner[1]) if winner[0] >= e else (e,pos)
+            self.winners.append(winner[1])
 
     def q(self, t):
-        lo, hi = 1, len(self.A)
-        while lo < hi:
-            mi = (lo + hi) / 2
-            if self.A[mi][0][0] <= t:
-                lo = mi + 1
-            else:
-                hi = mi
-        i = lo - 1
-        j = bisect.bisect(self.A[i], (t, float('inf')))
-        return self.A[i][j-1][1]
+        location = bisect.bisect(self.times,t)
+        return self.winners[location-1]
+
+# Q929 Unique Email Addresses
+import itertools,collections
+
+class Solution:
+    def numUniqueEmails(self, emails):
+        lookup = collections.defaultdict(int)
+        for email in emails:
+            email = ''.join(word for word in list(itertools.takewhile(lambda x : x != '+',email)) if word != '.') + '@' + ''.join(itertools.takewhile(lambda x : x != '@',reversed(email)))
+            lookup[email] += 1
+
+        return (len(lookup))

@@ -1,16 +1,16 @@
-# 201 Bitwise AND of Numbers Range
+# Q201 Bitwise AND of Numbers Range
 
 
-# 202 Happy Number
+# Q202 Happy Number
 
 
-# 203 Remove Linked List Elements
+# Q203 Remove Linked List Elements
 
 
-# 204 Count Primes
+# Q204 Count Primes
 
 
-# 205 Isomorphic Strings
+# Q205 Isomorphic Strings
 import collections
 
 class Solution:
@@ -22,40 +22,40 @@ class Solution:
                 return False
         return True
 
-# 206 Reverse Linked List
+# Q206 Reverse Linked List
 
 
-# 207 Course Schedule
+# Q207 Course Schedule
 
 
-# 208 Implement Trie (Prefix Tree)
+# Q208 Implement Trie (Prefix Tree)
 
 
-# 209 Minimum Size Subarray Sum
+# Q209 Minimum Size Subarray Sum
 
 
-# 210 Course Schedule II
+# Q210 Course Schedule II
 
 
-# 211 Add and Search Word - Data structure design
+# Q211 Add and Search Word - Data structure design
 
 
-# 21# 2 Word Search II
+# Q212 Word Search II
 
 
-# 213 House Robber II
+# Q213 House Robber II
 
 
-# 214 Shortest Palindrome
+# Q214 Shortest Palindrome
 
 
-# 215 Kth Largest Element in an Array
+# Q215 Kth Largest Element in an Array
 
 
-# 216 Combination Sum III
+# Q216 Combination Sum III
 
 
-# 217 Contains Duplicate
+# Q217 Contains Duplicate
 class Solution:
     def containsDuplicate1(self, nums):
         lookup = {}
@@ -72,7 +72,7 @@ class Solution:
                 return True
         return False
 
-# 218 The Skyline Problem
+# Q218 The Skyline Problem
 import heapq
 
 class Solution:
@@ -110,7 +110,7 @@ class Solution:
                 skyline.append([start, height])
         return skyline
 
-# 219 Contains Duplicate II
+# Q219 Contains Duplicate II
 class Solution:
     def containsNearbyDuplicate(self, nums, k):
         lookup = {}
@@ -123,7 +123,7 @@ class Solution:
                 lookup[num] = i
         return False
 
-# 220 Contains Duplicate III
+# Q220 Contains Duplicate III
 class Solution:
     #For a given element x, is there an item in the window that is within the range of [x-t, x+t]?
     def containsNearbyAlmostDuplicate(self, nums, k, t):
@@ -148,88 +148,123 @@ class Solution:
                     del buckets[nums[pos-k] // width]
         return False
 
-# 221 aximal Square
+# Q221 Maximal Square
 
 
-# 222 unt Complete Tree Nodes
+# Q222 Count Complete Tree Nodes
+class Solution:
+    #complete binary tree has 2^depth - 1 nodes
+    def height(self,root):
+        return -1 if not root else 1 + self.height(root.left)
+
+    def countNodes(self,root):
+        nodes = 0
+        h = self.height(root)
+        while root:
+            if self.height(root.right) == h - 1:
+                #same thing as: nodes += 2**h
+                nodes += 1 << h
+                root = root.right
+            else:
+                #same thing as: nodes += 2**(h-1)
+                nodes += 1 << (h - 1)
+                root = root.left
+            h -= 1
+        return nodes
+
+# Q223 Rectangle Area
 
 
-# 223 rectangle Area
+# Q224 Basic Calculator
 
 
-# 224 basic Calculator
+# Q225 Implement Stack using Queues
 
 
-# 225 implement Stack using Queues
+# Q226 Convert Binary Tree
 
 
-# 226 convert Binary Tree
+# Q227 Basic Calculator II
 
 
-# 227 basic Calculator II
+# Q228 Summary Ranges
 
 
-# 228 ummary Ranges
+# Q229 Majority Element II
 
 
-# 229 ajority Element II
+# Q230 Kth Smallest Element in a BST
 
 
-# 230 Kth Smallest Element in a BST
+# Q231 Power of Two
 
 
-# 231 Power of Two
+# Q232 Implement Queue using Stacks
 
 
-# 23# 2 I plement Queue using Stacks
+# Q233 Number of Digit One
 
 
-# 233 Number of Digit One
+# Q234 Palindrome Linked List
 
 
-# 234 Palindrome Linked List
+# Q235 Lowest Common Ancestor of a Binary Search Tree
 
 
-# 235 Lowest Common Ancestor of a Binary Search Tree
+# Q236 Lowest Common Ancestor of a Binary Tree
 
 
-# 236 Lowest Common Ancestor of a Binary Tree
+# Q237 Delete Node in a Linked List
 
 
-# 237 Delete Node in a Linked List
+# Q238 Product of Array Except Self
 
 
-# 238 Product of Array Except Self
+# Q239 Sliding Window Maximum
 
 
-# 239 Sliding Window Maximum
+# Q240 Search a 2D Matrix II
+
+#2Q41 Different Ways to Add Parentheses
 
 
-# 240 Search a 2D Matrix II#
+# Q242 Valid Anagram
 
 
-#241 Different Ways to Add Parentheses
+# Q243 Shortest Word Distance
 
 
-# 242 Valid Anagram
+# Q244 Shortest Word Distance II
 
 
-# 243 Shortest Word Distance
+# Q245 Shortest Word Distance III
 
 
-# 244 Shortest Word Distance II
+# Q246 Strobogrammatic Number
 
 
-# 245 Shortest Word Distance III
+# Q247 Strobogrammatic Number II
+class Solution:
+    lookup = {'0':'0', '1':'1', '6':'9', '8':'8', '9':'6'}
 
+    def findStrobogrammatic(self, n):
+        return self.findStrobogrammaticRecu(n, n)
 
-# 246 Strobogrammatic Number
+    def findStrobogrammaticRecu(self, n, k):
+        if k == 0:
+            return ['']
+        elif k == 1:
+            return ['0', '1', '8']
 
+        result = []
+        for num in self.findStrobogrammaticRecu(n, k - 2):
+            for key, val in self.lookup.items():
+                if n != k or key != '0':
+                    result.append(key + num + val)
 
-# 247 Strobogrammatic Number II
+        return result
 
-
-# 248 Strobogrammatic Number III
+# Q248 Strobogrammatic Number III
 class Solution:
     lookup = {'0':'0', '1':'1', '6':'9', '8':'8', '9':'6'}
     cache = {}
@@ -288,9 +323,9 @@ class Solution:
         else:
             return 5 * self.countStrobogrammaticByLength(n - 2)
 
-# 249 Group Shifted Strings
+# Q249 Group Shifted Strings
 
 
-# 250 Count Univalue Subtrees
+# Q250 Count Univalue Subtrees
 
 

@@ -9,6 +9,23 @@ class NumArray:
     def sumRange(self, i, j):
         return self.accu[j + 1] - self.accu[i]
 
+# Q307 Range Sum Query = Mutable
+import itertools
+
+class NumArray:
+
+    def __init__(self, nums):
+        self.original = nums
+        self.nums = [0] + list(itertools.accumulate(nums))
+
+    def update(self, i, val):
+        tmp = self.original[i] - val
+        for j in range(i+1,len(self.nums)):
+            self.nums[j] -= tmp
+
+    def sumRange(self, i, j):
+        return self.nums[j+1]-self.nums[i]
+
 # Q308 Range Sum Query 2D - Mutable
 from copy import deepcopy
 

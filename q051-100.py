@@ -797,6 +797,23 @@ class Solution:
                     maxArea = localArea if localArea > maxArea else maxArea
         return maxArea
 
+class Solution1:
+    def maximalRectangle(self, matrix):
+        for r,row in enumerate(matrix):
+            for c,elem in enumerate(row):
+                matrix[r][c] = int(matrix[r][c])
+                if c > 0 and matrix[r][c]:
+                    matrix[r][c] += matrix[r][c-1]
+
+        secondary = [row[:] for row in matrix]
+
+        for r,row in enumerate(matrix):
+            for c,elem in enumerate(row):
+                if r > 0 and matrix[r][c] and matrix[r-1][c]:
+                    matrix[r][c] = min(secondary[r][c],secondary[r-1][c])+matrix[r-1][c]
+
+        return max(max(row) for row in matrix)
+
 # Q86 Partition List
 class Solution:
     def partition(self, head, x):
