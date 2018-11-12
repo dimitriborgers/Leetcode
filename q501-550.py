@@ -28,6 +28,9 @@ class Solution:
     def pickIndex(self):
         target = random.randint(0, self.__prefix_sum[-1]-1)
         #gives the index
+        #bisect == bisect_right: if you have [1,1,1], index will be 3
+        #bisect_left: if you have [1,1,1], index will be 0. So you actually take the index of the first instance found
+        #if element you're inputting isn't in list already, then both methods should return the same index
         return bisect.bisect_right(self.__prefix_sum, target)
 
 # Q539 Minimum Time Difference

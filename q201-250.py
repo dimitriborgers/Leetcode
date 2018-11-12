@@ -154,6 +154,7 @@ class Solution:
 # Q222 Count Complete Tree Nodes
 class Solution:
     #complete binary tree has 2^depth - 1 nodes
+    #in this problem, you don't include the (- 1) because you're always looking at subtrees, which does not include root node
     def height(self,root):
         return -1 if not root else 1 + self.height(root.left)
 

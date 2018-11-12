@@ -1,3 +1,53 @@
+# Q355 Design Snake Game
+from collections import defaultdict, deque
+
+class SnakeGame:
+
+    def __init__(self, width,height,food):
+        self.__width = width
+        self.__height = height
+        self.__score = 0
+        self.__food = deque(food)
+        self.__snake = deque([(0, 0)])
+        self.__direction = {"U": (-1, 0), "L": (0, -1), "R": (0, 1), "D": (1, 0)}
+        self.__lookup = defaultdict(int)
+        self.__lookup[(0, 0)] += 1
+
+    def move(self, direction):
+
+        def valid(x, y):
+            #need lookup so that validation check done in O(1)
+            return 0 <= x < self.__height and 0 <= y < self.__width and (x, y) not in self.__lookup
+
+        d = self.__direction[direction]
+        x, y = self.__snake[-1][0] + d[0], self.__snake[-1][1] + d[1]
+        tail = self.__snake[0]
+        self.__lookup.pop(self.__snake[0])
+        self.__snake.popleft()
+
+        if not valid(x, y):
+            return -1
+        elif self.__food and (self.__food[0][0], self.__food[0][1]) == (x, y):
+            self.__score += 1
+            self.__food.popleft()
+            self.__snake.appendleft(tail)
+            self.__lookup[tail] += 1
+
+        #adds (x,y) to original deque
+        self.__snake += (x, y),
+        self.__lookup[(x, y)] += 1
+
+        return self.__score
+
+# Q375 Guess Number Higher or Lower II
+class Solution:
+    def getMoneyAmount(self, n):
+        pay = [[0] * n for _ in range(n+1)]
+        for i in reversed(range(n)):
+            for j in range(i+1, n):
+                pay[i][j] = min(k+1 + max(pay[i][k-1], pay[k+1][j]) for k in range(i, j+1))
+        return pay[0][n-1]
+
 # Q393 UTF-8 Validation
 #0b is like 0x - it indicates the number is formatted in binary (0x indicates the number is in hex).
 #bin(30)[2:].zfill(8) //if bin(30) is less than 8 digits, it fills the left side with 0s.

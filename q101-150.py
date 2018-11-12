@@ -1100,7 +1100,7 @@ class Solution:
                     if numerator > 0 and denominator < 0 and abs(denominator)>numerator:
                         total = 0
                     else:
-                        total = numbers.pop() // denominator
+                        total = numerator // denominator
                     numbers.append(total)
                 if tokens[i] == '+':
                     total = numbers.pop() + numbers.pop()
