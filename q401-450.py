@@ -46,6 +46,30 @@ class Solution:
             self.word_counter = (self.word_counter + 1) % self.words
             self.recur(index,sentence[self.word_counter],length)
 
+# Q424 Longest Repeating Character Replacement
+#ord('A') - 65
+#ord('a') - 97
+#Sliding window
+class Solution:
+    def characterReplacement(self, s, k):
+        res = 0
+
+        cnts = [0] * 26
+        times, i, j = k, 0, 0
+        while j < len(s):
+            cnts[ord(s[j]) - ord('A')] += 1
+            if s[j] != s[i]:
+                times -= 1
+                if times < 0:
+                    res = max(res, j - i)
+                    while i < j and times < 0:
+                        cnts[ord(s[i]) - ord('A')] -= 1
+                        i += 1
+                        times = k - (j - i + 1 - cnts[ord(s[i]) - ord('A')])
+            j += 1
+
+        return max(res, j - i + min(i, times))
+
 # Q428 Serialize and Deserialize N-ary Tree
 class Node:
     def __init__(self, val, children):

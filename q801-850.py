@@ -236,6 +236,23 @@ class Solution1:
 
         return dist[0]
 
+# Q819 Most Common Word
+from collections import Counter
+import string
+
+class Solution:
+    def mostCommonWord(self, paragraph, banned):
+        count = Counter()
+        exclude = set(string.punctuation)
+
+        for punc in exclude:
+            paragraph = paragraph.replace(punc,' ')
+
+        count.update(word.lower() for word in paragraph.split(' ') if word != '')
+        for pair in count.most_common():
+            if pair[0] not in banned:
+                return pair[0]
+
 # Q833 Find And Replace in String
 class Solution:
     def findReplaceString(self, S, indexes, sources, targets):

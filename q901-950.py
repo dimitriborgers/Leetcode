@@ -70,19 +70,27 @@ class Solution:
         return sum(dp(N, j) for j in range(N+1)) % MOD
 
 # Q904 Fruit Into Baskets
+from collections import defaultdict
+
 class Solution:
     def totalFruit(self, tree):
-        maxlength = float('-inf')
-        for i in range(len(tree)-1):
-            j = i+1
-            basket = {tree[i]}
-            while j < len(tree):
-                if tree[j] not in basket:
-                    basket.add(tree[j])
-                if len(basket) > 2:
-                    break
-                j += 1
-            maxlength = max(j-i,maxlength)
+        maxlength = 1
+        i = j = 0
+        basket = set()
+        lookup = defaultdict(int)
+        while i < len(tree):
+            basket.add(tree[i])
+            lookup[tree[i]] += 1
+            if len(basket) > 2:
+                while len(basket) > 2:
+                    lookup[tree[j]] -= 1
+                    if lookup[tree[j]] == 0:
+                        basket.remove(tree[j])
+                        del lookup[tree[j]]
+                    j += 1
+            i += 1
+            maxlength = max(maxlength,i-j)
+
         return maxlength
 
 # Q905 Sort Array By Parity
