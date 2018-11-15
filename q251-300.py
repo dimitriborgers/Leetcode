@@ -16,7 +16,7 @@ class Codec:
             i += 8+l
         return strs
 
-# Q273. Integer to English Words
+# Q273 Integer to English Words
 class Solution:
     def numberToWords(self, num):
         if num == 0:
@@ -70,7 +70,35 @@ class Solution:
         #this method can only be called after its definition. Python is interpreted, so it goes line by line.
         return inorderTraversal(root)
 
-#Q 299 Bulls and Cows
+# Q295 Find Median from Data Stream
+import bisect
+
+class MedianFinder:
+
+    def __init__(self):
+        self.is_even = True
+        self.sequence = []
+
+    def __repr__(self):
+        return '{}'.format(self.sequence)
+
+    def addNum(self, num):
+        if self.is_even:
+            self.is_even = False
+        else:
+            self.is_even = True
+        bisect.insort(self.sequence,num)
+
+    def findMedian(self):
+        if not self.sequence:
+            return None
+
+        if self.is_even:
+            return (self.sequence[len(self.sequence) // 2 - 1] + self.sequence[len(self.sequence) // 2]) / 2
+        else:
+            return self.sequence[len(self.sequence) // 2]
+
+# Q299 Bulls and Cows
 class Solution:
     def getHint(self, secret, guess):
         used = []

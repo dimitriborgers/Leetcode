@@ -572,12 +572,6 @@ class Solution:
             cur = next_queue
         return 0
 
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot","dot","dog","lot","log","cog"]
-#if you have a __init__ method, just put args in Solution brackets
-print(Solution().ladderLength(beginWord,endWord,wordList))
-
 # Q128 Longest Consecutive Sequence
 class Solution:
     #(n) since you hashSet
@@ -825,10 +819,13 @@ class Solution:
     def copyRandomList(self, head):
         lookup = {}
         cur = head
+        new_head = None
         while cur:
             if cur not in lookup:
                 new_cur = RandomListNode(cur.label)
                 lookup[cur] = new_cur
+                if not new_head:
+                    new_head = new_cur
             if cur.next:
                 if cur.next not in lookup:
                     new_next = RandomListNode(cur.next.label)
@@ -840,7 +837,7 @@ class Solution:
                     lookup[cur.random] = new_random
                 lookup[cur].random = lookup[cur.random]
             cur = cur.next
-        return head
+        return new_head
 
 # Q139 Word Break
 class Solution:
@@ -953,12 +950,13 @@ MRU-When a file is being repeatedly scanned in a [Looping Sequential] reference 
 RR-Randomly selects a candidate item and discards it to make space when necessary. This algorithm does not require keeping any information about the access history.
 LFU-Counts how often an item is needed. Those that are used least often are discarded first.
 """
+#This solution only works for 3.7+
 class LRUCache:
     #you can't return anything in init method
     def __init__(self, capacity):
         self.capacity = capacity
         #Since python 3.7, Python dict is an ordered dict. It puts the most recently added on the right
-        #The popitem()-returns an arbitrary element (key, value) pair from the dictionary
+        #The popitem()-returns an arbitrary element (key, value) pair from the dictionary. No longer the case in 3.7 (it returns last element added)
         self.lookup = {}
         self.size = 0
 
@@ -969,6 +967,8 @@ class LRUCache:
         return '{}'.format(output)
 
     def get(self, key):
+        if key not in self.lookup:
+            return -1
         value = self.lookup[key]
         del self.lookup[key]
         self.lookup[key] = value
@@ -985,6 +985,55 @@ class LRUCache:
         else:
             del self.lookup[key]
             self.lookup[key] = value
+
+#This solution works for any Python 3 version
+class Node:
+    def __init__(self, k, v):
+        self.key = k
+        self.val = v
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.dict = {}
+        self.head = Node(0, 0)
+        self.tail = Node(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def get(self, key):
+        if key in self.dict:
+            n = self.dict[key]
+            self._remove(n)
+            self._add(n)
+            return n.val
+        return -1
+
+    def put(self, key, value):
+        if key in self.dict:
+            self._remove(self.dict[key])
+        n = Node(key, value)
+        self._add(n)
+        self.dict[key] = n
+        if len(self.dict) > self.capacity:
+            n = self.head.next
+            self._remove(n)
+            del self.dict[n.key]
+
+    def _remove(self, node):
+        p = node.prev
+        n = node.next
+        p.next = n
+        n.prev = p
+
+    def _add(self, node):
+        p = self.tail.prev
+        p.next = node
+        self.tail.prev = node
+        node.prev = p
+        node.next = self.tail
 
 # Q147 Insertion Sort List
 class Solution:

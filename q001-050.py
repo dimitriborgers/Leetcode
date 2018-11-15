@@ -2,12 +2,12 @@
 class Solution:
     def twoSum(self, nums, target):
         counter = {}
-        for i in nums:
-            if i in counter:
-                return i,counter[i]
+        for pos,e in enumerate(nums):
+            if e in counter:
+                return counter[e],pos
             else:
-                complement = target - i
-                counter[complement] = i
+                complement = target - e
+                counter[complement] = pos
         return None
 
 # Q2 Add Two Numbers

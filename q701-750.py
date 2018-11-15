@@ -1,3 +1,24 @@
+# Q703 Kth Largest Element in a Stream
+import bisect
+
+class KthLargest:
+
+    def __init__(self, k, nums):
+        self.k = k
+        self.nums = sorted(nums)
+        if len(self.nums) >= self.k:
+            self.largest = self.nums[-self.k]
+        else:
+            self.largest = None
+
+    def add(self, val):
+        bisect.insort(self.nums,val)
+        if len(self.nums) >= self.k:
+            self.largest = self.nums[-self.k]
+        else:
+            self.largest = None
+        return self.largest
+
 # Q727 Minimum Window Subsequence
 class Solution:
     def minWindow(self, S, T):
