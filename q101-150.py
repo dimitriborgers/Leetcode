@@ -774,6 +774,7 @@ class Solution:
         return False
 
 # Q135 Candy
+#Time Limit Exceeded
 class Solution:
     def candy(self, ratings):
         result = [1]*len(ratings)
@@ -782,10 +783,24 @@ class Solution:
                 result[i] = result[i-1]+1
             elif ratings[i] < ratings[i-1]:
                 index = i
-                while index > 0 and result[index-1]==result[index]:
+                while index > 0 and ratings[index-1] > ratings[index] and result[index-1] == result[index]:
                     result[index-1] += 1
                     index -= 1
         return sum(result)
+
+class Solution1:
+    def candy(self,ratings):
+        candies = [1]*len(ratings)
+        for i in range(1,len(ratings)):
+            if ratings[i] > ratings[i - 1]:
+                candies[i] = candies[i - 1] + 1;
+
+        total = candies[len(ratings) - 1]
+        for i in range(len(ratings)-2,-1,-1):
+            if ratings[i] > ratings[i + 1]:
+                candies[i] = max(candies[i], candies[i + 1] + 1)
+            total += candies[i]
+        return total
 
 # Q136 Single Number
 class Solution:

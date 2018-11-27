@@ -20,7 +20,7 @@ class Solution:
             return not text
 
         #make sure there is still text, then check pattern.
-        first_match = text and pattern[0] in (text[0], '.')
+        first_match = bool(text) and pattern[0] in (text[0], '.')
 
         #* means 0 or more, that's why would try pattern[2:]
         if len(pattern) >= 2 and pattern[1] == '*':
@@ -130,76 +130,22 @@ class Solution:
                 merged[-1].end = max(merged[-1].end, interval.end)
         return merged
 
-#Using adjacency list
-class Solution:
-    def overlap(self, a, b):
-        return a.start <= b.end and b.start <= a.end
-
-    # generate graph where there is an undirected edge between intervals u
-    # and v iff u and v overlap.
-    def build_graph(self, intervals):
-        graph = collections.defaultdict(list)
-
-        for i, interval_i in enumerate(intervals):
-            for j in range(i+1, len(intervals)):
-                if self.overlap(interval_i, intervals[j]):
-                    graph[interval_i].append(intervals[j])
-                    graph[intervals[j]].append(interval_i)
-
-        return graph
-
-    # merges all of the nodes in this connected component into one interval.
-    def merge_nodes(self, nodes):
-        min_start = min(node.start for node in nodes)
-        max_end = max(node.end for node in nodes)
-        return Interval(min_start, max_end)
-
-    # gets the connected components of the interval overlap graph.
-    def get_components(self, graph, intervals):
-        visited = set()
-        comp_number = 0
-        nodes_in_comp = collections.defaultdict(list)
-
-        def mark_component_dfs(start):
-            stack = [start]
-            while stack:
-                node = stack.pop()
-                if node not in visited:
-                    visited.add(node)
-                    nodes_in_comp[comp_number].append(node)
-                    stack.extend(graph[node])
-
-        # mark all nodes in the same connected component with the same integer.
-        for interval in intervals:
-            if interval not in visited:
-                mark_component_dfs(interval)
-                comp_number += 1
-
-        return nodes_in_comp, comp_number
-
-    def merge(self, intervals):
-        graph = self.build_graph(intervals)
-        nodes_in_comp, number_of_comps = self.get_components(graph, intervals)
-
-        # all intervals in each connected component must be merged.
-        return [self.merge_nodes(nodes_in_comp[comp]) for comp in range(number_of_comps)]
-
 #------------------------------------------------------------------------------
 
 # Q94 Binary Tree Inorder Traversal
 class Solution:
-    def inorderTraversalRec(self,root):
+    def inorderTraversal(self,root):
         self.result = []
         return self._inorder_helper(root)
 
     def _inorder_helper(self, root):
-        if root.left:
+        if root and root.left:
             self._inorder_helper(root.left)
-        #can't be append(root) because this would traverse from root every time when you print
-        self.result.append(root.val)
-        if root.right:
+        if root:
+            self.result.append(root.val)
+        if root and root.right:
             self._inorder_helper(root.right)
-        return result
+        return self.result
 
     def inorderTraversalIterative(self, root):
         result, curr = [], root
@@ -342,17 +288,18 @@ class Solution:
 
 # Q135 Candy
 class Solution:
-    def candy(self, ratings):
-        result = [1]*len(ratings)
+    def candy(self,ratings):
+        candies = [1]*len(ratings)
         for i in range(1,len(ratings)):
-            if ratings[i] > ratings[i-1]:
-                result[i] = result[i-1]+1
-            elif ratings[i] < ratings[i-1]:
-                index = i
-                while index > 0 and result[index-1] == result[index]:
-                    result[index-1] += 1
-                    index -= 1
-        return sum(result)
+            if ratings[i] > ratings[i - 1]:
+                candies[i] = candies[i - 1] + 1;
+
+        total = candies[len(ratings) - 1]
+        for i in range(len(ratings)-2,-1,-1):
+            if ratings[i] > ratings[i + 1]:
+                candies[i] = max(candies[i], candies[i + 1] + 1)
+            total += candies[i]
+        return total
 
 #------------------------------------------------------------------------------
 
@@ -550,19 +497,21 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q271 Encode and Decode Strings
+from itertools import dropwhile
+
 class Codec:
 
     def encode(self, strs):
         encoded_str = ''
         for s in strs:
-            encoded_str +=  '0000000' + str(len(s)) + s
+            encoded_str += str(len(s)).zfill(8) + s
         return encoded_str
 
     def decode(self, s):
         i = 0
         strs = []
         while i < len(s):
-            l = int(s[i+7])
+            l = int(''.join(list(dropwhile(lambda x: x == '0',s[i:i+8]))))
             strs.append(s[i+8:i+8+l])
             i += 8+l
         return strs
@@ -606,26 +555,7 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q285 Inorder Successor in BST
-class Solution1:
-    def inorderSuccessor(self, root, p):
-        self.p = p
-        self.found = False
-
-        def inorderTraversal(root):
-            if root.left:
-                inorderTraversal(root.left)
-            if root.val == self.p:
-                self.found = True
-            #since it uses self.found, it acts like a global variable
-            if self.found:
-                return root.val
-            if root.right:
-                inorderTraversal(root.right)
-
-        #this method can only be called after its definition. Python is interpreted, so it goes line by line.
-        return inorderTraversal(root)
-
-class Solution2:
+class Solution:
     def inorderSuccessor(self, root, p):
         # If it has right subtree.
         if p and p.right:
@@ -661,7 +591,7 @@ class NumArray:
 #------------------------------------------------------------------------------
 
 # Q325 Maximum Size Subarray Sum Equals k
-class Solution1:
+class Solution:
     def maxSubArrayLen(self, nums, k):
         sums = {}
         cur_sum, max_len = 0, 0
@@ -674,21 +604,6 @@ class Solution1:
             if cur_sum not in sums:
                 sums[cur_sum] = i
         return max_len
-
-from itertools import accumulate
-
-class Solution2:
-    def maxSubArrayLen(self, nums, k):
-        lookup = {}
-        length = 0
-        nums = list(accumulate([0] + nums))
-        for pos,e in enumerate(nums):
-            if (e - k) in lookup:
-                length = max(length,pos - lookup[(e - k)])
-            else:
-                if e not in lookup:
-                    lookup[e] = pos
-        return length
 
 #------------------------------------------------------------------------------
 

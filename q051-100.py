@@ -1023,19 +1023,18 @@ class TreeNode:
         self.right = None
 
 class Solution:
-    def inorderTraversalRec(self,root):
-        global result
-        result = []
+    def inorderTraversal(self,root):
+        self.result = []
         return self._inorder_helper(root)
 
     def _inorder_helper(self, root):
-        if root.left:
+        if root and root.left:
             self._inorder_helper(root.left)
-        #can't be append(root) because this would traverse from root every time when you print
-        result.append(root.val)
-        if root.right:
+        if root:
+            self.result.append(root.val)
+        if root and root.right:
             self._inorder_helper(root.right)
-        return result
+        return self.result
 
     def inorderTraversalIterative(self, root):
         result, curr = [], root
@@ -1192,8 +1191,6 @@ class Solution:
                     cur = cur.right
 
         broken[0].val, broken[1].val = broken[1].val, broken[0].val
-
-        return root
 
     def detectBroken(self, broken, pre, cur):
         if pre and pre.val > cur.val:

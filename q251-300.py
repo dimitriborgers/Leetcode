@@ -1,17 +1,20 @@
 # Q271 Encode and Decode Strings
+from itertools import dropwhile
+
 class Codec:
 
     def encode(self, strs):
         encoded_str = ''
         for s in strs:
-            encoded_str +=  '0000000' + str(len(s)) + s
+            #How to add 0's to fill gap
+            encoded_str += str(len(s)).zfill(8) + s
         return encoded_str
 
     def decode(self, s):
         i = 0
         strs = []
         while i < len(s):
-            l = int(s[i+7])
+            l = int(''.join(list(dropwhile(lambda x: x == '0',s[i:i+8]))))
             strs.append(s[i+8:i+8+l])
             i += 8+l
         return strs
@@ -53,22 +56,23 @@ class Solution:
 # Q285 Inorder Successor in BST
 class Solution:
     def inorderSuccessor(self, root, p):
-        self.p = p
-        self.found = False
+        # If it has right subtree.
+        if p and p.right:
+            p = p.right
+            while p.left:
+                p = p.left
+            return p
 
-        def inorderTraversal(root):
-            if root.left:
-                inorderTraversal(root.left)
-            if root.val == self.p:
-                self.found = True
-            #since it uses self.found, it acts like a global variable
-            if self.found:
-                return root.val
-            if root.right:
-                inorderTraversal(root.right)
+        # Search from root.
+        successor = None
+        while root and root != p:
+            if root.val > p.val:
+                successor = root
+                root = root.left
+            else:
+                root = root.right
 
-        #this method can only be called after its definition. Python is interpreted, so it goes line by line.
-        return inorderTraversal(root)
+        return successor
 
 # Q295 Find Median from Data Stream
 import bisect

@@ -264,7 +264,19 @@ class Solution:
             return not text
 
         #make sure there is still text, then check pattern.
-        first_match = text and pattern[0] in (text[0], '.')
+        #and statement specifications:
+            #True and False -> False
+            #True and True -> True
+            #False and True -> False
+            #False and 5, 5 and False -> False
+            #True and 5, 5 and True -> 5
+            #5 and 'hello' -> 'hello'
+        #or statement specifications:
+            #True and 5, 5 and True -> True
+            #False and 5, 5 and False -> 5
+            #5 or 'Hello' -> 'Hello'
+        #In this case, if you don't have bool(text), then first_match would equal whatever string text is if statement on right equals True.
+        first_match = bool(text) and pattern[0] in (text[0], '.')
 
         #* means 0 or more, that's why would try pattern[2:]
         if len(pattern) >= 2 and pattern[1] == '*':
