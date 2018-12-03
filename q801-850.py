@@ -258,42 +258,50 @@ class Solution:
     def findReplaceString(self, S, indexes, sources, targets):
         original = str(S)
         updated_str = str(S)
-        starting_index = 0
+        starting_index = offset = 0
+        changes = sorted(zip(indexes,sources,targets))
 
-        for i in zip(sources,indexes,targets):
-            if original[i[1]:i[1]+len(i[0])] == i[0]:
-                updated_str = updated_str[:i[1]+starting_index] + i[2] + updated_str[i[1]+len(i[0])+starting_index:]
-
-                starting_index += len(i[2])-1
+        for i in changes:
+            if original[i[0]:i[0]+len(i[1])] == i[1]:
+                updated_str = updated_str[:i[0]+offset] + i[2] + updated_str[i[0]+len(i[1])+offset:]
+                offset = offset + (len(i[2]) - len(i[1]))
 
         return updated_str
 
 # Q843 Guess the Word
-import random
-
-#class Master(object):
-#    def guess(self, word):
-#        """
-#        :type word: str
-#        :rtype int
-#        """
-
-class Solution:
+class Solution(object):
     def findSecretWord(self, wordlist, master):
 
-        def num_of_same(aa, bb):
-            return sum([a == b for a, b in zip(aa,bb)])
+        def pair_matches(a, b):         # count the number of matching characters
+            return sum(c1 == c2 for c1, c2 in zip(a, b))
 
-        random.shuffle(wordlist)
-        pool = list(word)
+        def most_overlap_word():
+            counts = [[0 for _ in range(26)] for _ in range(6)]     # counts[i][j] is nb of words with char j at index i
+            for word in candidates:
+                for i, c in enumerate(word):
+                    counts[i][ord(c) - ord("a")] += 1
 
-        while pool:
-            word = pool.pop()
-            num_same = master.guess(word)
-            if num_same == len(word):
-                return word
-            pool = [i for i in pool if num_of_same(word,i) == num_same]
-        return -1
+            best_score = 0
+            for word in candidates:
+                score = 0
+                for i, c in enumerate(word):
+                    score += counts[i][ord(c) - ord("a")]           # all words with same chars in same positions
+                if score > best_score:
+                    best_score = score
+                    best_word = word
+
+            return best_word
+
+        candidates = wordlist[:]        # all remaining candidates, initially all words
+        while candidates:
+
+            s = most_overlap_word()     # guess the word that overlaps with most others
+            matches = master.guess(s)
+
+            if matches == 6:
+                return
+
+            candidates = [w for w in candidates if pair_matches(s, w) == matches]   # filter words with same matches
 
 # Q844 Backspace string Compare
 class Solution:
@@ -337,18 +345,24 @@ class Solution:
         return result
 
 # Q849 Maximize Distance to Closest Person
+from itertools import takewhile
+
 class Solution:
     def maxDistToClosest(self, seats):
         seq = [0]*len(seats)
         for i in range(len(seq)):
             if not seats[i]:
                 seq[i] = 1
+
+        leftEdgeList = sum(list(takewhile(lambda x: x>0,seq)))
+        leftEdge = leftEdgeList if leftEdgeList else 0
+
         for i in range(1,len(seq)):
             if seq[i] and seq[i-1]:
                 seq[i] += seq[i-1]
-        if seq[-1] > (max(seq)+1) // 2:
+        if seq[-1] > max((max(seq)+1) // 2,leftEdge):
             return seq[-1]
-        return (max(seq)+1) // 2
+        return max(leftEdge,(max(seq)+1) // 2)
 
 # Q850 Rectangle Area II
 import itertools,functools

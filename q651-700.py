@@ -69,6 +69,7 @@ class Solution:
             if all(digit in allowed for block in divmod(cur, 60) for digit in divmod(block, 10)):
                 #2 puts two spaces of padding minimum and 0 puts a 0 in front of the number if only 1 is present
                 #d is just for signed integer decimal
+                #to unpack, you must put the * before the variable
                 return "{:02d}:{:02d}".format(*divmod(cur, 60))
 
 # Q682

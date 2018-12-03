@@ -95,7 +95,7 @@ class Solution:
             if count == K-1:
                 S.insert(i,'-')
                 count = -1
-            count+=1
+            count += 1
             i -= 1
         return ''.join(S)
 

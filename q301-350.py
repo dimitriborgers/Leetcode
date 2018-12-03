@@ -27,31 +27,23 @@ class NumArray:
         return self.nums[j+1]-self.nums[i]
 
 # Q308 Range Sum Query 2D - Mutable
-from copy import deepcopy
+from itertools import accumulate
 
-class NumMatrix:
+class NumMatrix(object):
     def __init__(self, matrix):
-        self.matrix = matrix
-        self.dp = deepcopy(matrix)
-        for i in range(len(self.dp[0])):
-            for j in range(1,len(self.dp)):
-                self.dp[j][i] += self.dp[j-1][i]
-
-        for i in range(len(self.dp)):
-            for j in range(1,len(self.dp[0])):
-                self.dp[i][j] += self.dp[i][j-1]
+        self.d = [list(accumulate(row)) for row in matrix]
 
     def update(self, row, col, val):
-        for i in range(row,len(self.dp)):
-            self.dp[i][col] -= self.matrix[row][col] - val
-
-        for i in range(row,len(self.dp)):
-            for j in range(col+1,len(self.dp[0])):
-                self.dp[i][j] -= self.matrix[row][col] - val
+        row = self.d[row]
+        orig = row[col] - (row[col-1] if col else 0)
+        for i in range(col, len(row)):
+            row[i] += val - orig
 
     def sumRegion(self, row1, col1, row2, col2):
-        total = self.dp[row2][col2] - self.dp[row2][col1-1] - self.dp[row1-1][col2] + self.dp[row1-1][col1-1]
-        return total
+        out = 0
+        for i in range(row1, row2+1):
+            out += self.d[i][col2] - (self.d[i][col1-1] if col1 else 0)
+        return out
 
 # Q325 Maximum Size Subarray Sum Equals k
 class Solution:

@@ -103,21 +103,25 @@ class MedianFinder:
             return self.sequence[len(self.sequence) // 2]
 
 # Q299 Bulls and Cows
+from collections import defaultdict
+
 class Solution:
     def getHint(self, secret, guess):
-        used = []
-        bulls = 0
-        cows = 0
-        for i in range(len(secret)):
+        secretSet = defaultdict(int)
+        guessSet = defaultdict(int)
+        bulls = cows = i = 0
+
+        while i < len(secret):
             if secret[i] == guess[i]:
+                secret = secret[:i]+secret[i+1:]
+                guess = guess[:i]+guess[i+1:]
                 bulls += 1
-                used.append(i)
-        for i in used:
-            #str does not have pop() operation
-            secret = secret[:i]+secret[i+1:]
-            guess = guess[:i]+guess[i+1:]
-        for i in secret:
-            if i in guess:
-                cows += 1
+            else:
+                secretSet[secret[i]] += 1
+                guessSet[guess[i]] += 1
+                i += 1
+        for k,v in secretSet.items():
+            if k in guessSet:
+                cows += min(secretSet[k],guessSet[k])
         return '{}A{}B'.format(bulls,cows)
 

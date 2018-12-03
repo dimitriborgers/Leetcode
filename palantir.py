@@ -1,3 +1,34 @@
+# ZigZag Pattern
+class Solution:
+    def zigzag(self,root,lvl = 0):
+        stack_even = [root]
+        stack_odd = []
+        result = []
+
+        while stack_even or stack_odd:
+            if lvl % 2 == 0:
+                tmp = stack_even.pop()
+                result.append(tmp.val)
+                if tmp.right:
+                    stack_odd.append(tmp.right)
+                if tmp.left:
+                    stack_odd.append(tmp.left)
+                if not stack_even:
+                    lvl += 1
+            else:
+                tmp = stack_odd.pop()
+                result.append(tmp.val)
+                if tmp.left:
+                    stack_even.append(tmp.left)
+                if tmp.right:
+                    stack_even.append(tmp.right)
+                if not stack_odd:
+                    lvl += 1
+
+        return result
+
+#------------------------------------------------------------------------------
+
 # Q1 Two Sum
 class Solution:
     def twoSum(self, nums, target):
@@ -13,16 +44,14 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q10 Regular Expression Matching
+# Make sure you have bool(text)
 class Solution:
     def isMatch(self, text, pattern):
         if not pattern:
-            #if there is no pattern and no text, this returns True
             return not text
 
-        #make sure there is still text, then check pattern.
         first_match = bool(text) and pattern[0] in (text[0], '.')
 
-        #* means 0 or more, that's why would try pattern[2:]
         if len(pattern) >= 2 and pattern[1] == '*':
             return (self.isMatch(text, pattern[2:]) or
                     first_match and self.isMatch(text[1:], pattern))
@@ -608,6 +637,9 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q393 UTF-8 Validation
+# Don't need to do bin(c)
+# Make sure it is >>, and not <<
+# return count == 0, not True
 class Solution:
     def validUtf8(self, data):
         count = 0
@@ -630,6 +662,7 @@ class Solution:
 #------------------------------------------------------------------------------
 
 # Q539 Minimum Time Difference
+#Don't forget to sort list after you make it
 class Solution:
     def findMinDifference(self, timePoints):
         minutes = [int(x[:2]) * 60 + int(x[3:]) for x in timePoints]
