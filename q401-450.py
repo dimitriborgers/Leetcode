@@ -24,7 +24,8 @@ class Solutionr:
         return possibilities(stones[0],0)
 
 # Q418 Sentence Screen Fitting
-class Solution:
+# Time limit exceeded
+class Solution1:
     def wordsTyping(self, sentence, rows, cols):
         self.count = 0
         self.word_counter = 0
@@ -45,6 +46,21 @@ class Solution:
 
             self.word_counter = (self.word_counter + 1) % self.words
             self.recur(index,sentence[self.word_counter],length)
+
+class Solution2:
+    def wordsTyping(self, sentence, rows, cols):
+        s = ' '.join(sentence) + ' '
+        start = 0
+        for i in range(rows):
+            start += cols - 1
+            if s[start % len(s)] == ' ':
+                start += 1
+            elif s[(start + 1) % len(s)] == ' ':
+                start += 2
+            else:
+                while start > 0 and s[(start - 1) % len(s)] != ' ':
+                    start -= 1
+        return start // len(s)
 
 # Q424 Longest Repeating Character Replacement
 #ord('A') - 65

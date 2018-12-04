@@ -1,5 +1,5 @@
 # Q562 Longest Line of Consecutive One in Matrix
-class Solution:
+class Solution1:
     def longestLine(self, M):
         maxLength = 0
         for i in range(len(M)):
@@ -33,6 +33,28 @@ class Solution:
             i += 1
             count += 1
         return count
+
+class Solution2:
+    def longestLine(self, M):
+        if len(M)==0: return 0
+        m,n=len(M),len(M[0])
+        P=[[[0]*4 for _ in range(0,n)] for j in range(0,m)]
+
+        for r in range(m):
+            for c in range(n):
+                if c==0: P[r][c][0]=M[r][c]
+                else: P[r][c][0]= (P[r][c-1][0]+M[r][c])*M[r][c]
+
+                if r==0: P[r][c][1]=M[r][c]
+                else: P[r][c][1]= (P[r-1][c][1]+M[r][c])*M[r][c]
+
+                if r==0 or c==n-1: P[r][c][2]=M[r][c]
+                else: P[r][c][2]= (P[r-1][c+1][2]+M[r][c])*M[r][c]
+
+                if r==0 or c==0: P[r][c][3]=M[r][c]
+                else: P[r][c][3]= (P[r-1][c-1][3]+M[r][c])*M[r][c]
+
+        return max([P[i][j][k] for i in range(0,m) for j in range(0,n) for k in range(0,4)])
 
 # Q568 Maximum Vacation Days
 class Solution:

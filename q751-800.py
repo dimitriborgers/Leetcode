@@ -115,29 +115,14 @@ class Solution2:
 # Q777 Swap Adjacent in LR String
 class Solution:
     def canTransform(self, start, end):
-        if not start or not end or len(start) != len(end):
+        #replace(x,y) replaces all instances of x with y
+        if start.replace('X', '') != end.replace('X', ''):
             return False
 
-        def recur(left,right,word):
-            if word == list(end):
-                return True
-
-            for i in range(left,right):
-                if word[i]+word[i+1] == 'XL':
-                    tmp = list(word)
-                    tmp[i],tmp[i+1] = tmp[i+1],tmp[i]
-                    result = recur(i+1,right,tmp)
-                    if result:
-                        return True
-
-                elif word[i]+word[i+1] == 'RX':
-                    tmp = list(word)
-                    tmp[i],tmp[i+1] = tmp[i+1],tmp[i]
-                    result = recur(i+1,right,tmp)
-                    if result:
-                        return True
-
-            return False
-
-        return recur(0,len(start)-1,start)
-
+        ctr = collections.Counter()
+        for s, e in zip(start, end):
+            ctr[s] += 1
+            ctr[e] -= 1
+            if ctr['L'] > 0 or ctr['R'] < 0:
+                return False
+        return True

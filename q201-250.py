@@ -15,10 +15,12 @@ import collections
 
 class Solution:
     def isIsomorphic(self, s, t):
-        seq = collections.defaultdict(set)
+        seqs = collections.defaultdict(set)
+        seqt = collections.defaultdict(set)
         for i in range(len(s)):
-            seq[s[i]].add(t[i])
-            if len(seq[s[i]]) > 1:
+            seqs[s[i]].add(t[i])
+            seqt[t[i]].add(s[i])
+            if len(seqs[s[i]]) > 1 or len(seqt[t[i]]) > 1:
                 return False
         return True
 
@@ -267,62 +269,46 @@ class Solution:
 
 # Q248 Strobogrammatic Number III
 class Solution:
-    lookup = {'0':'0', '1':'1', '6':'9', '8':'8', '9':'6'}
-    cache = {}
-
     def strobogrammaticInRange(self, low, high):
-        return self.countStrobogrammaticUntil(high, False) - self.countStrobogrammaticUntil(str(int(low)-1), False)
+        a = self.below(high)
+        b = self.below(low, include=False)
+        return a-b if a>b else 0
 
-    def countStrobogrammaticUntil(self, num,  can_start_with_0):
-        if can_start_with_0 and num in self.cache:
-            return self.cache[num]
+    def below(self,n,include=True):
+        res = 0
+        for i in range(len(n)):
+            res += self.number(i)
+        l = self.strobogrammatic(len(n))
 
-        count = 0
-        if len(num) == 1:
-            for c in ['0', '1', '8']:
-                if num[0] >= c:
-                    count += 1
-            self.cache[num] = count
-            return count
-
-        #also works to write Solution.loopkup.items()
-        for key, val in self.lookup.items():
-            if can_start_with_0 or key != '0':
-                if num[0] > key:
-                    if len(num) == 2:  # num is like "21"
-                        count += 1
-                    else:  # num is like "201"
-                        count += self.countStrobogrammaticUntil('9' * (len(num) - 2), True)
-                elif num[0] == key:
-                    if len(num) == 2:  # num is like 12".
-                        if num[-1] >= val:
-                            count += 1
-                    else:
-                        if num[-1] >= val:  # num is like "102".
-                            count += self.countStrobogrammaticUntil(self.getMid(num), True);
-                        elif (self.getMid(num) != '0' * (len(num) - 2)):  # num is like "110".
-                            count += self.countStrobogrammaticUntil(self.getMid(num), True) - self.isStrobogrammatic(self.getMid(num))
-
-        if not can_start_with_0: # Sum up each length.
-            for i in range(len(num) - 1, 0, -1):
-                count += self.countStrobogrammaticByLength(i)
+        if include:
+            l = [num for num in l if (len(num)==1 or num[0]!='0') and num <= n]
         else:
-            self.cache[num] = count
+            l = [num for num in l if (len(num)==1 or num[0]!='0') and num < n]
+        return res + len(l)
 
-        return count
+    def strobogrammatic(self,l):
+        res = []
+        if l == 1:
+            return ['0','1','8']
+        if l == 2:
+            return ['00','11','69','96','88']
+        for s in self.strobogrammatic(l-2):
+            res.append('0'+s+'0')
+            res.append('1'+s+'1')
+            res.append('6'+s+'9')
+            res.append('8'+s+'8')
+            res.append('9'+s+'6')
+        return res
 
-    def getMid(self, num):
-        return num[1:len(num) - 1]
-
-    def countStrobogrammaticByLength(self, n):
-        if n == 1:
+    def number(self,l):
+        if l == 0:
+            return 0
+        if l%2 == 0:
+            return 4*(5**(l//2-1))
+        elif l == 1:
             return 3
-        elif n == 2:
-            return 4
-        elif n == 3:
-            return 4 * 3
         else:
-            return 5 * self.countStrobogrammaticByLength(n - 2)
+            return 3*(5**(l//2-1))*4
 
 # Q249 Group Shifted Strings
 

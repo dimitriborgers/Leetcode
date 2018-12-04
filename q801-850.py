@@ -31,7 +31,7 @@ class DSU:
     def top(self):
         # Size of component at ephemeral "source" node at index R*C, minus 1 to not count the source itself in the size
         # All nodes on the top edge are connected to the source node
-        return self.size(len(self.size) - 1) - 1
+        return self.size[len(self.size) - 1] - 1
 
 class Solution:
     def hitBricks(self, grid, hits):
@@ -269,7 +269,7 @@ class Solution:
         return updated_str
 
 # Q843 Guess the Word
-class Solution(object):
+class Solution:
     def findSecretWord(self, wordlist, master):
 
         def pair_matches(a, b):         # count the number of matching characters

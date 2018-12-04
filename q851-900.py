@@ -16,3 +16,24 @@ class Solution:
             if len(max_heap) == K:
                 result = min(result, qsum*r)
         return result
+
+# Q900 RLEIterator
+class RLEIterator:
+
+    def __init__(self, A):
+        self.seq = []
+        self.index = -1
+        for i in range(len(A)-1):
+            if not i % 2:
+                self.seq.extend([A[i+1]]*A[i])
+        self.remainder = len(self.seq)
+
+    def next(self, n):
+        if n > self.remainder:
+            self.index += n
+            self.remainder -= n
+            return -1
+
+        self.index += n
+        self.remainder -= n
+        return self.seq[self.index]

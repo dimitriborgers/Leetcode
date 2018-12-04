@@ -1,24 +1,3 @@
-# Q900 RLEIterator
-class RLEIterator:
-
-    def __init__(self, A):
-        self.seq = []
-        self.index = -1
-        for i in range(len(A)-1):
-            if not i % 2:
-                self.seq.extend([A[i+1]]*A[i])
-        self.remainder = len(self.seq)
-
-    def next(self, n):
-        if n > self.remainder:
-            self.index += n
-            self.remainder -= n
-            return -1
-
-        self.index += n
-        self.remainder -= n
-        return self.seq[self.index]
-
 # Q901 Online Stock Span - Didn't understand
 class StockSpanner:
 
@@ -178,3 +157,49 @@ class Solution:
             lookup[email] += 1
 
         return (len(lookup))
+
+# Q947 Most Stones Removed with Same Row or Column
+from collections import Counter
+
+class DSU:
+
+    def __init__(self,stones):
+        self.parent = [i for i in range(len(stones))]
+        self.rank = [1]*len(stones)
+
+    def find(self,value):
+        if self.parent[value] != value:
+            self.parent[value] = self.find(self.parent[value])
+        return self.parent[value]
+
+    def union(self,left,right):
+        parentLeft = self.find(left)
+        parentRight = self.find(right)
+        if parentLeft != parentRight:
+            if self.rank[parentLeft] > self.rank[parentRight]:
+                self.parent[parentRight] = parentLeft
+            elif self.rank[parentLeft] < self.rank[parentRight]:
+                self.parent[parentLeft] = parentRight
+            else:
+                self.parent[parentRight] = parentLeft
+                self.rank[parentLeft] += 1
+
+    def max(self):
+        print(Counter(self.parent))
+        return sum(i-1 for i in Counter(self.parent).values())
+
+class Solution:
+    def removeStones(self, stones):
+        dsu = DSU(stones)
+        for i in range(len(stones)):
+            for j in range(len(stones)):
+                if self.check(stones[i],stones[j]):
+                    dsu.union(i,j)
+                dsu.find(i)
+                dsu.find(j)
+        return dsu.max()
+
+    def check(self,left,right):
+        if left[0] == right[0] or left[1] == right[1]:
+            return True
+        return False
