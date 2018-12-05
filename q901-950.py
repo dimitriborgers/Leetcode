@@ -129,22 +129,26 @@ class Solution:
         return ans
 
 # Q911 Online Election
-import bisect
-
 class TopVotedCandidate:
-
     def __init__(self, persons, times):
-        self.persons = persons
-        self.times = times
-        self.winners = []
-        winner = persons[0],0
-        for pos,e in enumerate(persons):
-            winner = (winner[0],winner[1]) if winner[0] >= e else (e,pos)
-            self.winners.append(winner[1])
+        self.A = []
+        count = collections.Counter()
+        leader, m = None, 0  # leader, num votes for leader
+
+        for p, t in zip(persons, times):
+            count[p] += 1
+            c = count[p]
+            if c >= m:
+                if p != leader:  # lead change
+                    leader = p
+                    self.A.append((t, leader))
+
+                if c > m:
+                    m = c
 
     def q(self, t):
-        location = bisect.bisect(self.times,t)
-        return self.winners[location-1]
+        i = bisect.bisect(self.A, (t, float('inf')), 1)
+        return self.A[i-1][1]
 
 # Q929 Unique Email Addresses
 import itertools,collections
@@ -157,6 +161,28 @@ class Solution:
             lookup[email] += 1
 
         return (len(lookup))
+
+# Q939 Minimum Area Rectangle
+import collections
+
+class Solution:
+    def minAreaRect(self, points):
+        columns = collections.defaultdict(list)
+        for x, y in points:
+            columns[x].append(y)
+        lastx = {}
+        ans = float('inf')
+
+        for x in sorted(columns):
+            column = columns[x]
+            column.sort()
+            for pos, y2 in enumerate(column):
+                for i in range(pos):
+                    y1 = column[i]
+                    if (y1, y2) in lastx:
+                        ans = min(ans, (x - lastx[y1,y2]) * (y2 - y1))
+                    lastx[y1, y2] = x
+        return ans if ans < float('inf') else 0
 
 # Q947 Most Stones Removed with Same Row or Column
 from collections import Counter

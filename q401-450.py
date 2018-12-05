@@ -1,5 +1,5 @@
 # Q403 Frog Jump
-class Solutionr:
+class Solution:
     def canCross(self, stones):
         destination = stones[-1]
 

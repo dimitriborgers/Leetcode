@@ -9,12 +9,13 @@ class Solution:
             return False
 
         result = [(len(word),word) for word in d if searcher(s,word)]
-        length = max(result,key=lambda x:x[0])[0]
-        return min([word for num,word in result if num == length])
+        length = max(result,key=lambda x:x[0])[0] if result else 0
+        #return min() since you want the lowest alphabetic result if multiple words have same length
+        return min([word for num,word in result if num == length]) if result else ''
 
 
 # Q528 Random Pick with Weight
-#Space: O(1)   Time: O(n)
+#Space: O(1) Time: O(n)
 import random,bisect,itertools
 
 class Solution:

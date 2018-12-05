@@ -128,85 +128,49 @@ class Solution:
         return root
 
 # Q157 Read N Characters Given Read4
-def read4(buf):
-    global file_content
-    i = 0
-    while i < len(file_content) and i < 4:
-        buf[i] = file_content[i]
-        i += 1
-
-    if len(file_content) > 4:
-        file_content = file_content[4:]
-    else:
-        file_content = ""
-    return i
-
 class Solution:
     def read(self, buf, n):
-        read_bytes = 0
-        buffer = [''] * 4
-        for i in range(n // 4 + 1):
-            size = read4(buffer)
-            if size:
-                size = min(size, n-read_bytes)
-                buf[read_bytes:read_bytes+size] = buffer[:size]
-                read_bytes += size
-            else:
-                break
-        return read_bytes
+        buf4 = [""] * 4
+        res = 0
 
-if __name__ == "__main__":
-    global file_content
-    buf = ['' for _ in range(100)]
-    file_content = "a"
-    print(buf[:Solution().read(buf, 9)])
-    file_content = "abcdefghijklmnop"
-    print(buf[:Solution().read(buf, 9)])
+        while res < n:
+            r4 = read4(buf4)
+            buf[res : res+r4] = buf4[:r4]
+            res += r4
+            if r4 < 4:
+                break
+
+        return min(res, n)
 
 # Q158 Read N Characters Given Read4 II - Call multiple times
-def read4(buf):
-    global file_content
-    i = 0
-    while i < len(file_content) and i < 4:
-        buf[i] = file_content[i]
-        i += 1
-
-    if len(file_content) > 4:
-        file_content = file_content[4:]
-    else:
-        file_content = ""
-    return i
-
 class Solution:
     def __init__(self):
-        self.__buf4 = [''] * 4
-        self.__i4 = 0
-        self.__n4 = 0
+        self.unused = []
 
     def read(self, buf, n):
-        i = 0
-        while i < n:
-            if self.__i4 < self.__n4:  # Any characters in buf4.
-                buf[i] = self.__buf4[self.__i4]
-                i += 1
-                self.__i4 += 1
-            else:
-                #new 4 letters must be requested
-                self.__n4 = read4(self.__buf4)  # Read more characters.
-                if self.__n4:
-                    self.__i4 = 0
-                else:  # Buffer has been empty.
-                    break
+        buf4 = ['']*4
+        count = 0
 
-        return i
+        if len(self.unused) >= n:
+            buf[:n] = self.unused[:n]
+            self.unused = self.unused[n:]
+            return n
+        else:
+            buf[:len(self.unused)] = self.unused
+            count = len(self.unused)
+            self.unused = []
 
-if __name__ == "__main__":
-    global file_content
-    file_content = "ab"
-    sol = Solution()
-    buf = ['' for _ in range(100)]
-    print(buf[:sol.read(buf, 1)])
-    print(buf[:sol.read(buf, 2)])
+        while count < n:
+            num = read4(buf4)
+            buf[count:count+num] = buf4[:num]
+            count += num
+            if num < 4:
+                break
+
+        if n < count:
+            self.unused = buf[n:count]
+
+        return min(count,n)
 
 # Q159 Longest Substring with At Most Two Distinct Characters
 class Solution:

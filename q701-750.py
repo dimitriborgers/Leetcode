@@ -22,41 +22,40 @@ class KthLargest:
 # Q727 Minimum Window Subsequence
 class Solution:
     def minWindow(self, S, T):
-        start = 0
-        length = []
-        while start < len(S):
-            indexes = []
-            for i in T:
-                tmp = S.find(i,start)
-                if tmp == -1:
-                    break
-                else:
-                    indexes.append(tmp)
-                    start = tmp+1
-            if tmp == -1:
-                break
-            length.append((indexes[2]-indexes[0]+1,indexes[0],indexes[2]))
-        return S[min(length)[1]:min(length)[2]+1]
+        cur = [i if x == T[0] else None
+               for i, x in enumerate(S)]
+
+        for j in range(1, len(T)):
+            last = None
+            new = [None] * len(S)
+            for i, u in enumerate(S):
+                if last is not None and u == T[j]: new[i] = last
+                if cur[i] is not None: last = cur[i]
+            cur = new
+
+        ans = 0, len(S)
+        for e, s in enumerate(cur):
+            if s is not None and e - s < ans[1] - ans[0]:
+                ans = s, e
+        return S[ans[0]: ans[1]+1] if ans[1] < len(S) else ""
 
 # Q731 My Calendar II
-from collections import defaultdict
-
 class MyCalendarTwo:
-
     def __init__(self):
-        self.calendar = defaultdict(int)
+        self.calendar = []
+        self.overlaps = []
 
     def book(self, start, end):
-        #The loop will not start if self.calendar is empty
-        for k,v in self.calendar.items():
-            if (k[0] <= start < k[1]) or (k[1] > end > k[0]):
-                if self.calendar[k] == 2:
-                    return False
-                self.calendar[k] += 1
-        self.calendar[(start,end)] = 1
+        for i, j in self.overlaps:
+            if start < j and end > i:
+                return False
+        for i, j in self.calendar:
+            if start < j and end > i:
+                self.overlaps.append((max(start, i), min(end, j)))
+        self.calendar.append((start, end))
         return True
 
-#Q 734 Sentence Similarity
+# Q734 Sentence Similarity
 import collections
 
 class Solution:
@@ -84,3 +83,54 @@ class Solution2:
 
         lookup = set(tuple(i) for i in pairs)
         return all(w1 == w2 or (w1, w2) in lookup or (w2, w1) in lookup for w1, w2 in zip(words1, words2))
+
+# Q736 Parse Lisp Expression
+from operator import add, mul
+from collections import deque
+
+class Solution:
+    def evaluate(self, expression):
+
+        def scan(s):
+            return s.replace('(', ' ( ').replace(')', ' ) ').split()
+
+        def parse(tokens):
+            tok = tokens.popleft()
+            if tok == '(':
+                L = []
+                while tokens[0] != ')':
+                    L.append(parse(tokens))
+                tokens.popleft()
+                return L
+            else:
+                try:
+                    return int(tok)
+                except ValueError:
+                    return tok
+
+        def ast(s):
+            return parse(deque(scan(s)))
+
+        def eval(e):
+            if not isinstance(e, list):
+                if isinstance(e, int):
+                    return e
+                else:
+                    for scope in reversed(env):
+                        if e in scope:
+                            return scope[e]
+            else:
+                env.append({})
+                if e[0] in ['add', 'mult']:
+                    op = add if e[0] == 'add' else mul
+                    res = op(eval(e[1]), eval(e[2]))
+                else:
+                    for i in range(2, len(e), 2):
+                        env[-1][e[i-1]] = eval(e[i])
+                    res = eval(e[-1])
+                env.pop()
+                return res
+
+        env = []
+        syntax_tree = ast(expression)
+        return eval(syntax_tree)
