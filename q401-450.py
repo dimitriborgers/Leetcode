@@ -1,5 +1,6 @@
 # Q403 Frog Jump
-class Solution:
+# Time Limit Exceeded
+class Solution1:
     def canCross(self, stones):
         destination = stones[-1]
 
@@ -22,6 +23,20 @@ class Solution:
             return False
 
         return possibilities(stones[0],0)
+
+class Solution2:
+    def canCross(self, stones):
+        if stones[1] != 1:
+            return False
+        d = dict((x,set()) for x in stones)
+        d[1].add(1)
+        for i in range(len(stones[1:])):
+            for j in d[stones[i]]:
+                for k in range(j-1, j+2):
+                    if k > 0 and stones[i]+k in d:
+                        d[stones[i]+k].add(k)
+
+        return d[stones[-1]] != set()
 
 # Q418 Sentence Screen Fitting
 # Time limit exceeded
