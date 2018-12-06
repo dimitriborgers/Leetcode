@@ -8,7 +8,7 @@ class Solution:
         if not A:
             return False
         if len(A) == 1:
-            return A[0] - 24 == 0
+            return abs(A[0] - 24) < 1e-6
 
         for i in range(len(A)):
             for j in range(len(A)):
@@ -17,10 +17,13 @@ class Solution:
                     for op in (truediv, mul, add, sub):
                         #Makes sure you don't divide by 0
                         if op is not truediv or A[j]:
-                            B.append(op(A[i], A[j]))
-                            if self.judgePoint24(B):
-                                return True
-                            B.pop()
+                            if (op is add or op is mul) and j > i:
+                                continue
+                            if op is not truediv or A[j]:
+                                B.append(op(A[i], A[j]))
+                                if self.judgePoint24(B):
+                                    return True
+                                B.pop()
         return False
 
 # Q681 Next Closest Time

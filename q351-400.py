@@ -39,6 +39,23 @@ class SnakeGame:
 
         return self.__score
 
+# Q359 Logger Rate Limiter
+class Logger:
+
+    def __init__(self):
+        self.dict = {}
+
+    def shouldPrintMessage(self, timestamp, message):
+        if message not in self.dict:
+            self.dict[message] = timestamp
+            return True
+        else:
+            if timestamp - self.dict[message] < 10:
+                return False
+            else:
+                self.dict[message] = timestamp
+                return True
+
 # Q375 Guess Number Higher or Lower II
 class Solution:
     def getMoneyAmount(self, n):

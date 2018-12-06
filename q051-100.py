@@ -359,13 +359,16 @@ class Solution:
 # Q66 Plus One
 class Solution:
     def plusOne(self, digits):
-        n = len(digits)-1
-        digits[n] += 1
-        while digits[n] > 9:
-            digits[n] = 0
-            digits[n-1] += 1
-            n = n-1
-        return digits
+        total = 0
+        for pos,e in enumerate(digits):
+            total = total*10 + e
+        total += 1
+        result = []
+        while total:
+            tmp = total % 10
+            result.append(tmp)
+            total //= 10
+        return result[::-1]
 
 # Q67 Add Binary
 import itertools
@@ -770,32 +773,25 @@ class Solution:
 # Q85 Maximal Rectangle
 class Solution:
     def maximalRectangle(self, matrix):
-        for i in matrix:
-            for j in range(1,len(i)):
-                i[0] = int(i[0])
-                if int(i[j-1]) > 0 and int(i[j]) > 0:
-                    i[j] = int(i[j]) + int(i[j-1])
-                else:
-                    i[j] = int(i[j])
-
-        maxArea = 0
-        for i in range(len(matrix)):
-            for j in range(len(matrix[0])):
-                maxArea = matrix[i][j] if matrix[i][j] > maxArea else maxArea
-                if i == 0:
-                    localArea,localAreaList,temp = 0,[],i
-                    while temp < len(matrix):
-                        if matrix[temp][j]:
-                            localAreaList.append(matrix[temp][j])
-                        temp += 1
-                    minimum = min(localAreaList)
-                    #below loop cannot use i because it would interfere with if i == 0 statement
-                    #i would have last value of element in localAreaList
-                    for x in localAreaList:
-                        if x:
-                            localArea += minimum
-                    maxArea = localArea if localArea > maxArea else maxArea
-        return maxArea
+        if not matrix or not matrix[0]:
+            return 0
+        m, n = len(matrix), len(matrix[0])
+        dp = [[0]*n for _ in range(m)]
+        res = 0
+        for j in range(n):
+            dp[0][j] = 1 if matrix[0][j]=="1" else 0
+        for i in range(0, m):
+            for j in range(n):
+                if i>0:
+                    dp[i][j] = dp[i-1][j] + 1 if matrix[i][j]=="1" else 0
+                local_min = dp[i][j]
+                res = max(res, dp[i][j])
+                for s in range(j, -1, -1):
+                    if dp[i][s]==0:
+                        break
+                    local_min = min(local_min, dp[i][s])
+                    res = max(res, local_min*(j-s+1))
+        return res
 
 class Solution1:
     def maximalRectangle(self, matrix):
