@@ -39,6 +39,8 @@ class Solution:
                 ans = s, e
         return S[ans[0]: ans[1]+1] if ans[1] < len(S) else ""
 
+# Q729 My Calendar I
+
 # Q731 My Calendar II
 class MyCalendarTwo:
     def __init__(self):
@@ -60,9 +62,6 @@ import collections
 
 class Solution:
     def areSentencesSimilar(self, words1, words2, pairs):
-        words1 = words1.split(' ')
-        words2 = words2.split(' ')
-
         if len(words1) != len(words2):
             return False
 
@@ -74,7 +73,7 @@ class Solution:
             lookup[right].append(right)
 
         #more pythonic way of checking something for every element in list
-        return all(word1 in lookup[word2] and word2 in lookup[word1] for word1,word2 in zip(words1,words2))
+        return all(word1 == word2 or word1 in lookup[word2] or word2 in lookup[word1] for word1,word2 in zip(words1,words2))
 
 class Solution2:
     def areSentencesSimilar(self, words1, words2, pairs):
@@ -134,3 +133,17 @@ class Solution:
         env = []
         syntax_tree = ast(expression)
         return eval(syntax_tree)
+
+# Q750 Number Of Corner Rectangles
+class Solution:
+    def countCornerRectangles(self, grid):
+        count = collections.Counter()
+        ans = 0
+        for row in grid:
+            for c1, v1 in enumerate(row):
+                if v1:
+                    for c2 in range(c1+1, len(row)):
+                        if row[c2]:
+                            ans += count[c1, c2]
+                            count[c1, c2] += 1
+        return ans

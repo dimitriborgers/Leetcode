@@ -13,6 +13,20 @@ class Solution:
         #return min() since you want the lowest alphabetic result if multiple words have same length
         return min([word for num,word in result if num == length]) if result else ''
 
+# Q527 Word Abbreviation
+class Solution:
+    def wordsAbbreviation(self, dict):
+        abb = collections.defaultdict(int)
+        for i, w in enumerate(dict):
+            for j in range(1, len(w) - 2):
+                abb[w[:j] + str(len(w) - j - 1) + w[-1]] += 1
+        for i, w in enumerate(dict):
+            for j in range(1, len(w) - 2):
+                new = w[:j] + str(len(w) - j - 1) + w[-1]
+                if abb[new] == 1:
+                    dict[i] = new
+                    break
+        return dict
 
 # Q528 Random Pick with Weight
 #Space: O(1) Time: O(n)

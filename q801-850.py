@@ -89,6 +89,46 @@ class Solution:
                 ans.append(max(0, dsu.top() - pre_roof - 1))
         return ans[::-1]
 
+# Q809 Expressive Words
+# Time Limit Exceeded
+class Solution1:
+    def expressiveWords(self, S, words):
+        def recur(S):
+            for i in range(len(S)-2):
+                if S[i] == S[i+1] == S[i+2]:
+                    tmp1 = S.replace(S[i:i+3],S[i:i+2],1)
+                    tmp2 = S.replace(S[i:i+3],S[i:i+1],1)
+                    if tmp1 not in result:
+                        result.add(tmp1)
+                        recur(tmp1)
+                    if tmp2 not in result:
+                        result.add(tmp2)
+                        recur(tmp2)
+        result = set()
+        recur(S)
+        return len([word for word in words if word in result])
+
+import itertools
+
+class Solution2:
+    def expressiveWords(self, S, words):
+        def RLE(S):
+            #groupby generates a break or new group every time the value of the key function changes
+            #zip(*[[1,2],[3,4]]) creates [[1,3],[2,4]]
+            return zip(*[(k, len(list(grp)))
+                         for k, grp in itertools.groupby(S)])
+
+        R, count = RLE(S)
+        ans = 0
+        for word in words:
+            R2, count2 = RLE(word)
+            if R2 != R:
+                continue
+            ans += all(c1 >= max(c2, 3) or c1 == c2
+                       for c1, c2 in zip(count, count2))
+
+        return ans
+
 # Q815 Bus Routes
 from collections import defaultdict
 

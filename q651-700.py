@@ -150,9 +150,7 @@ class Solution2:
 
 class DSU:
     def __init__(self):
-        #creates range class, can be accessed by index.
-        #range class is not same as generator, generators are not suscriptable, which means they can't be accessed by index.
-        self.parent = range(1001)
+        self.parent = [i for i in range(1001)]
         self.rank = [0] * 1001
 
     def find(self, x):
@@ -178,9 +176,6 @@ class DSU:
 # Q686 Repeated String Match
 class Solution:
     def repeatedStringMatch(self, A, B):
-        if len(B) < len(A):
-            return -1
-
         q = ((len(B)-1) // len(A)) + 1
         for i in range(2):
             if B in A * (q+i):

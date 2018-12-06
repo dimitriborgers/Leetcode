@@ -126,3 +126,15 @@ class Solution:
             if ctr['L'] > 0 or ctr['R'] < 0:
                 return False
         return True
+
+# Q800 Similar RGB Color
+class Solution:
+    def similarRGB(self, color):
+        def f(comp):
+            #int(x,y) y represents what output type you want. 2 for binary, 10 for decimal, 16 for hex.
+            q, r = divmod(int(comp, 16), 17)
+            if r > 8:
+                q += 1
+            return '{:02x}'.format(17 * q)
+
+        return '#' + f(color[1:3]) + f(color[3:5]) + f(color[5:])

@@ -74,6 +74,51 @@ class Solution:
 
         return successor
 
+# Q288 Unique Word Abbreviation
+# Doesn't work
+class ValidWordAbbr:
+
+    def __init__(self, dictionary):
+        self.ori = list(dictionary)
+        self.dic = list(dictionary)
+        for pos,e in enumerate(self.dic):
+            if len(e) > 2:
+                self.dic[pos] = e.replace(e[1:-1],str(len(e[1:-1])))
+
+
+    def isUnique(self, word):
+        tmp = word.replace(word[1:-1],str(len(word[1:-1])))
+        for i in range(len(self.dic)):
+            if self.ori[i] == word:
+                continue
+            if self.dic[i] == tmp:
+                return False
+        return True
+
+class ValidWordAbbr1:
+    def __init__(self, arr):
+        self.dic = {}
+        for word in set(arr):
+            abbr = self.abbrev(word)
+            if abbr not in self.dic:
+                self.dic[abbr] = word
+            else:
+                self.dic[abbr] = False
+
+    def isUnique(self, word):
+            abbr = self.abbrev(word)
+            if abbr not in self.dic:
+                return True
+            else:
+                return self.dic[abbr] == word
+
+    def abbrev(self, word):
+        if len(word) < 3:
+            return word
+        else:
+            return word[0] + str(len(word)-2) + word[-1]
+
+
 # Q295 Find Median from Data Stream
 import bisect
 

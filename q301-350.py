@@ -45,6 +45,94 @@ class NumMatrix(object):
             out += self.d[i][col2] - (self.d[i][col1-1] if col1 else 0)
         return out
 
+# Q317 Shortest Distance from All Buildings
+# Doesn't work
+class Solution1:
+    def shortestDistance(self, grid):
+        def check(row,col,visited):
+            return True if (0 <= row < len(grid) and 0 <= col < len(grid[0]) and grid[row][col] != 2 and (row,col) not in visited) else False
+
+        def bfs(row,col,houses,distance=0):
+            visited = set()
+            path = []
+            level = [(row,col)]
+
+            while level:
+                next_level = []
+                for r,c in level:
+                    if check(r,c,visited) and grid[r][c] == 1:
+                        path.append(distance)
+                        visited.add((r,c))
+                        continue
+                    visited.add((r,c))
+                    if check(r+1,c,visited):
+                        next_level.append((r+1,c))
+                    if check(r-1,c,visited):
+                        next_level.append((r-1,c))
+                    if check(r,c+1,visited):
+                        next_level.append((r,c+1))
+                    if check(r,c-1,visited):
+                        next_level.append((r,c-1))
+                distance += 1
+                level = next_level
+            return path if len(path) == houses else [float('inf')]
+
+        if not grid or not grid[0]:
+            return -1
+        minLength = float('inf')
+        total_houses = 0
+        for row,seq in enumerate(grid):
+            for col,e in enumerate(seq):
+                if grid[row][col] == 1:
+                    total_houses += 1
+        for row,seq in enumerate(grid):
+            for col,e in enumerate(seq):
+                if not grid[row][col]:
+                    minLength = min(minLength,sum(bfs(row,col,total_houses)))
+
+        return minLength if (minLength != float('inf') and minLength != 0) else -1
+
+class Solution2:
+    def shortestDistance(self, grid):
+        h = len(grid)
+        w = len(grid[0])
+
+        distance = [[0 for _ in range(w)] for _ in range(h)]
+        reach = [[0 for _ in range(w)] for _ in range(h)]
+
+        buildingNum = 0
+
+        for i in range(h):
+            for j in range(w):
+                if grid[i][j] == 1:
+                    buildingNum += 1
+                    q = [(i, j, 0)]
+
+                    isVisited = [[False for _ in range(w)] for _ in range(h)]
+
+                    for y, x, d in q:
+                        for dy, dx in (-1, 0), (1, 0), (0, -1), (0, 1):
+                            r = y + dy
+                            c = x + dx
+
+                            if 0 <= r < h and 0 <= c < w and grid[r][c] == 0 and not isVisited[r][c]:
+                                distance[r][c] += d + 1
+                                reach[r][c] += 1
+
+                                isVisited[r][c] = True
+                                q.append((r, c, d + 1))
+
+        shortest = float("inf")
+        for i in range(h):
+            for j in range(w):
+                if grid[i][j] == 0 and reach[i][j] == buildingNum:
+                    shortest = min(shortest, distance[i][j])
+
+        if shortest < float("inf"):
+            return shortest
+        else:
+            return -1
+
 # Q325 Maximum Size Subarray Sum Equals k
 class Solution:
     def maxSubArrayLen(self, nums, k):
@@ -60,11 +148,59 @@ class Solution:
                 sums[cur_sum] = i
         return max_len
 
+# Q329 Longest Increasing Path in a Matrix
+# Time Limit Exceeded
+class Solution1:
+    def longestIncreasingPath(self, matrix):
+
+        def check(rowdx,coldy,row,col):
+            if 0 <= rowdx < len(matrix) and 0 <= coldy < len(matrix[0]) and matrix[rowdx][coldy] > matrix[row][col]:
+                return True
+            return False
+
+        def dfs(row,col):
+            if not any(check(row+dx,col+dy,row,col) for dx,dy in directions):
+                return 1
+            # visited.add((row,col))
+            return 1 + max(dfs(row+dx,col+dy) for dx,dy in directions if check(row+dx,col+dy,row,col))
+
+        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+        maxLength = 0
+        for row,seq in enumerate(matrix):
+            for col,e in enumerate(seq):
+                # visited = set()
+                maxLength = max(maxLength,dfs(row,col))
+        return maxLength
+
+# Uses dfs and memoization
+class Solution2:
+    def longestIncreasingPath(self, matrix):
+        def dfs(i, j):
+            if not dp[i][j]:
+                val = matrix[i][j]
+                #for each cell in dp, you put the longest path that can be achieved from there; prevents recalculation.
+                dp[i][j] = 1 + max(
+                    dfs(i - 1, j) if i and val > matrix[i - 1][j] else 0,
+                    dfs(i + 1, j) if i < M - 1 and val > matrix[i + 1][j] else 0,
+                    dfs(i, j - 1) if j and val > matrix[i][j - 1] else 0,
+                    dfs(i, j + 1) if j < N - 1 and val > matrix[i][j + 1] else 0)
+            return dp[i][j]
+
+        if not matrix or not matrix[0]:
+            return 0
+        M, N = len(matrix), len(matrix[0])
+        #memoization included
+        dp = [[0] * N for i in range(M)]
+        return max(dfs(x, y) for x in range(M) for y in range(N))
+
 # Q340 Longest Substring with At Most K Distinct Characters
 from collections import defaultdict
 
 class Solution:
     def lengthOfLongestSubstringKDistinct(self, s, k):
+        if not s or not k:
+            return 0
+
         used_dict = defaultdict(int)
         length = float('-inf')
         i = j = 0

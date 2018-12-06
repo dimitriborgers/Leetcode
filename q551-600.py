@@ -57,7 +57,8 @@ class Solution2:
         return max([P[i][j][k] for i in range(0,m) for j in range(0,n) for k in range(0,4)])
 
 # Q568 Maximum Vacation Days
-class Solution:
+# Time limit exceeded
+class Solution1:
     def maxVacationDays(self, flights, days):
 
         for i in range(len(flights)):
@@ -75,3 +76,23 @@ class Solution:
             return days[current][day] + max(dfs(city,day+1) for city,name in enumerate(flights[current]) if name)
 
         return dfs(0,-1)
+
+# Uses dfs and memoization
+class Solution2:
+    def maxVacationDays(self, flights, days):
+        n = len(flights)
+        k = len(days[0])
+        graph = collections.defaultdict(list)
+        for i in range(n):
+            for j in range(n):
+                if flights[i][j]:
+                    graph[j].append(i)
+            graph[i].append(i)
+        dp = [[-float('inf')]*n for i in range(k+1)]
+        dp[0][0] = 0
+        for i in range(1,k+1):
+            for j in range(n):
+                for k in graph[j]:
+                    dp[i][j] = max(dp[i][j],dp[i-1][k])
+                dp[i][j] += days[j][i-1]
+        return max(dp[-1])

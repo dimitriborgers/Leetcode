@@ -261,18 +261,31 @@ class Solution:
 # Q163 Missing Ranges
 class Solution:
     def findMissingRanges(self, nums, lower, upper):
-        output = []
-        for i in range(len(nums)-1):
-            if nums[i+1] - nums[i] == 2:
-                output.append(str(nums[i]+1))
-            elif nums[i+1] - nums[i] > 1:
-                #can do output.append('{}->{}'.format(nums[i]+1,nums[i+1]-1)
-                output.append(str(nums[i]+1)+'->'+str(nums[i+1]-1))
-            else:
-                continue
-        if upper > nums[-1]:
-            output.append(str(nums[-1]+1)+'->'+str(upper))
-        return output
+        l = lower
+        ret = list()
+
+        if len(nums) == 0:
+            st = str(lower)
+            if l < upper:
+                st+="->"+str(upper)
+            ret.append(st)
+            return ret
+
+        for i in range(len(nums)):
+            u = nums[i]-1
+            if l <= u < upper:
+                 st = str(l)
+                 if l < u:
+                    st+="->"+str(u)
+                 ret.append(st)
+            l = nums[i]+1
+
+        if nums[-1]+1 <= upper:
+            st = str(nums[-1]+1)
+            if nums[-1]+1 < upper:
+                st+="->"+str(upper)
+            ret.append(st)
+        return ret
 
 # Q164 Maximum Gap
 class Solution:
