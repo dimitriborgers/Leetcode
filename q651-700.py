@@ -176,6 +176,36 @@ class DSU:
             self.rank[xr] += 1
         return True
 
+# Q685 Redundant Connection II
+class Solution:
+    def findRedundantDirectedConnection(self, edges):
+        candidate =[]
+        self.par = [0]*(len(edges)+1)
+
+        for u,v in edges:
+            if self.par[v] != 0:
+                candidate.append([self.par[v],v])
+                candidate.append([u,v])
+                break
+            else:
+                self.par[v] = u
+        self.par = [i for i in range(len(edges)+1)]
+        for u,v in edges:
+            if candidate and [u,v] == candidate[1]:
+                continue
+            if self.find(u) == v:
+                if candidate:
+                    return candidate[0]
+                return [u,v]
+            self.par[v] = u
+        return candidate[1]
+
+    def find(self,u):
+        if self.par[u] != u:
+            self.par[u] = self.find(self.par[u])
+        return self.par[u]
+
+
 # Q686 Repeated String Match
 class Solution:
     def repeatedStringMatch(self, A, B):

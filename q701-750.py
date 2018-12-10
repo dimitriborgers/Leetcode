@@ -19,6 +19,61 @@ class KthLargest:
             self.largest = None
         return self.largest
 
+# Q715 Range Module
+from bisect import bisect_left as bl, bisect_right as br
+class RangeModule1:
+
+    def __init__(self):
+        self.ivs = []
+
+    def addRange(self, left, right):
+        ivs = self.ivs
+        ilo, ihi = bl(ivs, left), br(ivs, right)
+        if ilo%2 == 1:
+            ilo -= 1
+            left = ivs[ilo]
+        if ihi%2 == 1:
+            right = ivs[ihi]
+            ihi += 1
+        self.ivs = ivs[:ilo] + [left, right] + ivs[ihi:]
+
+    def queryRange(self, left, right):
+        ivs = self.ivs
+        ilo = br(ivs, left)
+        return ilo%2 == 1 and ilo < len(ivs) and ivs[ilo-1] <= left < right <= ivs[ilo]
+
+    def removeRange(self, left, right):
+        ivs = self.ivs
+        ilo, ihi = bl(ivs, left), br(ivs, right)
+        new = []
+        if ilo%2 == 1:
+            ilo -= 1
+            new += [ivs[ilo], left]
+        if ihi%2 == 1:
+            new += [right, ivs[ihi]]
+            ihi += 1
+        self.ivs = ivs[:ilo] + new + ivs[ihi:]
+
+from bisect import bisect_left as bl, bisect_right as br
+
+class RangeModule2:
+
+    def __init__(self):
+        self._X = []
+
+    def addRange(self, left, right):
+        i, j = bl(self._X, left), br(self._X, right)
+        #a[1:5] = b -> will shorten or lengthen [1:5] depending on the length of b
+        self._X[i:j] = [left]*(i%2 == 0) + [right]*(j%2 == 0)
+
+    def queryRange(self, left, right):
+        i, j = br(self._X, left), bl(self._X, right)
+        return i == j and i%2 == 1
+
+    def removeRange(self, left, right):
+        i, j = bl(self._X, left), br(self._X, right)
+        self._X[i:j] = [left]*(i%2 == 1) + [right]*(j%2 == 1)
+
 # Q727 Minimum Window Subsequence
 class Solution:
     def minWindow(self, S, T):
