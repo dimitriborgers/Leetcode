@@ -1,3 +1,23 @@
+# Q636 Exclusive Time of Functions
+class Solution:
+    def exclusiveTime(self, n, logs):
+        ans = [0]*n
+        stack = [[-1, 0, 0, 0]]
+        for l in logs:
+            idx, op, t = self.processLogInfo(l)
+            if idx != stack[-1][0] or not op:
+                stack[-1][2] += t-stack[-1][1]
+                stack += [[idx, t, 0, op]]
+            else:
+                _, start_time, run_time, _ = stack.pop()
+                ans[idx] += run_time + t-start_time+1
+                stack[-1][1] = t+1
+        return ans
+
+    def processLogInfo(self, log):
+        info = log.split(':')
+        return int(info[0]), 0 if info[1] == 'start' else 1, int(info[-1])
+
 #642 Design Search Autocomplete System
 import collections
 import bisect

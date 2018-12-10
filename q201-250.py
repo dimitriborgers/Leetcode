@@ -31,7 +31,36 @@ class Solution:
 
 
 # Q208 Implement Trie (Prefix Tree)
+class Trie:
 
+    def __init__(self):
+        self.trie = {}
+
+    def insert(self, word):
+        cur = self.trie
+        for letter in word:
+            if letter not in cur:
+                cur[letter] = {}
+            cur = cur[letter]
+        cur['$'] = None
+
+    def search(self, word):
+        cur = self.trie
+        for letter in word:
+            if letter not in cur:
+                return False
+            cur = cur[letter]
+        if '$' in cur:
+            return True
+        return False
+
+    def startsWith(self, prefix):
+        cur = self.trie
+        for letter in prefix:
+            if letter not in cur:
+                return False
+            cur = cur[letter]
+        return True
 
 # Q209 Minimum Size Subarray Sum
 
@@ -191,7 +220,26 @@ class Solution:
 
 
 # Q228 Summary Ranges
+class Solution:
+    def summaryRanges(self, nums):
+        if not nums:
+            return []
+        end = start = nums[0]
+        lst = []
+        for item in nums[1:]:
+            if item - end != 1:
+                if start == end:
+                    lst.append(str(start))
+                else:
+                    lst.append("{}->{}".format(start,end))
+                start = item
+            end = item
+        if start == end:
+            lst.append(str(start))
+        else:
+            lst.append("{}->{}".format(start,end))
 
+        return lst
 
 # Q229 Majority Element II
 

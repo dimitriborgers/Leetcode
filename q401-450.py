@@ -38,6 +38,34 @@ class Solution2:
 
         return d[stones[-1]] != set()
 
+# Q410 Split Array Largest Sum
+class Solution:
+    def splitArray(self, nums, m):
+        L, R = 0, sum(nums) + 1
+
+        ans = 0
+        while L < R:
+            mid = (L + R) // 2
+            if self.guess(mid, nums, m):
+                ans = mid
+                R = mid
+            else:
+                L = mid + 1
+        return ans
+
+    @staticmethod
+    def guess(mid, nums, m):
+        sum = 0
+        for i in range(0, len(nums)):
+            if sum + nums[i] > mid:
+                m -= 1
+                sum = nums[i]
+                if nums[i] > mid:
+                    return False
+            else:
+                sum += nums[i]
+        return m >= 1
+
 # Q418 Sentence Screen Fitting
 # Time limit exceeded
 class Solution1:
@@ -157,3 +185,49 @@ class Codec:
         #iter creates an iterator from iterable
         #iter can make an iterator from a string
         return dfs(iter(isplit(data, ' ')))
+
+# Q444 Sequence Reconstruction
+class Solution1:
+    def sequenceReconstruction(self, org, seqs):
+        pos = {org[i] : i for i in range(len(org))}
+        flag = [0] * len(org)
+        stupid_test = 0
+
+        to_match = len(org) - 1
+        for seq in seqs:
+            stupid_test += len(seq)
+            for i in range(len(seq)):
+                if seq[i] <= 0 or seq[i] > len(org):
+                    return False
+                if i == 0:
+                    continue
+                x = seq[i - 1]
+                y = seq[i]
+                if pos[x] >= pos[y]:
+                    return False
+                if pos[x] + 1 == pos[y] and flag[x-1] == 0:
+                    flag[x-1] = 1
+                    to_match -= 1
+        return to_match == 0 and stupid_test != 0
+
+class Solution2:
+    def sequenceReconstruction(self, org, seqs):
+        order, orders, graph, seen = collections.defaultdict(int), set(), collections.defaultdict(set), set()
+        for seq in seqs:
+            for i in range(len(seq)):
+                if i > 0:
+                    if seq[i] == seq[i - 1]:
+                        return False
+                    graph[seq[i - 1]].add(seq[i])
+                seen.add(seq[i])
+        if not seen:
+            return False
+        for i in range(len(org) - 1, -1, -1):
+            if org[i] in seen:
+                seen.discard(org[i])
+            order[org[i]] = max([order[v] for v in graph[org[i]]] or [0]) + 1
+            before = set(v for v in graph[org[i]] if v in seen)
+            if order[org[i]] in orders or before:
+                return False
+            orders.add(order[org[i]])
+        return not seen

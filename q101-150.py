@@ -734,28 +734,32 @@ class Solution:
         return
 
 # Q133 Clone Graph
-class UndirectedGraphNode:
-    def __init__(self, x):
-        self.label = x
-        self.neighbors = []
+import collections
 
 class Solution:
     def cloneGraph(self, node):
         if not node:
             return
-        cloned_node = UndirectedGraphNode(node.label)
-        cloned, queue = {node:cloned_node}, [node]
+
+        #deque(iterable), thus element inside () should have iter() defined.
+        queue = collections.deque()
+        first_node = UndirectedGraphNode(node.label)
+        queue.append(node)
+        graph = {node:first_node}
 
         while queue:
-            current = queue.pop()
-            #accessing list of neighbors
-            for neighbor in current.neighbors:
-                if neighbor not in cloned:
-                    queue.append(neighbor)
-                    cloned_neighbor = UndirectedGraphNode(neighbor.label)
-                    cloned[neighbor] = cloned_neighbor
-                cloned[current].neighbors.append(cloned[neighbor])
-        return cloned[node]
+            tmp_ori = queue.popleft()
+            tmp_copy = graph[tmp_ori]
+            for n in tmp_ori.neighbors:
+                if n not in graph:
+                    neighbor_node = UndirectedGraphNode(n.label)
+                    queue.append(n)
+                    tmp_copy.neighbors.append(neighbor_node)
+                    graph[n] = neighbor_node
+                else:
+                    tmp_copy.neighbors.append(graph[n])
+
+        return first_node
 
 # Q134 Gas Station
 class Solution:

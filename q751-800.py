@@ -45,15 +45,19 @@ class Solution1:
     #Recursion is a good way to be able to change cur.left and cur.right without having a parent pointer
     def splitBST(self, root, V):
         if not root:
-            return None, None
-        elif root.val <= V:
-            result = self.splitBST(root.right, V)
-            root.right = result[0]
-            return root, result[1]
+            return [None,None]
+        if root.val==V:
+            a=root.right
+            root.right=None
+            return [root,a]
+        elif root.val<V:
+            small,large=self.splitBST(root.right,V)
+            root.right=small
+            return [root,large]
         else:
-            result = self.splitBST(root.left, V)
-            root.left = result[1]
-            return result[0], root
+            small,large=self.splitBST(root.left,V)
+            root.left=large
+            return [small,root]
 
 class TreeNode:
     def __init__(self, x):

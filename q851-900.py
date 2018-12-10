@@ -1,3 +1,48 @@
+# Q853 Car Fleet
+class Solution:
+    def carFleet(self, target, position, speed):
+        cars = sorted(zip(position, speed))
+        times = [float(target - pos) / spe for pos, spe in cars]
+        ans = 0
+        while len(times) > 1:
+            lead = times.pop()
+            if lead < times[-1]:
+                ans += 1
+            else:
+                times[-1] = lead
+
+        #Adding True in math equation equates to 1
+        return ans + bool(times)
+
+# Q855 Exam Room
+class ExamRoom:
+    def __init__(self, N):
+        self.N = N
+        self.students = []
+
+    def seat(self):
+        if not self.students:
+            student = 0
+        else:
+            #Good way to use enumerate and comparing two indexes without going out of bounds. First, store 0th index, and then when you enumerate through, don't compare if pos == 0.
+            dist, student = self.students[0], 0
+            for pos, s in enumerate(self.students):
+                if pos:
+                    prev = self.students[pos-1]
+                    d = (s - prev) // 2
+                    if d > dist:
+                        dist, student = d, prev + d
+
+            d = self.N - 1 - self.students[-1]
+            if d > dist:
+                student = self.N - 1
+
+        bisect.insort(self.students, student)
+        return student
+
+    def leave(self, p):
+        self.students.remove(p)
+
 # 857 Minimum Cost to Hire K Workers
 import heapq
 
