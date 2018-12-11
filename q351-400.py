@@ -1,4 +1,4 @@
-# Q355 Design Snake Game
+# Q353 Design Snake Game
 from collections import defaultdict, deque
 
 class SnakeGame:
@@ -55,6 +55,72 @@ class Logger:
             else:
                 self.dict[message] = timestamp
                 return True
+
+# Q361 Bomb Enemy
+class Solution:
+    def maxKilledEnemies(self, grid):
+        if not grid:
+            return 0
+        dp = [[0]*len(grid[0]) for _ in range(len(grid))]
+
+        for row in range(len(grid)):
+            count = 0
+            for col in range(len(grid[0])):
+                if grid[row][col] == "0":
+                    dp[row][col] = count
+                elif grid[row][col] == "E":
+                    count += 1
+                else:
+                    count = 0
+            count = 0
+            for col in range(len(grid[0])-1,-1,-1):
+                if grid[row][col] == "0":
+                    dp[row][col] += count
+                elif grid[row][col] == "E":
+                    count += 1
+                else:
+                    count = 0
+        ans = 0
+
+        for col in range(len(grid[0])):
+            count = 0
+            for row in range(len(grid)):
+                if grid[row][col] == "0":
+                    dp[row][col] += count
+                elif grid[row][col] == "E":
+                    count += 1
+                else:
+                    count = 0
+            count = 0
+            for row in range(len(grid)-1,-1,-1):
+                if grid[row][col] == "0":
+                    dp[row][col] += count
+                    if dp[row][col] > ans:
+                        ans = dp[row][col]
+                elif grid[row][col] == "E":
+                    count += 1
+                else:
+                    count = 0
+        return ans
+
+# Q365 Water and Jug Problem
+class Solution:
+    def canMeasureWater(self, x, y, z):
+        def gcd(x, y):
+            #Using Euclid's algorithm
+            if x < y :
+                x, y = y, x
+            while x != y and y != 0 :
+                remainder = x % y
+                x = y
+                y = remainder
+            return x
+
+        g = gcd(x,y)
+        if g == 0:
+            return z == 0
+
+        return (x+y) >= z and z % g == 0
 
 # Q375 Guess Number Higher or Lower II
 class Solution:

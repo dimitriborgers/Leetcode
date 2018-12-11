@@ -1,3 +1,26 @@
+# Q702 Search in a Sorted Array of Unknown Size
+class Solution:
+    def search(self, reader, target):
+        #find the upperbound
+        start = 0
+        end = 1
+        while (reader.get(end) < target) and (reader.get(end) != 2147483647):
+            end *= 2
+        #Binary search
+        while start + 1 < end:
+            mid = start + (end - start) // 2
+            if reader.get(mid) == target:
+                return mid
+            elif reader.get(mid) > target:
+                end = mid
+            else:
+                start = mid
+        if reader.get(start) == target:
+            return start
+        if reader.get(end) == target:
+            return end
+        return -1
+
 # Q703 Kth Largest Element in a Stream
 import bisect
 
