@@ -122,6 +122,8 @@ class Solution:
 
         return (x+y) >= z and z % g == 0
 
+# Q370 Range Addition
+
 # Q375 Guess Number Higher or Lower II
 class Solution:
     def getMoneyAmount(self, n):
@@ -163,6 +165,12 @@ class Solution:
                     return False
                 count -= 1
         return count == 0
+
+# Q378 Kth Smallest Element in a Sorted Matrix
+import heapq,itertools
+class Solution:
+    def kthSmallest(self, matrix, k):
+        return next(itertools.islice(heapq.merge(*matrix), k - 1, k))
 
 # Q380 Insert Delete GetRandom O(1)
 import random

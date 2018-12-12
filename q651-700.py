@@ -214,3 +214,5 @@ class Solution:
             if B in A * (q+i):
                 return q+i
         return -1
+
+# Q694 Number of Distinct Islands

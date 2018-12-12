@@ -255,6 +255,38 @@ class Solution:
         syntax_tree = ast(expression)
         return eval(syntax_tree)
 
+# Q737 Sentence Similarity II
+import collections
+
+class Solution:
+    def areSentencesSimilarTwo(self, words1, words2, pairs):
+        if len(words1) != len(words2):
+            return False
+
+        lookup = collections.defaultdict(set)
+        for left,right in pairs:
+            lookup[left].add(right)
+            lookup[right].add(left)
+
+        def dfs(cur,word2):
+            if word2 not in cur:
+                for word in cur:
+                    if word not in visited:
+                        visited.add(word)
+                        cur = lookup[word]
+                        tmp = dfs(cur,word2)
+                        if tmp:
+                            return True
+            else:
+                return True
+
+        for word1,word2 in zip(words1,words2):
+            if word1 != word2 and word1 not in lookup[word2]:
+                visited = {word1,word2}
+                if not dfs(lookup[word1],word2):
+                    return False
+        return True
+
 # Q750 Number Of Corner Rectangles
 class Solution:
     def countCornerRectangles(self, grid):

@@ -131,8 +131,29 @@ class Solution:
                 return False
         return True
 
+# Q787 Cheapest Flights Within K Stops
+import heapq,collections
+
+#Two ways to use heapq for Djikstra
+#1. If you add all elements to heapq at beginning, you have to run heapify everytime you change a node. Even if you change the value of a node, it will not update the composition of the heap tree. So, you must force it.
+#w. If you add elements only after you've altered them, then you don't need to run heapify. The benefit of this is that you can add elements to the heap without changing the composition of the tree before you added elements.
+class Solution:
+    def findCheapestPrice(self, n, flights, src, dst, k):
+        f = collections.defaultdict(dict)
+        for a, b, p in flights:
+            f[a][b] = p
+        heap = [(0, src, k + 1)]
+        while heap:
+            p, i, k = heapq.heappop(heap)
+            if i == dst:
+                return p
+            if k > 0:
+                for j in f[i]:
+                    heapq.heappush(heap, (p + f[i][j], j, k - 1))
+        return -1
+
 # Q799 Champagne Tower
-class Solution(object):
+class Solution:
     def champagneTower(self, poured, query_row, query_glass):
         A = [[0] * k for k in range(1, 102)]
         A[0][0] = poured
