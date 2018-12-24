@@ -344,7 +344,9 @@ import itertools
 
 class Solution:
     def letterCombinations(self, digits):
-        nums = {'2':'abc','3':'def','4':'ghi','5':'jkl','6':'mno','7':'pqr','8':'stu','9':'vwx'}
+        if not digits:
+            return []
+        nums = {'2':'abc','3':'def','4':'ghi','5':'jkl','6':'mno','7':'pqrs','8':'tuv','9':'wxyz'}
         inputDigits = []
         #Dynamically creating variables can be done with list or dictionary
         for i in digits:
@@ -418,6 +420,8 @@ class Solution:
             if i in '{[(':
                 S.append(i)
             else:
+                if not S:
+                    return False
                 x = S.pop()
                 if i == ']' and x == '[':
                     continue
@@ -427,7 +431,7 @@ class Solution:
                     continue
                 else:
                     return False
-        return True
+        return len(S) == 0
 
 # Q21 Merge Two Sorted Lists
 class Solution:

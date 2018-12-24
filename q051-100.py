@@ -280,7 +280,7 @@ class Solution:
         for i in range(1,n):
             for j in range(1,m):
                 matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
-        return matrix
+        return matrix[-1][-1]
 
 # Q63 Unique Paths II
 class Solution:
@@ -315,7 +315,7 @@ class Solution:
                     matrix[i][j] = 0
                 else:
                     matrix[i][j] = matrix[i][j-1] + matrix[i-1][j]
-        return matrix
+        return matrix[-1][-1]
 
 # Q64 Minimum Path Sum
 import copy

@@ -1,3 +1,27 @@
+# Q653 Two Sum IV - Input is a BST
+class Solution:
+    def findTarget(self, root, k):
+
+        def inorder_traversal(node):
+            if node.left:
+                tmp = inorder_traversal(node.left)
+                if tmp:
+                    return True
+
+            if node.val in lookup:
+                return True
+            else:
+                lookup[k-node.val] = node.val
+
+            if node.right:
+                tmp = inorder_traversal(node.right)
+                if tmp:
+                    return True
+
+        lookup = {}
+        result = inorder_traversal(root)
+        return result if result == True else False
+
 # Q675 Cut Off Trees for Golf Event
 # Time Limit Exceeded: Simple BFS
 class Solution:

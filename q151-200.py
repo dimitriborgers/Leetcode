@@ -53,30 +53,32 @@ class Solution:
         return minimum
 
 # Q155 Min Stack
+import heapq
+
 class MinStack:
 
     def __init__(self):
         self.stack = []
-        self.size = 0
-        self.min = float('inf')
+        self.min = []
 
     def __repr__(self):
         return '{}'.format(self.stack)
 
     def push(self, x):
         self.stack.append(x)
-        self.min = x if x < self.min else self.min
+        heapq.heappush(self.min,x)
 
     def pop(self):
-        return self.stack.pop()
+        tmp = self.stack.pop()
+        if tmp == self.min[0]:
+            heapq.heappop(self.min)
+        return tmp
 
     def top(self):
         return self.stack[-1]
 
     def getMin(self):
-        if not self.stack:
-            return 'Empty stack'
-        return self.min
+        return self.min[0]
 
 # Q156 Binary Tree Upside Down
 class TreeNode:
