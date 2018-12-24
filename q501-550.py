@@ -59,6 +59,29 @@ class Solution:
         #list1 = list1 + list2 reassigns list1 to new list
         return min((y - x) % (24 * 60) for x, y in zip(minutes, minutes[1:] + minutes[:1]))
 
+# Q543 Diameter of Binary Tree
+class Solution:
+    diameter = 0
+    def diameterOfBinaryTree(self, root):
+
+        def depth(root):
+            left = right = 0
+
+            if root.left:
+                left = depth(root.left) + 1
+            if root.right:
+                right = depth(root.right) + 1
+
+            path = left + right
+            self.diameter = max(self.diameter,path)
+            return max(left,right)
+
+        if not root:
+            return 0
+
+        depth(root)
+        return self.diameter
+
 # Q549 Binary Tree Longest Consecutive Sequence II
 class Solution:
     def longestConsecutive(self, root):

@@ -78,7 +78,7 @@ class Solution:
 import collections
 
 class Solution:
-    def levelOrder(self, root):
+    def zigzagLevelOrder(self, root):
         outcome = collections.defaultdict(list)
         self._helper(root,outcome)
         outcome = [[i for i in v] for k,v in outcome.items()]
@@ -861,38 +861,37 @@ class Solution:
 # Q139 Word Break
 class Solution:
     def wordBreak(self, s, wordDict):
-        if s == '':
-            return True
-        for i in wordDict:
-            if len(i) > len(s):
-                continue
-            if s[:len(i)] == i:
-                #Can't return directly since we have to wait for True
-                temp = self.wordBreak(s[len(i):],wordDict)
-                if temp == True:
-                    return True
-        return False
+        dp = [False] * (len(s) + 1)
+        dp[0] = True
+        for i in range(len(s)):
+            for j in range(i, len(s)):
+                if dp[i] and s[i: j+1] in wordDict:
+                    dp[j+1] = True
+
+        return dp[-1]
 
 # Q140 Word Break II
 class Solution:
-    output = []
     def wordBreak(self, s, wordDict):
-        self.wordBreakRec(s,wordDict)
-        return self.output
+        return self.helper(0, s, set(wordDict), {})
 
-    def wordBreakRec(self, s, wordDict,result=None):
-        if not result:
-            result = []
-        if s == '':
-            self.output.append(result)
-        for i in wordDict:
-            if len(i) > len(s):
-                continue
-            if s[:len(i)] == i:
-                result.append(i)
-                #if you don't do list(result), then result appended to ouput will have its items removed with pop()
-                self.wordBreakRec(s[len(i):],wordDict,list(result))
-                result.pop()
+    def helper(self, k, s, wordDict, cache):
+        if k == len(s):
+            return []
+        elif k in cache:
+            return cache[k]
+        else:
+            cache[k] = []
+            for i in range(k, len(s)):
+                left = s[k:i+1]
+                if left in wordDict:
+                    remainder = self.helper(i+1, s, wordDict, cache)
+                    if remainder:
+                        for x in remainder:
+                            cache[k].append(left + " " + x)
+                    elif (i == len(s)-1):
+                        cache[k].append(left)
+            return cache[k]
 
 # Q141 Linked List Cycle
 class Solution:

@@ -213,6 +213,19 @@ class RandomizedSet:
     def getRandom(self):
         return random.choice(self.nums)
 
+# Q387 First Unique Character in a String
+from collections import Counter
+
+class Solution:
+    def firstUniqChar(self, s):
+        count = {k for k,v in Counter(s).items() if v == 1}
+        if not count:
+            return -1
+        else:
+            for pos,e in enumerate(s):
+                if e in count:
+                    return pos
+
 # Q399 Evaluate Division
 import collections
 
