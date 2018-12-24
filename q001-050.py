@@ -11,97 +11,21 @@ class Solution:
         return None
 
 # Q2 Add Two Numbers
-class ListNode:
-    def __init__(self, x):
-        self.val = x
-        self.next = None
-
-import linked_list_mod as ll
-class LinkedList:
-    class ListNode:
-        __slots__ = 'value','next'
-
-        def __init__(self, _val, _next):
-            self.value = _val
-            self.next = _next
-
-    def __init__(self):
-        self.head = None
-        self.tail = None
-        self.size = 0
-
-    def __len__(self):
-        return self.size
-
-    def __repr__(self):
-        if self.size == 0:
-            return '[]'
-        outcome = []
-        current = self.head
-        while current:
-            outcome.append(current.value)
-            current = current.next
-        return "{}".format(outcome)
-
-    def addHead(self,value):
-        if self.head == None:
-            self.head = self.tail = self.ListNode(value, self.head)
-        else:
-            self.head = self.ListNode(value, self.head)
-        self.size += 1
-
-    def addTail(self,value):
-        if self.head == None:
-            self.head = self.tail = self.ListNode(value, self.head)
-        else:
-            self.tail.next = self.ListNode(value,None)
-            self.tail = self.tail.next
-        self.size += 1
-
-    def removeHead(self):
-        old_head = self.head
-        self.head = self.head.next
-        return old_head
-
-    def removeTail(self):
-        current = self.head
-        while current.next.next:
-            current = current.next
-        old_head = current.next
-        self.tail = current
-        self.tail.next = None
-        return old_head
-
 class Solution:
     def addTwoNumbers(self, l1, l2):
-        l3 = LinkedList()
-        remainder = 0
-        overflow = 0
-        while l1.head:
-            temp1 = l1.removeHead()
-            temp2 = l2.removeHead()
-
-            if remainder == 0:
-                if temp1.value+temp2.value > 9:
-                    if not temp1.next:
-                        overflow = 1
-                    remainder = 1
-                    addition = temp1.value+temp2.value-10
-                else:
-                    addition = temp1.value+temp2.value
-            else:
-                if temp1.value+temp2.value+remainder > 9:
-                    if not temp1.next:
-                        overflow = 1
-                    remainder = 1
-                    addition = temp1.value+temp2.value+remainder-10
-                else:
-                    addition = temp1.value+temp2.value+remainder
-
-            l3.addTail(addition)
-            if overflow == 1:
-                l3.addTail(1)
-            return (l3)
+        dummy = cur = ListNode(0)
+        carry = 0
+        while l1 or l2 or carry:
+            if l1:
+                carry += l1.val
+                l1 = l1.next
+            if l2:
+                carry += l2.val
+                l2 = l2.next
+            cur.next = ListNode(carry%10)
+            cur = cur.next
+            carry //= 10
+        return dummy.next
 
 # Q3 Longest Substring Without Repeating Characters
 class Solution:
@@ -506,21 +430,22 @@ class Solution:
         return True
 
 # Q21 Merge Two Sorted Lists
-def mergeLists(head1, head2):
-    temp = None
-    if head1 is None:
-        return head2
-    if head2 is None:
-        return head1
-    if head1.data <= head2.data:
-        #since you assign temp to head1, you actually change the structure of head1 list itself
-        #May need to use deepcopy if you don't want to alter original lists
-        temp = head1
-        temp.next = mergeLists(head1.next, head2)
-    else:
-        temp = head2
-        temp.next = mergeLists(head1, head2.next)
-    return temp
+class Solution:
+    def mergeTwoLists(self, l1, l2):
+        temp = None
+        if l1 is None:
+            return l2
+        if l2 is None:
+            return l1
+        if l1.val <= l2.val:
+            #since you assign temp to l1, you actually change the structure of l1 list itself
+            #May need to use deepcopy if you don't want to alter original lists
+            temp = l1
+            temp.next = self.mergeTwoLists(l1.next, l2)
+        else:
+            temp = l2
+            temp.next = self.mergeTwoLists(l1, l2.next)
+        return temp
 
 # Q22 Generate Parentheses
 class Solution:
@@ -762,15 +687,28 @@ class Solution2:
         return result
 
 # Q31 Next Permutation
+# if you have a for-loop with an else statement, the else statement is not triggered if you break out of the loop
 class Solution:
     def nextPermutation(self, nums):
-        for i in range(len(nums)-1,0,-1):
-            if nums[i] > nums[i-1]:
-                nums[i],nums[i-1] = nums[i-1],nums[i]
-                return nums
-        #if you do nums.sort(), it returns None instead because you are not creating a new list
-        #sorted returns a list. reversed returns a generator
-        return sorted(nums)
+        right = len(nums)-1
+        while nums[right] <= nums[right-1] and right-1 >=0:
+            right -= 1
+        if right == 0:
+            return self.reverse(nums,0,len(nums)-1)
+        pivot = right-1
+        successor = 0
+        for i in range(len(nums)-1,pivot,-1):
+            if nums[i] > nums[pivot]:
+                successor = i
+                break
+        nums[pivot],nums[successor] = nums[successor],nums[pivot]
+        self.reverse(nums,pivot+1,len(nums)-1)
+
+    def reverse(self,nums,l,r):
+        while l < r:
+            nums[l],nums[r] = nums[r],nums[l]
+            l += 1
+            r -= 1
 
 # Q32 Longest Valid Parentheses
 class Solution:

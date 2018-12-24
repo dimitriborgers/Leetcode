@@ -133,6 +133,21 @@ class Solution2:
         else:
             return -1
 
+# Q322 Coin Change
+class Solution:
+    def coinChange(self, coins, amount):
+        dp = [0] + [float('inf')] * amount
+
+        for i in range(1, amount + 1):
+            dp[i] = min([dp[i - coin] if i - coin >= 0 else float('inf') for coin in coins]) + 1
+
+        #[dp[amount], -1][dp[amount] == max_val] => [dp[amount], -1][0 or 1]
+        #if dp[amount] == max_val:
+            #[dp[amount], -1][1] => -1
+        #else:
+            #[dp[amount], -1][0] => dp[amount]
+        return [dp[amount], -1][dp[amount] == float('inf')]
+
 # Q325 Maximum Size Subarray Sum Equals k
 class Solution:
     def maxSubArrayLen(self, nums, k):

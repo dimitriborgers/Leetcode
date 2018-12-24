@@ -1156,30 +1156,22 @@ if __name__ == "__main__":
 # Q150 Evaluate Reverse Polish Notation
 class Solution:
     def evalRPN(self, tokens):
-        #make sure you understand examples given before continuing
-        total = 0
-        numbers = []
-        for i in range(len(tokens)):
-            if tokens[i] in '/+-*':
-                if tokens[i] == '/':
-                    denominator = numbers.pop()
-                    numerator = numbers.pop()
-                    # print(6//-12) -> -1 instead of 0
-                    if numerator > 0 and denominator < 0 and abs(denominator)>numerator:
-                        total = 0
-                    else:
-                        total = numerator // denominator
-                    numbers.append(total)
-                if tokens[i] == '+':
-                    total = numbers.pop() + numbers.pop()
-                    numbers.append(total)
-                if tokens[i] == '-':
-                    denominator = numbers.pop()
-                    total = numbers.pop() - denominator
-                    numbers.append(total)
-                if tokens[i] == '*':
-                    total = numbers.pop() * numbers.pop()
-                    numbers.append(total)
+        stack = []
+        for t in tokens:
+            if t not in ["+", "-", "*", "/"]:
+                stack.append(int(t))
             else:
-                numbers.append(int(tokens[i]))
-        return total
+                r, l = stack.pop(), stack.pop()
+                if t == "+":
+                    stack.append(l+r)
+                elif t == "-":
+                    stack.append(l-r)
+                elif t == "*":
+                    stack.append(l*r)
+                else:
+                    # print(6//-12) or print(-6/12) -> -1 instead of 0
+                    if l*r < 0 and l % r != 0:
+                        stack.append(l//r+1)
+                    else:
+                        stack.append(l//r)
+        return stack.pop()

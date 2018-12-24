@@ -308,7 +308,21 @@ class Solution:
 
 
 # Q246 Strobogrammatic Number
+class Solution:
+    def isStrobogrammatic(self, num):
+        dic = {'0':'0','1':'1','8':'8','6':'9','9':'6'}
 
+        def check(num):
+            if len(num) == 1:
+                return True if num[0] in {'0','1','8'} else False
+            elif len(num) == 2:
+                if num[0] in dic and num[-1] in dic and dic[num[0]] == num[-1] and dic[num[-1]] == num[0]:
+                    return True
+                return False
+            else:
+                return num[0] in dic and num[-1] in dic and dic[num[0]] == num[-1] and dic[num[-1]] == num[0] and check(num[1:-1])
+
+        return check(num)
 
 # Q247 Strobogrammatic Number II
 class Solution:

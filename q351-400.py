@@ -123,6 +123,19 @@ class Solution:
         return (x+y) >= z and z % g == 0
 
 # Q370 Range Addition
+class Solution:
+    def getModifiedArray(self, length, updates):
+        res = [0] * length
+        for start,end,inc in updates:
+            res[start] += inc
+            if end + 1 <= length - 1:
+                res[end+1] -= inc
+
+        sum = 0
+        for i in range(length):
+            sum += res[i]
+            res[i] = sum
+        return res
 
 # Q375 Guess Number Higher or Lower II
 class Solution:

@@ -93,6 +93,17 @@ class Solution:
             i -= 1
         return ''.join(S)
 
+# Q486 Predict the Winner
+class Solution:
+    def PredictTheWinner(self, nums):
+        def dp(nums,p1,p2,turn):
+            if not nums:
+                return p1 >= p2
+            if turn:
+                return dp(nums[1:],p1,p2+nums[0],False) and dp(nums[:-1],p1,p2+nums[-1],False)
+            return dp(nums[1:],p1+nums[0],p2,True) or dp(nums[:-1],p1+nums[-1],p2,True)
+        return dp(nums,0,0,False)
+
 # Q489 Robot Room Cleaner
 class Solution:
     def cleanRoom(self, robot):

@@ -105,6 +105,30 @@ class Solution2:
                     start -= 1
         return start // len(s)
 
+# Q419 Battleships in a Board
+class Solution:
+    def countBattleships(self, board):
+        prev, count = False,0
+
+        for r,row in enumerate(board):
+            for c,col in enumerate(row):
+                if board[r][c] == 'X' and ((r > 0 and board[r-1][c] == 'X') or (r < len(board)-1 and board[r+1][c] == 'X')):
+                    if r == 0 or board[r-1][c] != 'X':
+                        count += 1
+                else:
+                    if prev == True and board[r][c] != 'X':
+                        prev = False
+                        count += 1
+                    elif c == len(board[0])-1 and board[r][c] == 'X':
+                        prev = False
+                        count += 1
+                    elif board[r][c] == 'X':
+                        prev = True
+                    else:
+                        continue
+
+        return count
+
 # Q424 Longest Repeating Character Replacement
 #ord('A') - 65
 #ord('a') - 97

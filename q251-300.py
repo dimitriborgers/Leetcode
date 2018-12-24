@@ -1,3 +1,34 @@
+# Q253 Meeting Rooms II
+class Solution1:
+    def minMeetingRooms(self, intervals):
+        if not intervals:
+            return 0
+        array = [0]*(max(x.end for x in intervals)+1)
+        for interval in intervals:
+            array[interval.start] += 1
+            array[interval.end] -= 1
+
+        sum = 0
+        for i in range(len(array)):
+            sum += array[i]
+            array[i] = sum
+
+        return max(array)
+
+class Solution2:
+    def minMeetingRooms(self, intervals):
+        intervals.sort(key=lambda x:x.start)
+        heap = []
+        for i in intervals:
+            if heap and i.start >= heap[0]:
+                #Means two intervals can use the same room
+                #Pop and return the smallest item from the heap, and also push the new item.
+                heapq.heapreplace(heap, i.end)
+            else:
+                #New room is allocated
+                heapq.heappush(heap, i.end)
+        return len(heap)
+
 # Q265 Paint House II
 class Solution:
     def minCostII(self, costs):

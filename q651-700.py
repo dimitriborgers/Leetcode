@@ -1,3 +1,90 @@
+# Q675 Cut Off Trees for Golf Event
+# Time Limit Exceeded: Simple BFS
+class Solution:
+    def cutOffTree(self, forest):
+        if forest[0][0] == 0:
+            return -1
+
+        #To loop through a 2D array using list comprehension, think of it as going through the outer, then inner loop
+        ordered_trees = sorted([num for row in forest for num in row if num > 1])
+
+        if forest[0][0] == ordered_trees[0]:
+            forest[0][0] = 1
+            ordered_trees = ordered_trees[1:]
+
+        g_count = 0
+        location = (0,0)
+        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+
+        for tree in ordered_trees:
+            l_count = 0
+            level = [location]
+            visited = {location}
+            found = False
+
+            while level and not found:
+                next_level = []
+                for l in level:
+                    row = l[0]
+                    col = l[1]
+
+                    if forest[row][col] == tree:
+                        g_count += l_count
+                        location = (row,col)
+                        forest[row][col] = 1
+                        found = True
+                        break
+
+                    for d in directions:
+                        if 0 <= row+d[0] < len(forest) and 0 <= col+d[1] < len(forest[0]) and forest[row+d[0]][col+d[1]] > 0 and (row+d[0],col+d[1]) not in visited:
+                            #Always add to visited when first seeing it, not after it's already been added to level queue
+                            visited.add((row+d[0],col+d[1]))
+                            next_level.append((row+d[0],col+d[1]))
+
+                level = next_level
+                l_count += 1
+
+            if not found:
+                return -1
+
+        return g_count
+
+# Hadlock's algorithm
+class Solution:
+    def cutOffTree(self, forest):
+
+        def hadlocks(forest, sr, sc, tr, tc):
+            R, C = len(forest), len(forest[0])
+            processed = set()
+            deque = collections.deque([(0, sr, sc)])
+            while deque:
+                detours, r, c = deque.popleft()
+                if (r, c) not in processed:
+                    processed.add((r, c))
+                    if r == tr and c == tc:
+                        return abs(sr-tr) + abs(sc-tc) + 2*detours
+                    for nr, nc, closer in ((r-1, c, r > tr), (r+1, c, r < tr),
+                                           (r, c-1, c > tc), (r, c+1, c < tc)):
+                        if 0 <= nr < R and 0 <= nc < C and forest[nr][nc]:
+                            if closer:
+                                deque.appendleft((detours, nr, nc))
+                            else:
+                                deque.append((detours+1, nr, nc))
+            return -1
+
+        trees = sorted((v, r, c) for r, row in enumerate(forest)
+                       for c, v in enumerate(row) if v > 1)
+        sr = sc = ans = 0
+        for _, tr, tc in trees:
+            d = hadlocks(forest, sr, sc, tr, tc)
+            if d < 0:
+                return -1
+            ans += d
+            sr, sc = tr, tc
+        return ans
+
+
+
 # Q679 24 Game
 #self-made classes naturally have __hash__ function made for them
 #heapq methods don't work with self-made classes, unless you define le,lt,etc.
@@ -216,3 +303,25 @@ class Solution:
         return -1
 
 # Q694 Number of Distinct Islands
+class Solution:
+    def numDistinctIslands(self, grid):
+        seen = set()
+        #Instead of first creating the islands and then looping through them to get their shapes, explore does both at the same time.
+        def explore(r, c, r0, c0):
+            if (0 <= r < len(grid) and 0 <= c < len(grid[0]) and
+                    grid[r][c] and (r, c) not in seen):
+                seen.add((r, c))
+                shape.add((r - r0, c - c0))
+                explore(r+1, c, r0, c0)
+                explore(r-1, c, r0, c0)
+                explore(r, c+1, r0, c0)
+                explore(r, c-1, r0, c0)
+
+        shapes = set()
+        for r in range(len(grid)):
+            for c in range(len(grid[0])):
+                shape = set()
+                explore(r, c, r, c)
+                if shape:
+                    shapes.add(frozenset(shape))
+        return len(shapes)
