@@ -986,30 +986,24 @@ class Solution:
 # Q93 Restore IP Addresses
 class Solution:
     def restoreIpAddresses(self, s):
-        result = []
-        self.restoreIpAddressesRecur(result, s, 0, "", 0)
-        return result
+        res = []
+        self.dfs(s, 0, "", res)
+        return res
 
-    def restoreIpAddressesRecur(self, result, s, start, current, dots):
-        # pruning to improve performance
-        if (4 - dots) * 3 < len(s) - start or (4 - dots) > len(s) - start:
+    def dfs(self, s, index, path, res):
+        if index == 4:
+            if not s:
+                res.append(path[:-1])
             return
 
-        if start == len(s) and dots == 4:
-            #if you just write append(current), there is an extra dot at the end
-            result.append(current[:-1])
-        else:
-            for i in xrange(start, start + 3):
-                if len(s) > i and self.isValid(s[start:i + 1]):
-                    current += s[start:i + 1] + '.'
-                    self.restoreIpAddressesRecur(result, s, i + 1, current, dots + 1)
-                    #same thing as creating a temp of current before any changes are made and ressasgning current to it
-                    current = current[:-(i - start + 2)]
-
-    def isValid(self, s):
-        if len(s) == 0 or (s[0] == '0' and s != "0"):
-            return False
-        return int(s) < 256
+        for i in range(1, 4):
+            if i <= len(s):
+                if i == 1:
+                    self.dfs(s[i:], index+1, path+s[:i]+".", res)
+                elif i == 2 and s[0] != "0":
+                    self.dfs(s[i:], index+1, path+s[:i]+".", res)
+                elif i == 3 and s[0] != "0" and int(s[:3]) <= 255:
+                    self.dfs(s[i:], index+1, path+s[:i]+".", res)
 
 # Q94 Binary Tree Inorder Traversal
 class TreeNode:

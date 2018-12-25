@@ -19,6 +19,31 @@ class Solution:
         dfs("0" * (n-1))
         return "".join(ans) + "0" * (n-1)
 
+# Q763 Partition Labels
+from collections import defaultdict
+
+class Solution:
+    def partitionLabels(self, S):
+        lookup = defaultdict(list)
+        for pos,e in enumerate(S):
+            if e not in lookup:
+                lookup[e].append(pos)
+                lookup[e].append(pos)
+            else:
+                lookup[e][-1] = pos
+
+        merged = []
+        for k,v in lookup.items():
+            if len(merged) == 0:
+                merged.append(v)
+            else:
+                if v[0] < merged[-1][1] and v[1] > merged[-1][0]:
+                    merged[-1][1] = max(merged[-1][1],v[1])
+                else:
+                    merged.append(v)
+
+        return [end-start+1 for start,end in merged]
+
 # Q766 Toeplitz Matrix
 class Solution:
     def isToeplitzMatrix(self, matrix):

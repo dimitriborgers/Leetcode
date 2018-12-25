@@ -22,6 +22,36 @@ class Solution:
         result = inorder_traversal(root)
         return result if result == True else False
 
+# Q658 Find K Closest Elements
+import bisect
+
+class Solution:
+    def findClosestElements(self, arr, k, x):
+        location = bisect.bisect_left(arr,x)
+        bisect.insort(arr,x)
+        i = location - 1
+        j = location + 1
+        result = []
+        while k > 0:
+            if 0 <= i < len(arr) and 0 <= j < len(arr):
+                if abs(x - arr[i]) <= abs(x-arr[j]):
+                    result.append(arr[i])
+                    k -= 1
+                    i -= 1
+                else:
+                    result.append(arr[j])
+                    k -= 1
+                    j += 1
+            elif 0 <= i < len(arr):
+                result.append(arr[i])
+                k -= 1
+                i -= 1
+            else:
+                result.append(arr[j])
+                k -= 1
+                j += 1
+        return sorted(result)
+
 # Q675 Cut Off Trees for Golf Event
 # Time Limit Exceeded: Simple BFS
 class Solution:
@@ -349,3 +379,5 @@ class Solution:
                 if shape:
                     shapes.add(frozenset(shape))
         return len(shapes)
+
+# Q695 Max Area of Island
