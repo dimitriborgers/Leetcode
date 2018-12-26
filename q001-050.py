@@ -228,47 +228,26 @@ class Solution:
 
 # Q12 Integer to Roman
 class Solution:
-    def intToRoman(self, x):
-        outcome = ''
-        if x > 1000:
-            quotient,x = divmod(x,1000)
-            outcome += quotient*'M'
-        if x > 100:
-            quotient,x = divmod(x,100)
-            if quotient == 9:
-                outcome += 'CM'
-            elif quotient >= 5:
-                quotient %= 5
-                outcome += 'D' + quotient*'C'
-            elif quotient == 4:
-                outcome += 'CD'
-            else:
-                outcome += quotient*'C'
-        if x > 10:
-            quotient,x = divmod(x,10)
-            if quotient == 9:
-                outcome += 'XC'
-            elif quotient >= 5:
-                quotient %= 5
-                outcome += 'L' + quotient*'X'
-            elif quotient == 4:
-                outcome += 'XL'
-            else:
-                outcome += quotient*'X'
-        if x < 10:
-            if x == 9:
-                outcome += 'IX'
-            elif x >= 5:
-                x %= 5
-                outcome += 'V' + x*'I'
-            elif x == 4:
-                outcome += 'IV'
-            else:
-                outcome += x*'I'
-        return outcome
+    def intToRoman(self, num):
+        values = [ 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 ]
+        numerals = [ "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" ]
+        res = ""
+        for i, v in enumerate(values):
+            res += (num//v) * numerals[i]
+            num %= v
+        return res
 
 # Q13 Roman to Integer
-#Same Q12
+class Solution:
+    def romanToInt(self, s):
+        roman = {'M': 1000,'D': 500 ,'C': 100,'L': 50,'X': 10,'V': 5,'I': 1}
+        z = 0
+        for i in range(0, len(s) - 1):
+            if roman[s[i]] < roman[s[i+1]]:
+                z -= roman[s[i]]
+            else:
+                z += roman[s[i]]
+        return z + roman[s[-1]]
 
 # Q14 Longest Common Prefix
 class Solution:
@@ -991,9 +970,38 @@ class Solution:
         return set(list(itertools.permutations(nums,len(nums))))
 
 # Q48 Rotate Image
-class Solution:
+# Sort of In place
+class Solution1:
     def rotate(self, matrix):
-        return [list(reversed(x)) for x in zip(*matrix)]
+        #Difference between nums[:] = and nums = is that the latter doesn't replace elements in the original list.
+        #matrix[:] = zip(*matrix[::-1]) works as well
+        matrix[::] = zip(*matrix[::-1])
+        '''
+        >>> a = list(range(10))
+        >>> b = a
+        >>> a[:] = [0, 0, 0] # changes what a and b both refer to
+        >>> b
+        [0, 0, 0]
+
+        >>> a = list(range(10))
+        >>> b = a
+        >>> a = [0, 0, 0] # a now refers to a different list than b
+        >>> b
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        '''
+
+# 100% In place
+class Solution2:
+    def rotate(self, A):
+        n = len(A)
+        for i in range(n//2):
+            for j in range(n-n//2):
+                #complement operator
+                #~0 -> -1
+                #~1 -> -2
+                #~-5 -> 4
+                #using ~ in matrix indexing will give you opposite end of indexes given.
+                A[i][j], A[~j][i], A[~i][~j], A[j][~i] = A[~j][i], A[~i][~j], A[j][~i], A[i][j]
 
 # Q49 Group Anagrams
 import collections

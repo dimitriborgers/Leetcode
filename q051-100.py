@@ -471,30 +471,6 @@ class Solution:
 class Solution:
     #str class does not have del method
     def simplifyPath(self, path):
-        count = 0
-
-        word = []
-        directions = []
-        for i in path[::-1]:
-            if i == '.':
-                directions.append(i)
-                if len(directions) > 1:
-                    count += 1
-                    directions = []
-            elif  i == '/' and directions:
-                directions.pop()
-            elif i.isalpha():
-                word.append(i)
-            elif word and i == '/':
-                if count:
-                    word = []
-                    count -= 1
-                else:
-                    word.append(i)
-                    return ''.join(word[::-1])
-        return '/'
-
-    def simplifyPath2(self, path):
         stack, tokens = [], path.split("/")
         for token in tokens:
             if token == ".." and stack:

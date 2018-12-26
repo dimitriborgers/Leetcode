@@ -225,6 +225,8 @@ import bisect
 class Solution:
     def kEmptySlots(self, flowers, k):
         days = [0] * len(flowers)
+        #enumerate only works in left to right order
+        #you cannot use it with reversed(flowers) or flowers[::-1]
         for day, position in enumerate(flowers, 1):
             days[position - 1] = day
 
@@ -381,3 +383,15 @@ class Solution:
         return len(shapes)
 
 # Q695 Max Area of Island
+class Solution:
+    def maxAreaOfIsland(self, grid):
+        m, n = len(grid), len(grid[0])
+
+        def dfs(i, j):
+            if 0 <= i < m and 0 <= j < n and grid[i][j]:
+                grid[i][j] = 0
+                return 1 + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i + 1, j) + dfs(i, j - 1)
+            return 0
+
+        areas = [dfs(i, j) for i in range(m) for j in range(n) if grid[i][j]]
+        return max(areas) if areas else 0
