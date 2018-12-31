@@ -97,6 +97,46 @@ class RangeModule2:
         i, j = bl(self._X, left), br(self._X, right)
         self._X[i:j] = [left]*(i%2 == 1) + [right]*(j%2 == 1)
 
+# Q716 Max Stack
+class MaxStack:
+
+    def __init__(self):
+        self.stack = []
+        self.maxe = float('-inf')
+        self.maxi = None
+
+    def push(self, x):
+        self.stack.append(x)
+        if x >= self.maxe:
+            self.maxe = x
+            self.maxi = len(self.stack)-1
+
+    def pop(self):
+        element = self.stack.pop()
+        if element == self.maxe:
+            self.maxe = float('-inf')
+            for i in range(len(self.stack)-1,-1,-1):
+                if self.stack[i] > self.maxe:
+                    self.maxe = self.stack[i]
+                    self.maxi = i
+        return element
+
+    def top(self):
+        return self.stack[-1]
+
+    def peekMax(self):
+        return self.maxe
+
+    def popMax(self):
+        element = self.maxe
+        del self.stack[self.maxi]
+        self.maxe = float('-inf')
+        for i in range(len(self.stack)-1,-1,-1):
+            if self.stack[i] > self.maxe:
+                self.maxe = self.stack[i]
+                self.maxi = i
+        return element
+
 # Q727 Minimum Window Subsequence
 class Solution:
     def minWindow(self, S, T):

@@ -237,3 +237,31 @@ class Solution:
             length = max(length,i-j)
 
         return length
+
+# Q348 Design Tic-Tac-Toe
+class TicTacToe:
+
+    def __init__(self, n):
+        self.row = [0]*n
+        self.col = [0]*n
+        self.diag = 0
+        self.undiag = 0
+        self.n = n
+
+
+    def move(self, row, col, player):
+        order = 1 if player == 1 else -1
+
+        self.row[row] += order
+        self.col[col] += order
+
+        if row == col:
+            self.diag += order
+
+        if col == (self.n-1-row):
+            self.undiag += order
+
+        if abs(self.row[row]) == self.n or abs(self.col[col]) == self.n or abs(self.diag) == self.n or abs(self.undiag) == self.n:
+            return player
+        else:
+            return 0

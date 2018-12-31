@@ -625,31 +625,32 @@ class Solution:
 # Q79 Word Search
 class Solution:
     def exist(self, board, word):
-        n = len(board)
-        m = len(board[0])
-        locations = []
-        for i in range(n):
-            for j in range(m):
-                if board[i][j] == word[0]:
-                    locations.append((i,j))
-        for k,v in locations:
-            outcome = self._finder(board,word,0,k,v,m,n)
-            if outcome:
+
+        def dfs(word,r,c):
+            if not word:
                 return True
+
+            if 0 <= r < len(board) and 0 <= c < len(board[0]) and board[r][c] == word[0]:
+
+                #You don't want to add elements to a visited set because you're searching for a specific pattern, while a regular dfs just finds connected components in any order.
+                #Thus, if searching a specific pattern, you have to put the element back into the grid after every call.
+                tmp = board[r][c]
+                board[r][c] = '#'
+                #doing or statements is faster than any(list of calls)
+                result = dfs(word[1:],r+1,c) or dfs(word[1:],r-1,c) or dfs(word[1:],r,c+1) or dfs(word[1:],r,c-1)
+                board[r][c] = tmp
+                return result
+
+        for r,row in enumerate(board):
+            for c,col in enumerate(row):
+                if col == word[0]:
+                    #instead of doing:
+                    #res = dfs()
+                    #if res:
+                        #return True
+                    if dfs(word,r,c):
+                        return True
         return False
-
-    def _finder(self,board,word,letter,k,v,m,n):
-        if letter == len(word):
-            return True
-
-        if k < 0 or k >= n or v < 0 or v >= m or board[k][v] != word[letter]:
-            return False
-
-        result = self._finder(board,word,letter+1,k+1,v,m,n) or \
-                self._finder(board,word,letter+1,k-1,v,m,n) or \
-                self._finder(board,word,letter+1,k,v+1,m,n) or \
-                self._finder(board,word,letter+1,k,v-1,m,n)
-        return result
 
 # Q80 Remove Duplicates from Sorted Array II
 class Solution:

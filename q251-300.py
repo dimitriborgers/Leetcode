@@ -101,6 +101,23 @@ class Solution:
             return lookup[num]
         return lookup[(num // 10) * 10] + " " + lookup[num % 10]
 
+# Q284 Peeking Iterator
+class PeekingIterator:
+    def __init__(self, iterator):
+        self.iter = iterator
+        self.temp = self.iter.next() if self.iter.hasNext() else None
+
+    def peek(self):
+        return self.temp
+
+    def next(self):
+        ret = self.temp
+        self.temp = self.iter.next() if self.iter.hasNext() else None
+        return ret
+
+    def hasNext(self):
+        return self.temp is not None
+
 # Q285 Inorder Successor in BST
 class Solution:
     def inorderSuccessor(self, root, p):

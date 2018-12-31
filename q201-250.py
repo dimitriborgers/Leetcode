@@ -196,7 +196,17 @@ class Solution:
         return False
 
 # Q221 Maximal Square
-
+class Solution:
+    def maximalSquare(self, matrix):
+        dp, maxArea = [[0]*len(matrix[0]) for _ in range(len(matrix))], 0
+        for r,row in enumerate(matrix):
+            for c,col in enumerate(row):
+                if r == 0 or c == 0:
+                    dp[r][c] = int(col)
+                elif int(col) == 1:
+                    dp[r][c] = min(dp[r - 1][c - 1], dp[r][c - 1], dp[r - 1][c]) + 1
+                maxArea = max(maxArea, dp[r][c])
+        return maxArea*maxArea
 
 # Q222 Count Complete Tree Nodes
 class Solution:
