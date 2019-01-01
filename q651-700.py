@@ -358,6 +358,24 @@ class Solution:
                 return q+i
         return -1
 
+# Q692 Top K Frequent Words
+from collections import Counter
+
+class Solution1:
+    #there is no built-in way to sort on two elements with one ordering being reverse
+    #however, if one element is an integer, just sort them on negative ints
+    def topKFrequent(self, words, k):
+        count = [(k,v) for k,v in collections.Counter(words).items()]
+        return [k for k,v in sorted(count,key = lambda x:(-x[1],x[0]))][:k]
+
+#heap
+class Solution2:
+    def topKFrequent(self, words, k):
+        count = collections.Counter(words)
+        heap = [(-freq, word) for word, freq in count.items()]
+        heapq.heapify(heap)
+        return [heapq.heappop(heap)[1] for _ in xrange(k)]
+
 # Q694 Number of Distinct Islands
 class Solution:
     def numDistinctIslands(self, grid):

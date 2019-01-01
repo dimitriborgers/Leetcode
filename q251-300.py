@@ -1,3 +1,15 @@
+# Q252 Meeting Rooms
+class Solution:
+    def canAttendMeetings(self, intervals):
+        #if intervals.sort() doesn't work, just specify the key to use
+        intervals.sort(key=lambda x: x.start)
+
+        for i in range(1, len(intervals)):
+            if intervals[i].start < intervals[i-1].end:
+                return False
+
+        return True
+
 # Q253 Meeting Rooms II
 class Solution1:
     def minMeetingRooms(self, intervals):
@@ -183,6 +195,32 @@ class ValidWordAbbr1:
         else:
             return word[0] + str(len(word)-2) + word[-1]
 
+# Q289 Game of Life
+class Solution:
+    def gameOfLife(self, board):
+
+        directions = [(1,0),(1,1),(0,1),(-1,1),(-1,0),(-1,-1),(0,-1),(1,-1)]
+
+        def check(r,c):
+            return 0<=r<len(board) and 0<=c<len(board[0])
+
+        def outcome(r,c):
+            total = sum(board[r+d[0]][c+d[1]] for d in directions if check(r+d[0],c+d[1]))
+            if board[r][c] == 1:
+                if total <= 1:
+                    return 0
+                elif 2 <= total <= 3:
+                    return 1
+                elif total >= 4:
+                    return 0
+            else:
+                if total == 3:
+                    return 1
+                else:
+                    return 0
+
+        #how to create a 2d array using list comprehension
+        board[:] = [[outcome(r,c) for c,col in enumerate(row)] for r,row in enumerate(board)]
 
 # Q295 Find Median from Data Stream
 import bisect

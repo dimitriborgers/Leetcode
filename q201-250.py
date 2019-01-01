@@ -28,7 +28,66 @@ class Solution:
 
 
 # Q207 Course Schedule
+# DFS - very slow
+import collections
 
+class Solution1:
+    def canFinish(self, numCourses, prerequisites):
+        def dfs(vertex):
+            if vertex in lookup:
+                #if you don't do above if statement, then lookup will add any vertex that it finds in lookup[vertex] that was not already part of lookup. So the dictionary changes size as you loop.
+                for adjacent in lookup[vertex]:
+                    if adjacent == target:
+                        return True
+                    if adjacent not in visited:
+                        visited.add(adjacent)
+                        tmp = dfs(adjacent)
+                        if tmp:
+                            return tmp
+
+            return False
+
+        lookup = collections.defaultdict(list)
+        for edge in prerequisites:
+            lookup[edge[0]].append(edge[1])
+
+        for vertex in lookup:
+            target = vertex
+            visited = {vertex}
+            if dfs(vertex):
+                return False
+
+        return True
+
+# Topological Sort
+class Solution:
+    def canFinish(self, n, edges):
+        # construct graph
+        graph = {i: set() for i in range(n)}
+        in_degrees = {i:0 for i in range(n)}
+
+        for edge in edges:
+            graph[edge[0]].add(edge[1])
+            in_degrees[edge[1]] += 1
+
+        # init var
+        q = collections.deque()
+        visited = set()
+
+        # find nodes whose in degree == 0
+        for index, in_degree in in_degrees.items():
+            if in_degree == 0:
+                q.append(index)
+
+        # loop all nodes whose in degree == 0
+        while q:
+            index = q.popleft()
+            visited.add(index)
+            for g in graph[index]:
+                in_degrees[g] -= 1
+                if in_degrees[g] == 0:
+                    q.append(g)
+        return len(visited) == n
 
 # Q208 Implement Trie (Prefix Tree)
 class Trie:
@@ -97,7 +156,48 @@ class Solution:
 
 
 # Q215 Kth Largest Element in an Array
+# nlgn time
+class Solution1:
+    def findKthLargest(self, nums, k):
+        return sorted(nums)[::-1][k-1]
 
+# n time
+class Solution2:
+    def findKthLargest(self, nums, k):
+        # convert the kth largest to smallest
+        return self.findKthSmallest(nums, len(nums)+1-k)
+
+    def findKthSmallest(self, nums, k):
+        if nums:
+            pos = self.partition(nums, 0, len(nums)-1)
+            if k > pos+1:
+                return self.findKthSmallest(nums[pos+1:], k-pos-1)
+            elif k < pos+1:
+                return self.findKthSmallest(nums[:pos], k)
+            else:
+                return nums[pos]
+
+    def partition(self, nums, l, r):
+        low = l
+        while l < r:
+            if nums[l] < nums[r]:
+                nums[l], nums[low] = nums[low], nums[l]
+                low += 1
+            l += 1
+        nums[low], nums[r] = nums[r], nums[low]
+        return low
+
+# n time
+import heapq
+
+class Solution:
+    def findKthLargest(self, nums, k):
+        heapq.heapify(nums)
+
+        for _ in range(len(nums)-k):
+            heapq.heappop(nums)
+
+        return nums[0]
 
 # Q216 Combination Sum III
 
@@ -313,8 +413,28 @@ class Solution:
 
 
 # Q240 Search a 2D Matrix II
+class Solution:
+    def searchMatrix(self, matrix, target):
+        if len(matrix) == 0 or len(matrix[0]) == 0:
+            return False
 
-#2Q41 Different Ways to Add Parentheses
+        height = len(matrix)
+        width = len(matrix[0])
+
+        row = height-1
+        col = 0
+
+        while col < width and row >= 0:
+            if matrix[row][col] > target:
+                row -= 1
+            elif matrix[row][col] < target:
+                col += 1
+            else:
+                return True
+
+        return False
+
+# Q241 Different Ways to Add Parentheses
 
 
 # Q242 Valid Anagram

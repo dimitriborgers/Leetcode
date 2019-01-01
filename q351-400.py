@@ -137,6 +137,27 @@ class Solution:
             res[i] = sum
         return res
 
+# Q373 Find K Pairs with Smallest Sums
+from itertools import product
+
+class Solution1:
+    def kSmallestPairs(self, nums1, nums2, k):
+        sums = [(sum(e),e) for e in list(product(nums1,nums2))]
+        return [v for k,v in sorted(sums)][:k]
+
+#heap
+class Solution2:
+    def kSmallestPairs(self, nums1, nums2, k, heap=[]):
+        for n1 in nums1:
+            for n2 in nums2:
+                if len(heap) < k: heapq.heappush(heap, (-n1-n2, [n1, n2]))
+                else:
+                    if heap and -heap[0][0] > n1 + n2:
+                        heapq.heappop(heap)
+                        heapq.heappush(heap, (-n1-n2, [n1, n2]))
+                    else: break
+        return [heapq.heappop(heap)[1] for _ in range(k) if heap]
+
 # Q375 Guess Number Higher or Lower II
 class Solution:
     def getMoneyAmount(self, n):

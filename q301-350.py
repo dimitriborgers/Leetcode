@@ -238,6 +238,13 @@ class Solution:
 
         return length
 
+# Q347 Top K Frequent Elements
+from collections import Counter
+
+class Solution:
+    def topKFrequent(self, nums, k):
+        return [k for k, v in Counter(nums).most_common(k)]
+
 # Q348 Design Tic-Tac-Toe
 class TicTacToe:
 

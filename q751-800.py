@@ -156,6 +156,23 @@ class Solution:
                 return False
         return True
 
+# Q783 Minimum Distance Between BST Nodes
+class Solution:
+    def minDiffInBST(self, root):
+        def dfs(node):
+            #have to use self.ans and self.prev because you are both using and re assigning these values in the method
+            if node:
+                dfs(node.left)
+                self.ans = min(self.ans, node.val - self.prev)
+                self.prev = node.val
+                dfs(node.right)
+
+        #instance methods can even be declared within a method
+        self.prev = float('-inf')
+        self.ans = float('inf')
+        dfs(root)
+        return self.ans
+
 # Q787 Cheapest Flights Within K Stops
 import heapq,collections
 

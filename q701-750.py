@@ -218,6 +218,22 @@ class MyCalendarTwo:
         self.calendar.append((start, end))
         return True
 
+# Q733 Flood Fill
+class Solution:
+    def floodFill(self, image, sr, sc, newColor):
+
+        def dfs(r,c,color,visited=set()):
+            if 0<=r<len(image) and 0<=c<len(image[0]) and (r,c) not in visited and image[r][c] == color:
+                visited.add((r,c))
+                image[r][c] = newColor
+                dfs(r+1,c,color,visited)
+                dfs(r-1,c,color,visited)
+                dfs(r,c+1,color,visited)
+                dfs(r,c-1,color,visited)
+
+        dfs(sr,sc,image[sr][sc])
+        return image
+
 # Q734 Sentence Similarity
 import collections
 
