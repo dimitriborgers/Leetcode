@@ -131,7 +131,57 @@ class Trie:
 
 
 # Q212 Word Search II
+class TrieNode():
+    def __init__(self):
+        self.children = collections.defaultdict(TrieNode)
+        self.isWord = False
 
+class Trie():
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for w in word:
+            node = node.children[w]
+        node.isWord = True
+
+    def search(self, word):
+        node = self.root
+        for w in word:
+            node = node.children.get(w)
+            if not node:
+                return False
+        return node.isWord
+
+class Solution:
+    def findWords(self, board, words):
+        res = []
+        trie = Trie()
+        node = trie.root
+        for w in words:
+            trie.insert(w)
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                self.dfs(board, node, i, j, "", res)
+        return res
+
+    def dfs(self, board, node, i, j, path, res):
+        if node.isWord:
+            res.append(path)
+            node.isWord = False
+        if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]):
+            return
+        tmp = board[i][j]
+        node = node.children.get(tmp)
+        if not node:
+            return
+        board[i][j] = "#"
+        self.dfs(board, node, i+1, j, path+tmp, res)
+        self.dfs(board, node, i-1, j, path+tmp, res)
+        self.dfs(board, node, i, j-1, path+tmp, res)
+        self.dfs(board, node, i, j+1, path+tmp, res)
+        board[i][j] = tmp
 
 # Q213 House Robber II
 class Solution:
@@ -410,7 +460,20 @@ class Solution:
         return output
 
 # Q239 Sliding Window Maximum
-
+class Solution:
+    def maxSlidingWindow(self, nums, k):
+        queue = collections.deque()
+        result = []
+        for pos,e in enumerate(nums):
+            while queue and nums[queue[-1]] < e:
+                queue.pop()
+            queue += pos,
+            if queue[0] == pos - k:
+                queue.popleft()
+            if pos >= k - 1:
+                #this same as result.append(nums[queue[0]])
+                result += nums[queue[0]],
+        return result
 
 # Q240 Search a 2D Matrix II
 class Solution:
@@ -534,5 +597,4 @@ class Solution:
 
 
 # Q250 Count Univalue Subtrees
-
 

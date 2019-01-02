@@ -194,6 +194,25 @@ class Solution:
                     heapq.heappush(heap, (p + f[i][j], j, k - 1))
         return -1
 
+# Q793 Preimage Size of Factorial Zeroes Function
+class Solution:
+    def count(self, num):
+        cnt = 0
+        while num:
+            cnt += num // 5
+            num //= 5
+        return cnt
+
+    def preimageSizeFZF(self, K):
+        l, r = 0, 2 ** 63 - 1
+        while l < r:
+            mid = (l + r) // 2
+            if self.count(mid) < K:
+                l = mid + 1
+            else:
+                r = mid
+        return 5 - l % 5 if self.count(l) == K else 0
+
 # Q799 Champagne Tower
 class Solution:
     def champagneTower(self, poured, query_row, query_glass):

@@ -257,3 +257,35 @@ class Solution2:
         return not seen
 
 # Q449 Serialize and Deserialize BST
+from collections import deque
+
+class Codec:
+
+    def serialize(self, root):
+        queue = deque([root])
+        result = []
+        while queue:
+            cur = queue.popleft()
+            if not cur:
+                result.append(None)
+            else:
+                result.append(cur.val)
+                queue.append(cur.left)
+                queue.append(cur.right)
+        return str(result)
+
+
+    def deserialize(self, data):
+        data = deque(i.strip() for i in data[1:-1].split(','))
+        val = data.popleft()
+        root = None if val == 'None' else TreeNode(int(val))
+        queue = deque([root])
+        while queue:
+            cur = queue.popleft()
+            if cur:
+                a,b = data.popleft(), data.popleft()
+                cur.left = None if a == 'None' else TreeNode(int(a))
+                cur.right = None if b == 'None' else TreeNode(int(b))
+                queue.append(cur.left)
+                queue.append(cur.right)
+        return root
