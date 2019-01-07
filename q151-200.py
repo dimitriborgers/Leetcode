@@ -489,35 +489,23 @@ class BSTIterator:
         return node.val
 
 # Q174 Dungeon Game
-import copy
-
 class Solution:
     def calculateMinimumHP(self, dungeon):
-        return abs(self.calculateMinimumHPRec(dungeon,0,0,dungeon[0][0]))+1
+        if not dungeon:
+            return
 
-    def calculateMinimumHPRec(self,dungeon,i,j,minimum):
-        print(dungeon,minimum)
-        right = bottom = float('-inf')
-        prev_min = minimum
+        r, c = len(dungeon), len(dungeon[0])
+        dp = [[0 for _ in range(c)] for _ in range(r)]
+        dp[-1][-1] = max(1, 1-dungeon[-1][-1])
 
-        if j < len(dungeon[0])-1:
-            dungeon[i][j+1] += dungeon[i][j]
-            minimum = dungeon[i][j+1] if dungeon[i][j+1] < minimum else minimum
-            right = self.calculateMinimumHPRec(copy.deepcopy(dungeon),i,j+1,minimum)
-            dungeon[i][j+1] -= dungeon[i][j]
-
-        minimum = prev_min
-
-        if i < len(dungeon)-1:
-            dungeon[i+1][j] += dungeon[i][j]
-            minimum = dungeon[i+1][j] if dungeon[i+1][j] < minimum else minimum
-            bottom = self.calculateMinimumHPRec(copy.deepcopy(dungeon),i+1,j,minimum)
-            dungeon[i+1][j] -= dungeon[i][j]
-
-        if i == len(dungeon)-1 and j == len(dungeon[0])-1:
-            return minimum
-
-        return max(right,bottom)
+        for i in range(c-2, -1, -1):
+            dp[-1][i] = max(1, dp[-1][i+1]-dungeon[-1][i])
+        for i in range(r-2, -1, -1):
+            dp[i][-1] = max(1, dp[i+1][-1]-dungeon[i][-1])
+        for i in range(r-2, -1, -1):
+            for j in range(c-2, -1, -1):
+                dp[i][j] = max(1, min(dp[i+1][j], dp[i][j+1])-dungeon[i][j])
+        return dp[0][0]
 
 # Q175 Combine Two Tables
 SELECT P.FirstName, P.LastName,A.City,A.State

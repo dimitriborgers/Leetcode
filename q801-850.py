@@ -320,6 +320,73 @@ class Solution:
             if pair[0] not in banned:
                 return pair[0]
 
+# Q827 Making A Large Island
+from collections import Counter
+
+class DSU:
+    def __init__(self,N):
+        self.parent = [i for i in range(N)]
+        self.rank = [1]*N
+
+    def find(self,e):
+        if self.parent[e] != e:
+            self.parent[e] = self.find(self.parent[e])
+        return self.parent[e]
+
+    def union(self,left,right):
+        l = self.find(left)
+        r = self.find(right)
+
+        if l != r:
+            if self.rank[l] > self.rank[r]:
+                self.parent[r] = l
+                self.rank[l] += self.rank[r]
+            elif self.rank[l] < self.rank[r]:
+                self.parent[l] = r
+                self.rank[r] += self.rank[l]
+            else:
+                self.parent[r] = l
+                self.rank[l] += self.rank[r]
+
+class Solution:
+    directions = [(0,1),(0,-1),(1,0),(-1,0)]
+
+    def pos(self,r,c,lc):
+        return (r*lc)+c
+
+    def largestIsland(self,grid):
+        lr = len(grid)
+        lc = len(grid[0])
+
+        def check(r,c):
+            if 0 <= r < lr and 0 <= c < lc and grid[r][c]:
+                return True
+
+        dsu = DSU(len(grid)*len(grid[0]))
+        for r,row in enumerate(grid):
+            for c,col in enumerate(row):
+                for dr,dc in Solution.directions:
+                    if grid[r][c] and check(r+dr,c+dc):
+                        dsu.union(self.pos(r,c,lc),self.pos(r+dr,c+dc,lc))
+                        dsu.find(self.pos(r,c,lc))
+
+        maxIsland = max(dsu.rank)
+        for r,row in enumerate(grid):
+            for c,col in enumerate(row):
+                if not grid[r][c]:
+                    grid[r][c] = 1
+                    tmp_par = list(dsu.parent)
+                    tmp_rank = list(dsu.rank)
+                    for dr,dc in Solution.directions:
+                        if check(r+dr,c+dc):
+                            dsu.union(self.pos(r,c,lc),self.pos(r+dr,c+dc,lc))
+                    maxIsland = max(maxIsland,max(dsu.rank))
+                    dsu.parent = tmp_par
+                    dsu.rank = tmp_rank
+                    grid[r][c] = 0
+
+        return maxIsland
+
 # Q833 Find And Replace in String
 class Solution:
     def findReplaceString(self, S, indexes, sources, targets):
