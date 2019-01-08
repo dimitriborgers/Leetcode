@@ -453,7 +453,60 @@ class Solution:
 
 
 # Q236 Lowest Common Ancestor of a Binary Tree
+# Using Recursion
+class Solution:
+    LCA = None
+    def lowestCommonAncestor(self, root, p, q):
+        def recurse_tree(node):
+            if not node:
+                return False
 
+            left = recurse_tree(node.left)
+            right = recurse_tree(node.right)
+
+            #Instead of:
+            #if node == p:
+                #mid = True
+            #if node == q:
+                #mid == True
+            mid = (node == p or node == q)
+
+            #Use True and False as numbers to check solution
+            if mid + left + right >= 2:
+                Solution.LCA = node
+
+            return mid or left or right
+
+        recurse_tree(root)
+        return Solution.LCA
+
+# Iterative Using Parent Pointers
+class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        stack = [root]
+        #Two ways of adding parent reference
+        #One is to add node.par as you go down
+        #Two is to create a dict of parents. Can only be used if unique node values
+        parent = {root: None}
+
+        while p not in parent or q not in parent:
+            node = stack.pop()
+
+            if node.left:
+                parent[node.left] = node
+                stack.append(node.left)
+            if node.right:
+                parent[node.right] = node
+                stack.append(node.right)
+
+        ancestors = set()
+        while p:
+            ancestors.add(p)
+            p = parent[p]
+        while q not in ancestors:
+            q = parent[q]
+
+        return q
 
 # Q237 Delete Node in a Linked List
 

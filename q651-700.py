@@ -1,3 +1,17 @@
+# Q652 Find Duplicate Subtrees
+class Solution:
+    def findDuplicateSubtrees(self, root):
+        def trv(node):
+            if not node:
+                return "null"
+            struct = "%s,%s,%s" % (str(node.val), trv(node.left), trv(node.right))
+            nodes[struct].append(node)
+            return struct
+
+        nodes = collections.defaultdict(list)
+        trv(root)
+        return [nodes[struct][0] for struct in nodes if len(nodes[struct]) > 1]
+
 # Q653 Two Sum IV - Input is a BST
 class Solution:
     def findTarget(self, root, k):
