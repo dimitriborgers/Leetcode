@@ -584,30 +584,37 @@ class Solution:
         return nums
 
 # Q76 Minimum Window Substring
+from collections import defaultdict,Counter
+
 class Solution:
-    #infinity
-    #minimum = float("inf")
     def minWindow(self, s, t):
-        i = 0
-        globalWindow = '0'*len(s)
-        while i < len(s)-len(t):
-            if s[i] not in t:
-                i += 1
-            else:
-                seq = set(t)
-                seq.remove(s[i])
-                j = i+1
-                while seq and j < len(s):
-                    if s[j] in seq:
-                        seq.remove(s[j])
-                    j += 1
-                if not seq:
-                    localWindow = s[i:j]
-                else:
-                    localWindow = '0'*len(s)
-                i += 1
-            globalWindow = localWindow if len(localWindow) < len(globalWindow) else globalWindow
-        return globalWindow if globalWindow != '0'*len(s) else ''
+        if not t or not s:
+            return ""
+
+        dict_t = Counter(t)
+        required = len(dict_t)
+        l, r = 0, 0
+        formed = 0
+        window_counts = defaultdict(int)
+        ans = float("inf"), None, None
+
+        while r < len(s):
+            character = s[r]
+            window_counts[character] += 1
+
+            if character in dict_t and window_counts[character] == dict_t[character]:
+                formed += 1
+
+            while l <= r and formed == required:
+                character = s[l]
+                if r - l + 1 < ans[0]:
+                    ans = (r - l + 1, l, r)
+                window_counts[character] -= 1
+                if character in dict_t and window_counts[character] < dict_t[character]:
+                    formed -= 1
+                l += 1
+            r += 1
+        return "" if ans[0] == float("inf") else s[ans[1] : ans[2] + 1]
 
 # Q77 Combinations
 import itertools

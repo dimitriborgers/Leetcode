@@ -177,6 +177,23 @@ class Solution:
 
         return (len(lookup))
 
+# Q937 Reorder Log Files
+class Solution:
+    def reorderLogFiles(self, logs):
+        merged_l = []
+        merged_n = []
+
+        for log in logs:
+            tmp = log.split(' ',1)
+            if tmp[1][0] in '0123456789':
+                merged_n.append(log)
+            else:
+                merged_l.append([tmp[0],tmp[1]])
+        merged_l.sort(key=lambda x:(x[1],x[0]))
+        merged_l = [' '.join(i) for i in merged_l]
+
+        return merged_l+merged_n
+
 # Q939 Minimum Area Rectangle
 import collections
 

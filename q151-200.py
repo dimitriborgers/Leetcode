@@ -490,6 +490,7 @@ class BSTIterator:
 
 # Q174 Dungeon Game
 class Solution:
+    #if value you are looking for is at the end of a dp table, see if problem can be solved by iterating backwards through grid
     def calculateMinimumHP(self, dungeon):
         if not dungeon:
             return
