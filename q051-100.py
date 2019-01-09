@@ -49,13 +49,16 @@ class Solution:
 # Q53 Maximum Subarray
 class Solution:
     def maxSubArray(self, nums):
-        if max(nums) < 0:
-            return max(nums)
-        global_max, local_max = 0, 0
-        for x in nums:
-            local_max = max(0, local_max + x)
-            global_max = max(global_max, local_max)
-        return global_max
+        lmax = gmax = nums[0]
+        for pos,e in enumerate(nums):
+            if pos > 0:
+                if e > lmax and lmax < 0:
+                    lmax = e
+                else:
+                    lmax += e
+                gmax = max(gmax,lmax)
+
+        return gmax
 
 # Q54 Spiral Matrix
 class Solution:

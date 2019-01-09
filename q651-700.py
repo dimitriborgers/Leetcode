@@ -4,6 +4,7 @@ class Solution:
         def trv(node):
             if not node:
                 return "null"
+            #Two ways of printing strings with variables
             struct = "%s,%s,%s" % (str(node.val), trv(node.left), trv(node.right))
             nodes[struct].append(node)
             return struct

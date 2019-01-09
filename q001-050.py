@@ -145,28 +145,19 @@ class Solution:
 
 # Q8 String to Integer (atoi)
 class Solution:
-    def myAtoi(self, string):
-        string = string.strip()
-        if not string:
-            return False
-        outcome = 0
-        if string[0] not in '-0123456789':
-            return False
-        else:
-            negative = True if string[0] == '-' else False
-            if negative:
-                for i in range(1,len(string)):
-                    if string[i] in '0123456789':
-                        outcome = outcome * 10 + int(string[i])
-                    else:
-                        break
-            else:
-                for i in range(len(string)):
-                    if string[i] in '0123456789':
-                        outcome = outcome * 10 + int(string[i])
-                    else:
-                        break
-        return outcome if not negative else -outcome
+    def myAtoi(self, s):
+        ls = list(s.strip())
+        if not ls:
+            return 0
+
+        sign = -1 if ls[0] == '-' else 1
+        if ls[0] in ['-','+']:
+            del ls[0]
+        ret, i = 0, 0
+        while i < len(ls) and ls[i].isdigit():
+            ret = ret*10 + ord(ls[i]) - ord('0')
+            i += 1
+        return max(-2**31, min(sign * ret,2**31-1))
 
 # Q9 Palindrome Number
 class Solution:

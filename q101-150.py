@@ -510,39 +510,29 @@ class Solution:
 
 # Q126 Word Ladder II
 class Solution:
-    def findLadders(self, start, end, dic):
-        dic.add(start)
-        dic.add(end)
+    def findLadders(self, beginWord, endWord, wordList):
+        wordList = set(wordList)
+        res = []
+        layer = {}
+        layer[beginWord] = [[beginWord]]
 
-        result, cur, visited, found, trace = [], [start], set([start]), False, {word: [] for word in dic}
+        # bfs using levels
+        while layer:
+            newlayer = collections.defaultdict(list)
+            for w in layer:
+                if w == endWord:
+                    res.extend(k for k in layer[w])
+                else:
+                    for i in range(len(w)):
+                        for c in 'abcdefghijklmnopqrstuvwxyz':
+                            neww = w[:i]+c+w[i+1:]
+                            if neww in wordList:
+                                newlayer[neww]+=[j+[neww] for j in layer[w]]
 
-        while cur and not found:
-            for word in cur:
-                visited.add(word)
+            wordList -= set(newlayer)
+            layer = newlayer
 
-            next = set()
-            for word in cur:
-                for i in range(len(word)):
-                    for j in 'abcdefghijklmnopqrstuvwxyz':
-                        candidate = word[:i] + j + word[i + 1:]
-                        if candidate not in visited and candidate in dic:
-                            if candidate == end:
-                                found = True
-                            next.add(candidate)
-                            trace[candidate].append(word)
-            cur = next
-
-        if found:
-            self.backtrack(result, trace, [], end)
-
-        return result
-
-    def backtrack(self, result, trace, path, word):
-        if not trace[word]:
-            result.append([word] + path)
-        else:
-            for prev in trace[word]:
-                self.backtrack(result, trace, [word] + path, prev)
+        return res
 
 # Q127 Word Ladder
 class Solution:

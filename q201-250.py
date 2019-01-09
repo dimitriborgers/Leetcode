@@ -125,7 +125,28 @@ class Trie:
 
 
 # Q210 Course Schedule II
+from collections import defaultdict,deque
 
+class Solution:
+    def findOrder(self, numCourses, prerequisites):
+        graph = defaultdict(list)
+        indegree = {key:0 for key in range(numCourses)}
+
+        for post, pre in prerequisites:
+            graph[pre].append(post)
+            indegree[post] += 1
+
+        queue = deque([c for c, deg in indegree.items() if deg == 0])
+        seq = []
+        while queue:
+            pre = queue.popleft()
+            seq.append(pre)
+            for post in graph[pre]:
+                indegree[post] -= 1
+                if indegree[post] == 0:
+                    queue.append(post)
+
+        return seq if len(seq) == len(indegree) else []
 
 # Q211 Add and Search Word - Data structure design
 
