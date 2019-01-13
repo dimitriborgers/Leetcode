@@ -152,8 +152,6 @@ class Solution:
             sr, sc = tr, tc
         return ans
 
-
-
 # Q679 24 Game
 #self-made classes naturally have __hash__ function made for them
 #heapq methods don't work with self-made classes, unless you define le,lt,etc.

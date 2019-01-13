@@ -321,35 +321,20 @@ class Solution:
         return matrix[-1][-1]
 
 # Q64 Minimum Path Sum
-import copy
-
 class Solution:
     def minPathSum(self, grid):
-        #global variables don't need to be passed into other functions
-        global n
-        n = len(grid)
-        global m
-        m = len(grid[0])
-        #list(grid) does not work in this situation because grid is 2d array, and list(grid) would only make a new reference to the outer array, but the inner arrays would still be linked. deepcopy replaces all links.
-        result = self._minPathFinder(copy.deepcopy(grid),0,0,0)
-        return result
+        for pos,e in enumerate(grid[0]):
+            if pos:
+                grid[0][pos] += grid[0][pos-1]
+        for pos,e in enumerate(grid):
+            if pos:
+                grid[pos][0] += grid[pos-1][0]
 
-    def _minPathFinder(self,grid,x,y,val):
-        grid[x][y] += val
+        for i in range(1,len(grid)):
+            for j in range(1,len(grid[0])):
+                grid[i][j] += min(grid[i-1][j],grid[i][j-1])
 
-        if x == n-1 and y == m-1:
-            return grid[x][y]
-
-        if x < n-1 and y < m-1:
-            down = self._minPathFinder(copy.deepcopy(grid),x+1,y,grid[x][y])
-            right = self._minPathFinder(copy.deepcopy(grid),x,y+1,grid[x][y])
-            return min(down,right)
-        elif x < n-1:
-            down = self._minPathFinder(copy.deepcopy(grid),x+1,y,grid[x][y])
-            return down
-        elif y < m-1:
-            right = self._minPathFinder(copy.deepcopy(grid),x,y+1,grid[x][y])
-            return right
+        return grid[-1][-1]
 
 # Q65 Valid Number
 import re
@@ -484,19 +469,23 @@ class Solution:
 
 # Q72 Edit Distance
 class Solution:
-    def minDistance(self, str1, str2,m,n):
-        #algorithm good for finding similar words in dictionary
-        if m==0:
-             return n
-        if n==0:
-            return m
+    def minDistance(self, word1, word2):
+        m = len(word1)
+        n = len(word2)
+        table = [[0] * (n + 1) for _ in range(m + 1)]
 
-        if str1[m-1]==str2[n-1]:
-            return self.minDistance(str1,str2,m-1,n-1)
+        for i in range(m + 1):
+            table[i][0] = i
+        for j in range(n + 1):
+            table[0][j] = j
 
-        return 1 + min(self.minDistance(str1, str2, m, n-1),    # Insert
-                       self.minDistance(str1, str2, m-1, n),    # Remove
-                       self.minDistance(str1, str2, m-1, n-1))    # Replace
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    table[i][j] = table[i - 1][j - 1]
+                else:
+                    table[i][j] = 1 + min(table[i - 1][j], table[i][j - 1], table[i - 1][j - 1])
+        return table[-1][-1]
 
 # Q73 Set Matrix Zeroes
 class Solution:

@@ -45,6 +45,20 @@ class NumMatrix(object):
             out += self.d[i][col2] - (self.d[i][col1-1] if col1 else 0)
         return out
 
+# Q315 Count of Smaller Numbers After Self
+from bisect import bisect_left,insort
+
+class Solution:
+    def countSmaller(self, nums):
+        sort = []
+        output = []
+        for i in reversed(nums):
+            loc = bisect_left(sort,i)
+            output.append(loc)
+            insort(sort,i)
+
+        return output[::-1]
+
 # Q317 Shortest Distance from All Buildings
 # Doesn't work
 class Solution1:

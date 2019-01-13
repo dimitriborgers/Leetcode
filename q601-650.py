@@ -80,3 +80,6 @@ class AutocompleteSystem:
                 self.__cur_node = self.__cur_node.leaves[c]
                 result = [p[1] for p in self.__cur_node.infos]
         return result
+
+# Q647 Palindromic Substrings
+

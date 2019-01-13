@@ -471,7 +471,32 @@ class Solution:
 
 
 # Q235 Lowest Common Ancestor of a Binary Search Tree
+class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        stack = [root]
+        #Two ways of adding parent reference
+        #One is to add node.par as you go down
+        #Two is to create a dict of parents. Can only be used if unique node values
+        parent = {root: None}
 
+        while p not in parent or q not in parent:
+            node = stack.pop()
+
+            if node.left:
+                parent[node.left] = node
+                stack.append(node.left)
+            if node.right:
+                parent[node.right] = node
+                stack.append(node.right)
+
+        ancestors = set()
+        while p:
+            ancestors.add(p)
+            p = parent[p]
+        while q not in ancestors:
+            q = parent[q]
+
+        return q
 
 # Q236 Lowest Common Ancestor of a Binary Tree
 # Using Recursion

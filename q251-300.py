@@ -151,6 +151,59 @@ class Solution:
 
         return successor
 
+# Q286 Walls and Gates
+# Brute Force BFS, TLE
+class Solution1:
+    def wallsAndGates(self, rooms):
+        if not rooms:
+            return
+
+        m = len(rooms)
+        n = len(rooms[0])
+        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+
+        def bfs(r,c,count=1):
+            level = [(r,c)]
+            while level:
+                next_level = []
+                for _ in range(len(level)):
+                    r,c = level.pop()
+                    visited.add((r,c))
+                    for dr,dc in directions:
+                        if check(r+dr,c+dc):
+                            if rooms[r+dr][c+dc] == 0:
+                                return count
+                            else:
+                                next_level.append((r+dr,c+dc))
+                count += 1
+                level = next_level
+
+            return 2147483647
+
+
+        def check(r,c):
+            if 0 <= r < m and 0 <= c < n and rooms[r][c] != -1 and (r,c) not in visited:
+                return True
+
+        for r,row in enumerate(rooms):
+            for c,col in enumerate(row):
+                if col == 2147483647:
+                    visited = set()
+                    rooms[r][c] = bfs(r,c)
+
+# BFS with updated queue
+class Solution2:
+    def wallsAndGates(self, rooms):
+        q = [(i, j) for i, row in enumerate(rooms) for j, r in enumerate(row) if not r]
+
+        for i, j in q:
+            for I, J in (i+1, j), (i-1, j), (i, j+1), (i, j-1):
+                if 0 <= I < len(rooms) and 0 <= J < len(rooms[0]) and rooms[I][J] > 2**30:
+                    rooms[I][J] = rooms[i][j] + 1
+                    #updated q in the loop passing through q
+                    #same as q.add(I,J)
+                    q += (I, J),
+
 # Q288 Unique Word Abbreviation
 # Doesn't work
 class ValidWordAbbr:
