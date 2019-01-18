@@ -87,6 +87,48 @@ class Solution:
 
         return []
 
+# Q895 Maximum Frequency Stack
+class FreqStack1:
+
+    def __init__(self):
+        self.freq = collections.Counter()
+        self.group = collections.defaultdict(list)
+        self.maxfreq = 0
+
+    def push(self, x):
+        f = self.freq[x] + 1
+        self.freq[x] = f
+        if f > self.maxfreq:
+            self.maxfreq = f
+        self.group[f].append(x)
+
+    def pop(self):
+        x = self.group[self.maxfreq].pop()
+        self.freq[x] -= 1
+        if not self.group[self.maxfreq]:
+            self.maxfreq -= 1
+
+        return x
+
+# Using heapq
+class FreqStack2:
+
+    def __init__(self):
+        self.stack = []
+        self.cnt = collections.Counter()
+        self.index = -1
+
+    def push(self, x):
+        self.cnt[x] += 1
+        self.index += 1
+        #when you add two tuples, and the first element is the same for both, then the next element in the tuples will decide which one is popped.
+        heapq.heappush(self.stack, (-self.cnt[x], -self.index, x))
+
+    def pop(self):
+        num = heapq.heappop(self.stack)[2]
+        self.cnt[num] -= 1
+        return num
+
 # Q900 RLEIterator
 # Space limit exceeded for self.seq array when using giant numbers.
 class RLEIterator1:

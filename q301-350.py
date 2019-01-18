@@ -162,6 +162,31 @@ class Solution:
             #[dp[amount], -1][0] => dp[amount]
         return [dp[amount], -1][dp[amount] == float('inf')]
 
+# Q323 Number of Connected Components in an Undirected Graph
+class Solution:
+    def countComponents(self, n, edges):
+        graph = {i:[] for i in range(n)}
+        for v1,v2 in edges:
+            graph[v1].append(v2)
+            graph[v2].append(v1)
+
+        def dfs(node):
+            for adjacent in graph[node]:
+                if adjacent not in visited:
+                    visited.add(adjacent)
+                    paths[adjacent] = node
+                    dfs(adjacent)
+
+        paths = {}
+        visited = set()
+        for vertex in graph:
+            if vertex not in visited:
+                paths[vertex] = None
+                visited.add(vertex)
+                dfs(vertex)
+
+        return sum([1 for i in paths.values() if i == None])
+
 # Q325 Maximum Size Subarray Sum Equals k
 class Solution:
     def maxSubArrayLen(self, nums, k):

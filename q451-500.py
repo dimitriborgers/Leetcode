@@ -134,6 +134,20 @@ class Solution:
 
         dfs((0, 0), robot, 0, set())
 
+# Q496 Next Greater Element I
+class Solution:
+    def nextGreaterElement(self, nums1, nums2):
+        lookup = collections.defaultdict(list)
+        for pos,e in enumerate(nums2):
+            lookup[e] = [i for i in nums2[pos+1:] if i > e]
+        result = []
+        for pos,e in enumerate(nums1):
+            if e not in lookup:
+                result.append(-1)
+            else:
+                result.append(lookup[e][0] if lookup[e] else -1)
+        return result
+
 # Q497 Random Point in Non-overlapping Rectangles
 class Solution:
 

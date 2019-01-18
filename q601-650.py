@@ -82,4 +82,21 @@ class AutocompleteSystem:
         return result
 
 # Q647 Palindromic Substrings
+class Solution:
+    def countSubstrings(self, s):
+        def check(i,j):
+            count = 0
+            while i>=0 and j<len(s):
+                if s[i]==s[j]:
+                    count+=1
+                    i-=1
+                    j+=1
+                else:
+                    break
+            return count
 
+        ans = 0
+        for i in range(len(s)):
+            #since python is interpreted, check() must be defined before it is called.
+            ans += (check(i,i)+check(i,i+1))
+        return ans
