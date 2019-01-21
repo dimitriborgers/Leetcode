@@ -45,6 +45,9 @@ class NumMatrix(object):
             out += self.d[i][col2] - (self.d[i][col1-1] if col1 else 0)
         return out
 
+# Q314 Binary Tree Vertical Order Traversal
+
+
 # Q315 Count of Smaller Numbers After Self
 from bisect import bisect_left,insort
 

@@ -1,3 +1,13 @@
+# Q518 Coin Change 2
+class Solution:
+    def change(self, amount, coins):
+        dp = [0] * (amount + 1)
+        dp[0] = 1
+        for i in coins:
+            for j in range(i, amount + 1):
+                dp[j] += dp[j - i]
+        return dp[amount]
+
 # Q524 Longest Word in Dictionary through Deleting
 class Solution:
     def findLongestWord(self, s, d):
@@ -44,6 +54,22 @@ class Solution:
         #bisect_left: if you have [1,1,1], index will be 0. So you actually take the index of the first instance found
         #if element you're inputting isn't in list already, then both methods should return the same index
         return bisect.bisect_right(self._prefix_sum, target)
+
+# Q532 K-diff Pairs in an Array
+class Solution:
+    def findPairs(self, nums, k):
+        if k < 0:
+            return 0
+        lookup = set()
+        result = set()
+        for num in nums:
+            if num - k in lookup:
+                result.add(frozenset((num,num-k)))
+            if num + k in lookup:
+                result.add(frozenset((num,num+k)))
+            lookup.add(num)
+
+        return len(result)
 
 # Q535 Encode and Decode TinyURL
 class Codec:

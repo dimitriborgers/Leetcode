@@ -256,34 +256,28 @@ class Solution:
 class Solution:
     def threeSum(self, nums):
         nums.sort()
-        end = len(nums)-1
-        output = []
+        output = set()
+
         for i in range(len(nums)-2):
             j = i + 1
+            end = len(nums)-1
 
-            #skip if last one seen is the same
             if i and nums[i] == nums[i - 1]:
                 continue
 
             while j != end:
-                total = nums[i]+nums[j]+nums[end]
                 #can't do sum(x,y,z), but can do sum([x,y,z])
+                total = nums[i]+nums[j]+nums[end]
 
                 if total < 0:
                     j += 1
                 elif total > 0:
                     end -= 1
                 else:
-                    output.append([nums[i],nums[j],nums[end]])
+                    output.add((nums[i],nums[j],nums[end]))
                     j += 1
 
-        unique_lst = []
-        #count makes sure that there is 0 in the output before adding it
-        #do this instead of adding to a set since these are lists
-        #instead of doing this, you could just add tuples and then create a set of tuples
-        [unique_lst.append(sublst) for sublst in output if not unique_lst.count(sublst)]
-
-        return unique_lst
+        return list(output)
 
 # Q16 3Sum Closest
 class Solution:
@@ -995,17 +989,13 @@ class Solution2:
                 A[i][j], A[~j][i], A[~i][~j], A[j][~i] = A[~j][i], A[~i][~j], A[j][~i], A[i][j]
 
 # Q49 Group Anagrams
-import collections
-
 class Solution:
     def groupAnagrams(self, strs):
-        anagrams_map, result = collections.defaultdict(list), []
+        ans = collections.defaultdict(list)
         for s in strs:
-            sorted_str = ("").join(sorted(s))
-            anagrams_map[sorted_str].append(s)
-        for anagram in anagrams_map.values():
-            result.append(anagram)
-        return result
+            ans[tuple(sorted(s))].append(s)
+
+        return list(ans.values())
 
 # Q50 Pow(x, n)
 class Solution:
