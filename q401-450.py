@@ -256,6 +256,21 @@ class Solution2:
             orders.add(order[org[i]])
         return not seen
 
+# Q447 Number of Boomerangs
+class Solution:
+    def numberOfBoomerangs(self, points):
+        nums = 0
+        for x1, y1 in points:
+            distance = collections.defaultdict(int)
+            for x2, y2 in points:
+                dx = abs(x2 - x1)
+                dy = abs(y2 - y1)
+                d = dx * dx + dy * dy
+                distance[d] += 1
+
+            nums += sum(n * (n-1) for n in distance.values())
+        return nums
+
 # Q449 Serialize and Deserialize BST
 from collections import deque
 

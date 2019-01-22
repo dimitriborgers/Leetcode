@@ -29,7 +29,7 @@ class NumArray:
 # Q308 Range Sum Query 2D - Mutable
 from itertools import accumulate
 
-class NumMatrix(object):
+class NumMatrix:
     def __init__(self, matrix):
         self.d = [list(accumulate(row)) for row in matrix]
 
@@ -46,7 +46,18 @@ class NumMatrix(object):
         return out
 
 # Q314 Binary Tree Vertical Order Traversal
-
+class Solution:
+    def verticalOrder(self, root):
+        cols = collections.defaultdict(list)
+        queue = [(root, 0)]
+        for node, i in queue:
+            if node:
+                cols[i].append(node.val)
+                #this extends the original list
+                #allows you to extend multiple things at once
+                queue += (node.left, i - 1), (node.right, i + 1)
+        #you can sort a dictionary by its keys
+        return [cols[i] for i in sorted(cols)]
 
 # Q315 Count of Smaller Numbers After Self
 from bisect import bisect_left,insort

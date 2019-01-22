@@ -1,3 +1,53 @@
+# Q622 Design Circular Queue
+class MyCircularQueue:
+
+    def __init__(self, k):
+        self.queue = [None]*k
+        self.front = 0
+        self.size = 0
+        self.k = k
+
+    def enQueue(self, value):
+        if self.isFull():
+            return False
+        self.queue[(self.front+self.size)%self.k] = value
+        self.size += 1
+        return True
+
+    def deQueue(self):
+        if self.isEmpty():
+            return False
+        self.queue[self.front] = None
+        self.size -= 1
+        self.front = (self.front + 1) % self.k
+        return True
+
+    def Front(self):
+        result = self.queue[self.front]
+        #Can't just be if not result because both 0 and None evaluate to False
+        return result if result != None else -1
+
+    def Rear(self):
+        result = self.queue[(self.front+self.size-1)%self.k]
+        return result if result != None else -1
+
+    def isEmpty(self):
+        return self.size == 0
+
+    def isFull(self):
+        return self.size == self.k
+
+# Q628 Maximum Product of Three Numbers
+class Solution1:
+    def maximumProduct(self, nums):
+        nums.sort()
+        return max(nums[-1] * nums[-2] * nums[-3], nums[0] * nums[1] * nums[-1])
+
+class Solution2:
+    def maximumProduct(self, nums):
+        #nlargest(n,seq) returns a list of the n largest elements in heap seq
+        return max(nums) * max(a * b for a, b in [heapq.nsmallest(2, nums), heapq.nlargest(3, nums)[1:]])
+
 # Q636 Exclusive Time of Functions
 class Solution:
     def exclusiveTime(self, n, logs):

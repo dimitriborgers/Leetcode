@@ -58,6 +58,14 @@ class Solution:
                     costs[i][j] += min1
         return min(costs[-1])
 
+# Q268 Missing Number
+class Solution:
+    def missingNumber(self, nums):
+        num_set = set(nums)
+        for number in range(len(nums)+1):
+            if number not in num_set:
+                return number
+
 # Q271 Encode and Decode Strings
 from itertools import dropwhile
 
