@@ -234,6 +234,52 @@ class RandomizedSet:
     def getRandom(self):
         return random.choice(self.nums)
 
+# Q381 Insert Delete GetRandom O(1) - Duplicates allowed
+class RandomizedCollection:
+
+    def __init__(self):
+        self.lookup = collections.defaultdict(set)
+        self.seq = []
+
+    def insert(self, val):
+        self.seq.append(val)
+        self.lookup[val].add(len(self.seq)-1)
+        return len(self.lookup[val]) == 1
+
+    def remove(self, val):
+        if val in self.lookup:
+            tmp = self.lookup[val].pop()
+            if len(self.lookup[val]) == 0:
+                del self.lookup[val]
+            if tmp == len(self.seq)-1:
+                self.seq.pop()
+            else:
+                self.seq[tmp] = self.seq[-1]
+                self.lookup[self.seq[tmp]].remove(len(self.seq)-1)
+                self.lookup[self.seq[tmp]].add(tmp)
+                self.seq.pop()
+            return True
+        else:
+            return False
+
+    def getRandom(self):
+        return random.choice(self.seq)
+
+# Q384 Shuffle an Array
+class Solution:
+    def __init__(self, nums):
+        self.array = list(nums)
+        self.original = list(nums)
+
+    def reset(self):
+        return self.original
+
+    def shuffle(self):
+        for i in range(len(self.array)):
+            swap_idx = random.randrange(i, len(self.array))
+            self.array[i], self.array[swap_idx] = self.array[swap_idx], self.array[i]
+        return self.array
+
 # Q387 First Unique Character in a String
 from collections import Counter
 

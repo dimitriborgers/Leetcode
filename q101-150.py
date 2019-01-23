@@ -108,18 +108,23 @@ class Solution:
         return max(self._helper(root.left,level+1),self._helper(root.right,level+1))
 
 # Q105 Construct Binary Tree from Preorder and Inorder Traversal
+from collections import deque
 class Solution:
     def buildTree(self, preorder, inorder):
-        return self.buildTreeRecu(preorder, inorder, 0, 0, len(inorder))
+        def helper(preorder, inorder):
+            if not inorder:
+                return None
 
-    def buildTreeRecu(self, preorder, inorder, pre_start, in_start, in_end):
-        if in_start == in_end:
-            return None
-        node = TreeNode(preorder[pre_start])
-        i = inorder.index(preorder[pre_start])
-        node.left = self.buildTreeRecu(preorder, inorder, pre_start + 1, in_start, i)
-        node.right = self.buildTreeRecu(preorder, inorder, pre_start + 1 + i - in_start, i + 1, in_end)
-        return node
+            root_val = preorder.popleft()
+            root = TreeNode(root_val)
+
+            index = inorder.index(root_val)
+
+            root.left= helper(preorder, inorder[:index])
+            root.right = helper(preorder, inorder[index + 1:])
+            return root
+
+        return helper(deque(preorder), inorder)
 
 # Q106 Construct Binary Tree from Inorder and Postorder Traversal
 class Solution:
@@ -288,94 +293,43 @@ class Solution:
         return self.result
 
 # Q116 Populating Next Right Pointers in Each Node
-class TreeLinkNode:
-    def __init__(self, x):
-        self.val = x
-        self.left = None
-        self.right = None
-        self.next = None
-
-    def __repr__(self):
-        return "{} -> {}".format(self.val, repr(self.next))
-
 class Solution:
     def connect(self, root):
-        if root.left:
-            if root.left.left:
-                leftleft = root.left.left
-                leftright = root.left.right
-                rightleft = root.right.left
-                rightright = root.right.right
-                self.connector(leftleft,leftright)
-                self.connector(leftright,rightleft)
-                self.connector(rightleft,rightright)
-            self.connector(root.left,root.right)
-            self.connect(root.left)
-            self.connect(root.right)
-        return root
-
-    def connector(self,left,right):
-        left.next = right
+        if not root:
+            return root
+        level = collections.deque([root])
+        while level:
+            next_level = collections.deque([])
+            for _ in range(len(level)):
+                tmp = level.popleft()
+                if not tmp:
+                    continue
+                if len(level) == 0:
+                    tmp.next = None
+                else:
+                    tmp.next = level[0]
+                next_level += tmp.left,tmp.right
+            level = next_level
 
 # Q117 Populating Next Right Pointers in Each Node II
 class Solution:
     def connect(self, root):
-        leftleft = leftright = rightleft = rightright = None
-        if root.left and root.right:
-            if root.left.left:
-                leftleft = root.left.left
-            if root.left.right:
-                leftright = root.left.right
-            if root.right.left:
-                rightleft = root.right.left
-            if root.right.right:
-                rightright = root.right.right
-
-            if leftleft and leftright:
-                self.connector(leftleft,leftright)
-            if leftright and rightleft:
-                self.connector(leftright,rightleft)
-            if rightleft and rightright:
-                self.connector(rightleft,rightright)
-            if leftright and not rightleft and rightright:
-                self.connector(leftright,rightright)
-            if leftleft and not leftright and rightleft:
-                self.connector(leftleft,rightleft)
-            if leftleft and not leftright and not rightleft and rightright:
-                self.connector(leftleft,rightright)
-
-            self.connector(root.left,root.right)
-            self.connect(root.left)
-            self.connect(root.right)
-        return root
-
-    def connector(self,left,right):
-        left.next = right
-
-class Solution2:
-    def connect(self, root):
-        head = root
-        while head:
-            prev, cur, next_head = None, head, None
-            while cur:
-                if next_head is None:
-                    if cur.left:
-                        next_head = cur.left
-                    elif cur.right:
-                        next_head = cur.right
-
-                if cur.left:
-                    if prev:
-                        prev.next = cur.left
-                    prev = cur.left
-
-                if cur.right:
-                    if prev:
-                        prev.next = cur.right
-                    prev = cur.right
-
-                cur = cur.next
-            head = next_head
+        if not root:
+            return root
+        level = collections.deque([root])
+        while level:
+            next_level = collections.deque([])
+            for _ in range(len(level)):
+                tmp = level.popleft()
+                if len(level) == 0:
+                    tmp.next = None
+                else:
+                    tmp.next = level[0]
+                if tmp.left:
+                    next_level += tmp.left,
+                if tmp.right:
+                    next_level += tmp.right,
+            level = next_level
 
 # Q118 Pascal's Triangle
 class Solution:

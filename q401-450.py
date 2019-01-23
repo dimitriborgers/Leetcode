@@ -66,6 +66,47 @@ class Solution:
                 sum += nums[i]
         return m >= 1
 
+# Q417 Pacific Atlantic Water Flow
+class Solution:
+    def pacificAtlantic(self, matrix):
+        if not matrix:
+            return []
+
+        dp = [[-1]*(len(matrix[0])+2)]+[[-1]+row[:]+[-2] for row in matrix]+[[-2]*(len(matrix[0])+2)]
+        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+        output = []
+
+        def check(r,c,h):
+            if 0 <= r < len(dp) and 0 <= c < len(dp[0]) and (r,c) not in seen and dp[r][c] <= h:
+                return True
+
+        def dfs(r,c,coasts=None):
+            if not coasts:
+                coasts = [False,False]
+            if dp[r][c] == -1:
+                coasts[0] = True
+            elif dp[r][c] == -2:
+                coasts[1] = True
+            elif 0<=r-1<len(matrix) and 0<=c-1<len(matrix[0]) and matrix[r-1][c-1] == -3:
+                return True
+            else:
+                for dr,dc in directions:
+                    if check(r+dr,c+dc,dp[r][c]):
+                        seen.add((r+dr,c+dc))
+                        if dfs(r+dr,c+dc,coasts):
+                            return True
+
+            return coasts[0] and coasts[1]
+
+        for i in range(1,len(dp)-1):
+            for j in range(1,len(dp[i])-1):
+                seen = set()
+                if dfs(i,j):
+                    output.append([i-1,j-1])
+                    matrix[i-1][j-1] = -3
+
+        return output
+
 # Q418 Sentence Screen Fitting
 # Time limit exceeded
 class Solution1:

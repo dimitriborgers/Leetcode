@@ -25,11 +25,10 @@ class Solution:
         while left != right:
             mid = left + (right-left) // 2
             if nums[right] < nums[mid]:
-                minimum = nums[mid] if nums[mid] < minimum else minimum
                 left = mid + 1
             else:
-                minimum = nums[mid] if nums[mid] < minimum else minimum
                 right = mid
+            minimum = min(minimum,nums[mid])
         if nums[right] < minimum:
             minimum = nums[right]
         return minimum

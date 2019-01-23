@@ -1152,14 +1152,34 @@ class Solution:
 # Q98 Validate Binary Search Tree
 class Solution:
     def isValidBST(self, root):
-        if not root:
-            return True
 
-        if root.left and root.left.val > root.val:
-            return False
-        if root.right and root.right.val < root.val:
-            return False
-        return self.isValidBST(root.right) and self.isValidBST(root.left)
+        def recur(node):
+            if not node:
+                return set()
+
+            nodes_right = recur(node.right)
+            if nodes_right == False:
+                return False
+            if not nodes_right or node.val < min(nodes_right):
+                #sets can't do set1 += value,
+                #you have to use add()
+                nodes_right.add(node.val)
+            else:
+                return False
+
+            nodes_left = recur(node.left)
+            if nodes_left == False:
+                return False
+            if not nodes_left or node.val > max(nodes_left):
+                nodes_left.add(node.val)
+            else:
+                return False
+
+            #Sets can't do set1 + set2, have to do union()
+            return nodes_right.union(nodes_left)
+
+        result = recur(root)
+        return True if result != False else False
 
 # Q99 Recover Binary Search Tree
 class Solution:

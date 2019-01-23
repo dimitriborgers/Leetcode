@@ -414,7 +414,34 @@ class Solution:
 
 
 # Q227 Basic Calculator II
+class Solution:
+    def calculate(self, s):
+        def update_helper(op, val):
+            if op == '+':
+                stack.append(val)
+            elif op == '-':
+                stack.append(-val)
+            elif op == '*':
+                stack.append(stack.pop() * val)
+            elif op == '/':
+                l, r = stack.pop() , val
+                if l * r < 0 and l % r != 0:
+                    stack.append(l // r  + 1)
+                else:
+                    stack.append(l // r)
 
+        stack, val, op = [], 0, '+'
+
+        for i in range(len(s)):
+            if s[i].isdigit():
+                val = val * 10 + int(s[i])
+            elif s[i] in ['+','-','*','/']:
+                update_helper(op, val)
+                op, val = s[i], 0
+
+        update_helper(op, val)
+
+        return sum(stack)
 
 # Q228 Summary Ranges
 class Solution:

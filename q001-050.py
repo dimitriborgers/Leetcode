@@ -1000,15 +1000,19 @@ class Solution:
 # Q50 Pow(x, n)
 class Solution:
     def myPow(self,x,n):
-        if n > 0:
-            result = x
-            for i in range(n-1):
-                result *= x
+        if n == 0:
+            return 1.0
+        elif n > 0:
+            result = self.Pow(x,n)
         else:
-            result = 1/x
-            for i in range(abs(n)-1):
-                result *= 1/x
+            result = 1/self.Pow(x,-n)
         return result
 
-#Solution.myPow() requires 3 arguments
-print(Solution().myPow(2,-2))
+    def Pow(self,x,n):
+        if n == 1:
+            return x
+        partial = self.Pow(x,n//2)
+        total = partial * partial
+        if n % 2 != 0:
+            total *= x
+        return total
