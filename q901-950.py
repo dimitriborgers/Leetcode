@@ -165,6 +165,18 @@ class TopVotedCandidate:
         i = bisect.bisect(self.A, (t, float('inf')), 1)
         return self.A[i-1][1]
 
+# Q920 Number of Music Playlists
+class Solution:
+    def numMusicPlaylists(self, N, L, K):
+        dp = [[0 for i in range(L + 1)] for j in range(N + 1)]
+        for i in range(K + 1, N + 1):
+            for j in range(i, L + 1):
+                if i == j or i == K + 1:
+                    dp[i][j] = math.factorial(i)
+                else:
+                    dp[i][j] = dp[i - 1][j - 1] * i + dp[i][j - 1] * (i - K)
+        return dp[N][L] % (10**9 + 7)
+
 # Q929 Unique Email Addresses
 import itertools,collections
 

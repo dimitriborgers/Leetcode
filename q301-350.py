@@ -291,6 +291,23 @@ class Solution:
 
         return length
 
+# Q341 Flatten Nested List Iterator
+class NestedIterator:
+
+    def __init__(self, nestedList):
+        self.stack = nestedList[::-1]
+
+    def next(self):
+        return self.stack.pop().getInteger()
+
+    def hasNext(self):
+        while self.stack:
+            top = self.stack[-1]
+            if top.isInteger():
+                return True
+            self.stack = self.stack[:-1] + top.getList()[::-1]
+        return False
+
 # Q347 Top K Frequent Elements
 from collections import Counter
 
@@ -325,3 +342,8 @@ class TicTacToe:
             return player
         else:
             return 0
+
+# Q349 Intersection of Two Arrays
+class Solution:
+    def intersection(self, nums1, nums2):
+        return list(set(nums1).intersection(set(nums2)))

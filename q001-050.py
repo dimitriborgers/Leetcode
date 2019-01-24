@@ -139,8 +139,10 @@ class Solution:
         while x != 0:
             pop = x % 10
             x = x // 10
-
             outcome = outcome*10 + pop
+
+        if outcome > 2**31-1:
+            return 0
         return outcome if negative == False else -outcome
 
 # Q8 String to Integer (atoi)

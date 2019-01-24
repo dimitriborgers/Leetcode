@@ -827,33 +827,28 @@ class Solution1:
 # Q86 Partition List
 class Solution:
     def partition(self, head, x):
-        dummy = ListNode(-1)
-        dummy.next = head
-        cur = dummy
-        begin = dummy
-        end = None
-        previous = None
-        while cur.next:
-            if cur.next.val >= x and not end:
-                end = cur.next
-                cur = cur.next
-            elif cur.next.val < x and end:
-                previous = cur
-                temp = cur.next.next
-                dummy.next = cur.next
-                dummy.next.next = end
-                cur.next = temp
-                dummy = dummy.next
-            elif cur.next.val < x and not end:
-                dummy = dummy.next
-                cur = cur.next
-            else:
-                cur = cur.next
-        if cur.val < x:
-            dummy.next = cur
-            cur.next = end
-            previous.next = None
-        return begin.next
+        smallerHead = ListNode(-1)
+        biggerHead = ListNode(-1)
+
+        curOriginal = head
+        curSmaller = smallerHead
+        curBigger = biggerHead
+
+        while curOriginal:
+            if curOriginal.val < x:
+                curSmaller.next = curOriginal
+                curOriginal = curOriginal.next
+                curSmaller = curSmaller.next
+                curSmaller.next = None
+            elif curOriginal.val >= x:
+                curBigger.next = curOriginal
+                curOriginal = curOriginal.next
+                curBigger = curBigger.next
+                curBigger.next = None
+
+        curSmaller.next = biggerHead.next
+        return smallerHead.next
+
 
 # Q87 Scramble String
 class Solution:
