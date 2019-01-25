@@ -186,13 +186,17 @@ class Solution:
             #True and True -> True
             #False and True -> False
             #False and 5, 5 and False -> False
-            #True and 5, 5 and True -> 5
+            #True and 5 -> 5
+            #5 and True -> True
             #5 and 'hello' -> 'hello'
+            #True and '', '' and True -> ''
+            #EXCEPTION: For some reason, this does not evaluate to False.
         #or statement specifications:
-            #True and 5, 5 and True -> True
-            #False and 5, 5 and False -> 5
-            #5 or 'Hello' -> 'Hello'
-        #In this case, if you don't have bool(text), then first_match would equal whatever string text is if statement on right equals True.
+            #True or 5 -> True
+            #5 or True -> 5
+            #False or 5, 5 or False -> 5
+            #5 or 'Hello' -> 5
+        #In this case, if you don't have bool(text), then first_match would equal an empty string if text is '' and right side evaluates to True.
         first_match = bool(text) and pattern[0] in (text[0], '.')
 
         #* means 0 or more, that's why would try pattern[2:]
@@ -928,7 +932,19 @@ class Solution:
             return self.isMatch(s, p[1:])
 
 # Q45 Jump Game II
-class Solution:
+class Solution1:
+    def jump(self, A):
+        if not A:
+            return 0
+        dp = [0]*len(A)
+        for i in range(len(A)-2,-1,-1):
+            if A[i] == 0:
+                dp[i] = float('inf')
+            else:
+                dp[i] = 1+min(dp[i+1:i+1+A[i]],default=0)
+        return dp[0]
+
+class Solution2:
     def jump(self, A):
         jump_count = 0
         reachable = 0
@@ -963,6 +979,8 @@ class Solution1:
         #Difference between nums[:] = and nums = is that the latter doesn't replace elements in the original list.
         #matrix[:] = zip(*matrix[::-1]) works as well
         matrix[::] = zip(*matrix[::-1])
+        #print(*matrix[::-1]) -> [7,8,9][4,5,6][1,2,3]
+        #print(matrix[::-1]) -> [[7,8,9],[4,5,6],[1,2,3]]
         '''
         >>> a = list(range(10))
         >>> b = a
