@@ -599,65 +599,43 @@ class Solution:
 # Q29 Divide Two Integers
 class Solution:
     def divide(self, dividend, divisor):
-        #can't do xor
-        isNegative = True if dividend < 0 or divisor < 0 else False
-        count = 0
-        dividend, divisor = abs(dividend),abs(divisor)
-        while dividend > divisor:
-            dividend -= divisor
-            count += 1
-        if isNegative:
-            return -count
-        return count
+        positive = (dividend < 0) is (divisor < 0)
+        dividend, divisor = abs(dividend), abs(divisor)
+        res = 0
+        while dividend >= divisor:
+            temp, i = divisor, 1
+            while dividend >= temp:
+                dividend -= temp
+                res += i
+                i <<= 1
+                temp <<= 1
+        if not positive:
+            res = -res
+        return min(max(-2147483648, res), 2147483647)
 
 # Q30 Substring with Concatenation of All Words
 import collections
 
 class Solution:
     def findSubstring(self, s, words):
-        result, m, n, k = [], len(s), len(words), len(words[0])
-        if m < n*k:
-            return result
+        if not s or not words:
+            return []
 
-        lookup = collections.defaultdict(int)
-        for i in words:
-            lookup[i] += 1
+        result, m, n, k = [], len(s), len(words), len(words[0])
+        lookup = collections.Counter(words)
 
         for i in range(m+1-k*n):
             cur, j = collections.defaultdict(int), 0
-            while j < n:
-                #s[a:b] does not include b
-                word = s[i+j*k:i+j*k+k]
+            for j in range(i,m,k):
+                word = s[j:j+k]
                 if word not in lookup:
                     break
                 cur[word] += 1
                 if cur[word] > lookup[word]:
                     break
-                j += 1
-            if j == n:
-                result.append(i)
+                if cur == lookup:
+                    result.append(i)
 
-        return result
-
-class Solution2:
-    def findSubstring(self, s, words):
-        result, m, n, k = [], len(s), len(words), len(words[0])
-        if m < n*k:
-            return result
-
-        for i in range(m+1-k*n):
-            setwords = set(words)
-            counter = i
-            temp = s[counter:counter+k]
-            while setwords:
-                if temp in setwords:
-                    setwords.remove(temp)
-                    counter += k
-                    temp = s[counter:counter+k]
-                else:
-                    break
-            else:
-                result.append(i)
         return result
 
 # Q31 Next Permutation
@@ -665,17 +643,17 @@ class Solution2:
 class Solution:
     def nextPermutation(self, nums):
         right = len(nums)-1
-        while nums[right] <= nums[right-1] and right-1 >=0:
+        while right-1 >= 0 and nums[right] <= nums[right-1]:
             right -= 1
         if right == 0:
             return self.reverse(nums,0,len(nums)-1)
+
         pivot = right-1
-        successor = 0
         for i in range(len(nums)-1,pivot,-1):
             if nums[i] > nums[pivot]:
-                successor = i
+                nums[pivot],nums[i] = nums[i],nums[pivot]
                 break
-        nums[pivot],nums[successor] = nums[successor],nums[pivot]
+
         self.reverse(nums,pivot+1,len(nums)-1)
 
     def reverse(self,nums,l,r):
@@ -727,9 +705,9 @@ class Solution:
 
             if nums[mid] == target:
                 i = j = 0
-                while nums[mid-i] == target:
+                while mid-i >= 0 and nums[mid-i] == target:
                     i += 1
-                while nums[mid+j] == target:
+                while mid+j < len(nums) and nums[mid+j] == target:
                     j += 1
                 return (mid-(i-1),mid+(j-1))
             elif nums[mid] < target:
@@ -766,11 +744,13 @@ class Solution:
 
     def isValid(self,row):
         row = [i for i in row if i != '.']
+        #Way of making sure there are no duplicates
         if len(set(row)) == len(row):
             return True
 
 # Q37 Sudoku Solver
-class Solution:
+# Doesn't work
+class Solution1:
     def solveSudoku(self, board):
         #Inside functions don't have self as argument or in front when they are called.
         def isValidSudoku(board):
@@ -803,6 +783,40 @@ class Solution:
                         return False
             return True
 
+class Solution2:
+    def solveSudoku(self, board):
+        rows, cols, triples, visit = collections.defaultdict(set), collections.defaultdict(set), collections.defaultdict(set), collections.deque([])
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] != ".":
+                    rows[r].add(board[r][c])
+                    cols[c].add(board[r][c])
+                    triples[(r // 3, c // 3)].add(board[r][c])
+                else:
+                    visit.append((r, c))
+        def dfs():
+            if not visit:
+                return True
+            r, c = visit[0]
+            t = (r // 3, c // 3)
+            for dig in {"1", "2", "3", "4", "5", "6", "7", "8", "9"}:
+                if dig not in rows[r] and dig not in cols[c] and dig not in triples[t]:
+                    board[r][c] = dig
+                    rows[r].add(dig)
+                    cols[c].add(dig)
+                    triples[t].add(dig)
+                    visit.popleft()
+                    if dfs():
+                        return True
+                    else:
+                        board[r][c] = "."
+                        rows[r].discard(dig)
+                        cols[c].discard(dig)
+                        triples[t].discard(dig)
+                        visit.appendleft((r, c))
+            return False
+        dfs()
+
 # Q38 Count and Say
 import itertools
 
@@ -815,7 +829,10 @@ class Solution:
 
         tmp =  self.countAndSay(n-1)
         outcome = ''
+        #Groupby: Make an iterator that returns consecutive keys and groups from the iterable.
+        #[k for k,g in groupby('AAAABCCDDDDA')] -> A B C D A
         for value,times in itertools.groupby(tmp):
+            #times actually returns an object representing the sublist of the group. So if it was 'AAA' -> list(times) returns ['A','A','A']
             outcome += str(len(list(times)))+value
         return outcome
 
@@ -857,8 +874,8 @@ class Solution:
     def firstMissingPositive(self, A):
         i = 0
         while i < len(A):
-            #This loop will only move elements between 0 and length of list. Therefore, you are putting the small elements in order at front
-            if A[i] > 0 and A[i] - 1 < len(A) and A[i] != A[A[i]-1]:
+            #This loop will only move elements between 0 and length of list + 1. Therefore, you are putting the small elements in order at front
+            if A[i] > 0 and A[i] < len(A) + 1 and A[i] != A[A[i]-1]:
                 A[A[i]-1], A[i] = A[i], A[A[i]-1]
             else:
                 i += 1
@@ -866,6 +883,7 @@ class Solution:
         for i, integer in enumerate(A):
             if integer != i + 1:
                 return i + 1
+
         return len(A) + 1
 
 # Q42 Trapping Rain Water
@@ -916,20 +934,22 @@ class Solution:
 # Q44 Wildcard Matching
 class Solution:
     def isMatch(self, s, p):
-        if not p or not s:
-            return not s and not p
-        if p[0] != '*':
-            if p[0] == s[0] or p[0] == '?':
-                return self.isMatch(s[1:], p[1:])
+        length = len(s)
+        #count() returns number of instances found
+        if len(p) - p.count('*') > length:
+            return False
+
+        dp = [True] + [False]*length
+        for i in p:
+            if i != '*':
+                for n in reversed(range(length)):
+                    dp[n+1] = dp[n] and (i == s[n] or i == '?')
             else:
-                return False
-        else:
-            while len(s) > 0:
-                #p[1:] does not change for every loop since it returns False everytime until breaks out
-                if self.isMatch(s, p[1:]):
-                    return True
-                s = s[1:]
-            return self.isMatch(s, p[1:])
+                for n in range(1, length+1):
+                    dp[n] = dp[n-1] or dp[n]
+            dp[0] = dp[0] and i == '*'
+
+        return dp[-1]
 
 # Q45 Jump Game II
 class Solution1:
@@ -941,6 +961,7 @@ class Solution1:
             if A[i] == 0:
                 dp[i] = float('inf')
             else:
+                #When you splice a section of list, if you go over bounds, it just returns what's inside its bounds; no error
                 dp[i] = 1+min(dp[i+1:i+1+A[i]],default=0)
         return dp[0]
 
