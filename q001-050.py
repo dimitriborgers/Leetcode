@@ -39,8 +39,7 @@ class Solution:
                 seq.add(s[j])
                 j += 1
                 count = len(seq)
-                if count > maxCount:
-                    maxCount = count
+                maxCount = max(maxCount,count)
             else:
                 seq.remove(s[i])
                 i += 1
@@ -373,15 +372,6 @@ class Solution:
 
         return dummy.next
 
-if __name__ == "__main__":
-    head = ListNode(1)
-    head.next = ListNode(2)
-    head.next.next = ListNode(3)
-    head.next.next.next = ListNode(4)
-    head.next.next.next.next = ListNode(5)
-
-    print(Solution().removeNthFromEnd(head, 2))
-
 # Q20 Valid Parentheses
 class Solution:
     def isValid(self, s):
@@ -439,28 +429,6 @@ class Solution:
 
 # Q23 Merge k Sorted Lists
 class Solution:
-    def mergeTwo(self,head1, head2):
-        temp = None
-        if head1 is None:
-            return head2
-        if head2 is None:
-            return head1
-        if head1.val <= head2.val:
-            #not actually needed to do deepcopy since you don't care about changing original lists
-            temp = copy.deepcopy(head1)
-            temp.next = self.mergeTwo(head1.next, head2)
-        else:
-            temp = copy.deepcopy(head2)
-            temp.next = self.mergeTwo(head1, head2.next)
-        return temp
-
-    def mergeKLists(self,lists):
-        for i in range(len(lists)-1):
-            temp = self.mergeTwo(lists[i],lists[i+1])
-            lists[i+1] = temp
-        return lists[-1]
-
-class Solution1:
     def mergeKLists(self, lists):
         amount = len(lists)
         interval = 1
@@ -491,9 +459,12 @@ class Solution1:
 
 # Q24 Swap Nodes in Pairs
 class Solution:
-    #seq can't equal head because that will just create a temporary pass by reference, so changes won't be saved.
     def swapPairs(self, seq):
-        current = seq.head
+        current = seq
+        dummy = ListNode(-1)
+        dummy.next = seq
+        previous = dummy
+
         while current and current.next:
             first = current
             second = current.next
@@ -501,17 +472,11 @@ class Solution:
 
             current.next = third
             second.next = first
-
-            if first == seq.head:
-                seq.head = second
-            else:
-                old_first.next = second
-
-            if third is None:
-                return seq.head
-
-            old_first = current
             current = third
+            previous.next = second
+            previous = first
+
+        return dummy.next
 
 # Q25 Reverse Nodes in k-Group
 class Solution:
@@ -545,49 +510,24 @@ class Solution:
                 begin.next = cur
                 cur = first.next
 
-if __name__ == "__main__":
-    head = ListNode(1)
-    head.next = ListNode(2)
-    head.next.next = ListNode(3)
-    head.next.next.next = ListNode(4)
-    head.next.next.next.next = ListNode(5)
-    print(Solution().reverseKGroup(head, 2))
-
 # Q26 Remove Duplicates from Sorted Array
 class Solution:
     def removeDuplicates(self, nums):
-        for i in range(len(nums)):
+        for i in range(1,len(nums)):
             while i<len(nums) and nums[i] == nums[i-1]:
                 del nums[i]
-        return nums
+        return len(nums)
 
 # Q27 Remove Element
 class Solution:
     def removeElement(self, nums, val):
         for i in range(len(nums)):
             while i<len(nums) and nums[i] == val:
-                #can't do del if use for i in nums
+                #can't do del if use "for i in nums:"
                 del nums[i]
-        return nums
+        return len(nums)
 
 # Q28 Implement strStr()
-class Solution:
-    def strStr(self, haystack, needle):
-        if haystack == '':
-            return 0
-        for i in range(len(haystack)):
-            index = 0
-            j = i+1
-            if haystack[i] == needle[index]:
-                index += 1
-                #order matters in while statement
-                while j < len(haystack) and haystack[j] == needle[index]:
-                    if index == len(needle)-1:
-                        return i
-                    j += 1
-                    index += 1
-        return -1
-
 import re
 class Solution:
     def strStr2(self, haystack, needle):
@@ -599,7 +539,8 @@ class Solution:
 # Q29 Divide Two Integers
 class Solution:
     def divide(self, dividend, divisor):
-        positive = (dividend < 0) is (divisor < 0)
+        #How to do an xor if statement
+        positive = (dividend < 0) == (divisor < 0)
         dividend, divisor = abs(dividend), abs(divisor)
         res = 0
         while dividend >= divisor:

@@ -1,23 +1,5 @@
 # Q101 Symmetric Tree
 class Solution:
-    def isSymmetric(self,root):
-        return self.inorder(root.left) == self.inorder(root.right)
-
-    def inorder(self,root):
-        global result
-        result = []
-        temp = self._inorder_helper(root)
-        return temp
-
-    def _inorder_helper(self,root):
-        if root.left:
-            self._inorder_helper(root.left)
-        result.append(root.val)
-        if root.right:
-            self._inorder_helper(root.right)
-        return result
-
-class Solution1:
     def isSymmetric(self, root):
         if root is None:
             return True
@@ -208,7 +190,7 @@ class Solution:
 class Solution:
     def minDepth(self, root):
         if not root.left and not root.right:
-            return 1
+            return 0
 
         if root.left and not root.right:
             return self.minDepth(root.left)+1
@@ -219,38 +201,55 @@ class Solution:
 
 # Q112 Path Sum
 class Solution:
-    def hasPathSum(self, root, sum_):
-
-        def helper(root,sum_,current):
-            if not root:
-                return False
-            current += root.val
-            if current == sum_ and not root.left and not root.right:
+    def hasPathSum(self, root: 'TreeNode', sum: 'int') -> 'bool':
+        def helper(node,value):
+            if value == sum and (not node.left and not node.right):
                 return True
-            return helper(root.left,sum_,current) or helper(root.right,sum_,current)
 
-        return helper(root,sum_,0)
+            if node.left:
+                value += node.left.val
+                if helper(node.left,value):
+                    return True
+                value -= node.left.val
+
+            if node.right:
+                value += node.right.val
+                if helper(node.right,value):
+                    return True
+            return False
+
+        if not root:
+            return False
+        return helper(root,root.val)
 
 # Q113 Path Sum II
 class Solution:
-    def hasPathSum(self, root, sum_):
-        #instead of global, you can just do a self.something
-        #if you write this self.something outside of method, but in class, you have to include it in a def __init__ wrapper
-        self.list = []
+    def pathSum(self, root: 'TreeNode', sum: 'int') -> 'bool':
+        output = []
+        if not root:
+            return []
 
-        def helper(root,sum_,current,seq=None):
-            if not seq:
-                seq = []
-            if not root:
-                return
-            current += root.val
-            seq.append(root.val)
-            if current == sum_ and not root.left and not root.right:
-                self.list.append(seq)
-            return helper(root.left,sum_,current,list(seq)) or helper(root.right,sum_,current,list(seq))
+        def helper(node,value,seq):
+            if value == sum and (not node.left and not node.right):
+                output.append(seq[:])
 
-        helper(root,sum_,0)
-        return self.list
+            if node.left:
+                value += node.left.val
+                seq.append(node.left.val)
+                helper(node.left,value,seq)
+                value -= node.left.val
+                seq.pop()
+
+            if node.right:
+                value += node.right.val
+                seq.append(node.right.val)
+                helper(node.right,value,seq)
+                value -= node.right.val
+                seq.pop()
+            return False
+
+        helper(root,root.val,[root.val])
+        return output
 
 # Q114 Flatten Binary Tree to Linked List
 class Solution:
@@ -264,33 +263,23 @@ class Solution:
             root.right = self.list_head
             root.left = None
             self.list_head = root
-            return root
 
 # Q115 Distinct Subsequences
 class Solution:
-    stack = []
-    result = 0
-    j = 0
     def numDistinct(self, s, t):
-        if self.j == len(t):
-            return self.result
+        l1, l2 = len(s)+1, len(t)+1
+        dp = [[0] * l1 for _ in range(l2)]
 
-        for i in range(len(s)):
-            if s[i] == t[self.j]:
-                self.stack.append(s[i])
-                self.j += 1
-                self.numDistinct(s[i+1:],t)
-                if len(self.stack) == len(t):
-                    self.result += 1
-                    self.stack.pop()
-                    self.j -= 1
-            else:
-                continue
-        if self.stack:
-            self.stack.pop()
-            self.j -= 1
-            return self.result
-        return self.result
+        for j in range(l1):
+            dp[0][j] = 1
+        for i in range(1, l2):
+            for j in range(1, l1):
+                if s[j-1] == t[i-1]:
+                    dp[i][j] = dp[i][j-1] + min(dp[i-1][j-1],dp[i-1][j])
+                else:
+                    dp[i][j] = dp[i][j-1]
+
+        return dp[-1][-1]
 
 # Q116 Populating Next Right Pointers in Each Node
 class Solution:
@@ -335,6 +324,8 @@ class Solution:
 class Solution:
     result = []
     def generate(self, numRows):
+        if numRows == 0:
+            return []
         if numRows == 1:
             return [[1]]
         elif numRows == 2:
@@ -360,22 +351,22 @@ class Solution:
         return result
 
 # Q120 Triangle
+import functools
+
 class Solution:
-    def minimumTotal(self, triangle):
-        result = [0]*len(triangle)
-        result[0] = triangle[0][0]
-        for i in range(1,len(triangle)):
-            resultTemp = list(result)
-            for j in range(len(triangle[i])-1):
-                old = resultTemp[j]
-                for k in range(j,j+2):
-                    print(result)
-                    if result[k] != resultTemp[k]:
-                        result[k] = old + triangle[i][k] if old + triangle[i][k] < compare[k] else result[k]
-                    else:
-                        result[k] = old + triangle[i][k]
-                        compare = result
-        return result
+    def minimumTotal(self, triangle: 'List[List[int]]') -> 'int':
+        if not triangle:
+            return 0
+
+        @functools.lru_cache(maxsize = None)
+        def dfs(level,total,loc):
+            if level < len(triangle)-1:
+                return total + min(dfs(level+1,triangle[level+1][loc],loc),dfs(level+1,triangle[level+1][loc+1],loc+1))
+
+            else:
+                return triangle[level][loc]
+
+        return dfs(0,triangle[0][0],0)
 
 # Q121 Best Time to Buy and Sell Stock
 class Solution:
