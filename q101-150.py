@@ -388,68 +388,59 @@ class Solution:
 
 # Q123 Best Time to Buy and Sell Stock III
 class Solution:
-    #list.sort() has to be on its own. You can't combine it with other functions
-    #reversed() creates a generator. If you don't want that, use list[::-1]
     def maxProfit(self, prices):
-        result = []
-        i,j = 0,1
-        while i < len(prices)-1:
-            if prices[i] < prices[j]:
-                for k in range(j,len(prices)):
-                    if prices[k] > prices[i]:
-                        result.append([(i,k),prices[k]-prices[i]])
-            i+=1;j+=1
-        if not result:
+        if not prices:
             return 0
-        #How to sort by second element
-        result = sorted(result,key = lambda x: int(x[1]))[::-1]
-        for l in range(len(result)-1):
-            if result[l][0][0] > result[l+1][0][1]:
-                return(result[l][1]+result[l+1][1])
-        return result[0][1]
 
-    def maxProfit2(self, prices):
-        #how to do negative infinity
-        hold1, hold2 = float("-inf"), float("-inf")
-        release1, release2 = 0, 0
-        for i in prices:
-            release2 = max(release2, hold2 + i)
-            hold2 = max(hold2, release1 - i)
-            release1 = max(release1, hold1 + i)
-            hold1 = max(hold1, -i)
-        return release2
+        profits = []
+        max_profit = 0
+        current_min = prices[0]
+        for price in prices:
+            current_min = min(current_min, price)
+            max_profit = max(max_profit, price - current_min)
+            profits.append(max_profit)
+
+        total_max = 0
+        max_profit = 0
+        current_max = prices[-1]
+        for i in range(len(prices) - 1, -1, -1):
+            current_max = max(current_max, prices[i])
+            max_profit = max(max_profit, current_max - prices[i])
+            total_max = max(total_max, max_profit + profits[i])
+
+        return total_max
 
 # Q124 Binary Tree Maximum Path Sum
 class Solution:
-    maxSum = float("-inf")
+    def maxPathSum(self, root: 'TreeNode') -> 'int':
+        total = [root.val]
+        if not root.left and not root.right:
+            return root.val
 
-    def maxPathSum(self, root):
-        self.maxPathSumRecu(root)
-        return self.maxSum
+        def recur(node):
+            if not node:
+                return 0
 
-    def maxPathSumRecu(self, root):
-        if root is None:
-            return 0
-        left = max(0, self.maxPathSumRecu(root.left))
-        right = max(0, self.maxPathSumRecu(root.right))
-        self.maxSum = max(self.maxSum, root.val + left + right)
-        return root.val + max(left, right)
+            child_left = max(recur(node.left),0)
+            child_right = max(recur(node.right),0)
+            total[0] = max(total[0],child_left + node.val + child_right)
+
+            return node.val + max(child_left,child_right)
+
+        recur(root)
+        return total[0]
 
 # Q125 Valid Palindrome
 class Solution:
     def isPalindrome(self, s):
         #a.isalnum() returns true if all characters in the string are alphanumeric or numbers and there is at least one character.
         #"this2009".isalnum() would be True
-        i,j = 0,len(s)-1
-        while i != j:
-            if s[i].isalpha() and s[j].isalpha() and s[i].lower() == s[j].lower():
-                i+=1
-                j-=1
-            elif not s[i].isalpha():
-                i+=1
-            elif not s[j].isalpha():
-                j-=1
-            else:
+        tmp = ''
+        for i in s:
+            if i.isalnum():
+                tmp += i.lower()
+        for i in range(len(tmp)//2):
+            if tmp[i] != tmp[~i]:
                 return False
         return True
 
@@ -457,41 +448,40 @@ class Solution:
 class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         wordList = set(wordList)
-        res = []
-        layer = {}
-        layer[beginWord] = [[beginWord]]
+        result = []
+        level = {beginWord:[[beginWord]]}
 
         # bfs using levels
-        while layer:
-            newlayer = collections.defaultdict(list)
-            for w in layer:
-                if w == endWord:
-                    res.extend(k for k in layer[w])
+        while level:
+            newlevel = collections.defaultdict(list)
+            for word in level:
+                if word == endWord:
+                    result.extend(level[word][:])
                 else:
-                    for i in range(len(w)):
+                    for i in range(len(word)):
                         for c in 'abcdefghijklmnopqrstuvwxyz':
-                            neww = w[:i]+c+w[i+1:]
+                            neww = word[:i]+c+word[i+1:]
                             if neww in wordList:
-                                newlayer[neww]+=[j+[neww] for j in layer[w]]
+                                #idea of path creation in dfs
+                                newlevel[neww] += [j+[neww] for j in level[word]]
 
-            wordList -= set(newlayer)
-            layer = newlayer
-
-        return res
+            wordList -= set(newlevel)
+            level = newlevel
+        return result
 
 # Q127 Word Ladder
 class Solution:
     def ladderLength(self, beginWord, endWord, wordList):
         distance = 0
         #[beginWord] creates ['hit'], list(beginWord) creates ['h','i','t']
-        cur = [beginWord]
+        level = [beginWord]
         visited = set([beginWord])
         lookup = set(wordList)
 
-        while cur:
-            next_queue = []
+        while level:
+            next_level = []
 
-            for word in cur:
+            for word in level:
                 if word == endWord:
                     return distance + 1
                 for i in range(len(word)):
@@ -501,10 +491,10 @@ class Solution:
                         #strs are not considered lists, so you don't have to worry about references
                         candidate = word[:i] + j + word[i + 1:]
                         if candidate not in visited and candidate in lookup:
-                            next_queue.append(candidate)
+                            next_level.append(candidate)
                             visited.add(candidate)
             distance += 1
-            cur = next_queue
+            level = next_level
         return 0
 
 # Q128 Longest Consecutive Sequence
@@ -515,6 +505,7 @@ class Solution:
         num_set = set(nums)
 
         for num in num_set:
+            #check to make sure you're at the lowest one, which prevents O(n^2)
             if num - 1 not in num_set:
                 current_num = num
                 current_streak = 1
@@ -528,31 +519,29 @@ class Solution:
 
 # Q129 Sum Root to Leaf Numbers
 class Solution:
-    result = []
-    def sumNumbers(self, root):
+    def sumNumbers(self, root: 'TreeNode') -> 'int':
         if not root:
             return 0
-        self.sumNumbersRec(root,0)
-        output = 0
-        for i in self.result:
-            output += i
-        return output
 
-    def sumNumbersRec(self,root,cur):
-        if not cur:
-            cur = root.val
-        else:
-            cur = cur*10 + root.val
-
-        if root.left and root.right:
-            self.sumNumbersRec(root.left,cur)
-            self.sumNumbersRec(root.right,cur)
-        elif root.left:
-            self.sumNumbersRec(root.left,cur)
-        elif root.right:
-            self.sumNumbersRec(root.right,cur)
-        else:
-            self.result.append(cur)
+        level = [root]
+        total = 0
+        while level:
+            next_level = []
+            #always be careful when looping through list without range(len()). If you modify the list, you may skip elements.
+            for _ in range(len(level)):
+                num = level.pop()
+                if not num.left and not num.right:
+                    total += num.val
+                if num.left:
+                    tmp = num.val * 10
+                    num.left.val += (tmp)
+                    next_level.append(num.left)
+                if num.right:
+                    tmp = num.val * 10
+                    num.right.val += (tmp)
+                    next_level.append(num.right)
+            level = next_level
+        return total
 
 # Q130 Surrounded Regions
 class Solution:
