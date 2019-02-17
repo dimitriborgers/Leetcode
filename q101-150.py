@@ -546,116 +546,65 @@ class Solution:
 # Q130 Surrounded Regions
 class Solution:
     def solve(self, board):
-        n = len(board)
-        m = len(board[0])
+        queue = collections.deque([])
+        for r in range(len(board)):
+            for c in range(len(board[0])):
+                if (r in [0, len(board)-1] or c in [0, len(board[0])-1]) and board[r][c] == "O":
+                    queue.append((r, c))
+        while queue:
+            r, c = queue.popleft()
+            if 0<=r<len(board) and 0<=c<len(board[0]) and board[r][c] == "O":
+                board[r][c] = "D"
+                queue.append((r-1, c)); queue.append((r+1, c))
+                queue.append((r, c-1)); queue.append((r, c+1))
 
-        for i in range(1,n-1):
-            for j in range(1,m-1):
-                if j == 1 and i == 1:
-                    if (board[i][j-1] == 'O' or board[i-1][j] == 'O') and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif j == 1 and i == m - 1:
-                    if (board[i][j-1] == 'O' or board[i+1][j] == 'O') and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif j == m-1 and i == 1:
-                    if (board[i][j+1] == 'O' or board[i-1][j] == 'O') and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif j == m-1 and i == n-1:
-                    if (board[i][j+1] == 'O' or board[i+1][j] == 'O') and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif j == 1:
-                    if board[i][j-1] == 'O' and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif j == m-1:
-                    if board[i][j+1] == 'O' and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif i == 1:
-                    if board[i-1][j] == 'O' and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                elif i == n-1:
-                    if board[i+1][j] == 'O' and board[i][j] == 'O':
-                        continue
-                    else:
-                        board[i][j] = 'X'
-                else:
-                    board[i][j] = 'X'
-        return board
+        for r in range(len(board)):
+            for c in range(len(board[0])):
+                if board[r][c] == "O":
+                    board[r][c] = "X"
+                elif board[r][c] == "D":
+                    board[r][c] = "O"
 
 # Q131 Palindrome Partitioning
+#Can't do a class attribute that is a list, because that list will be modified for all instances of the class, since it is mutable and by reference
 class Solution:
-    total = []
     def partition(self, s):
-        self.recur(s)
-        return self.total
+        res = []
+        self.dfs(s, [], res)
+        return res
 
-    def recur(self,s,result=None):
-        if len(s) <= 1:
+    def dfs(self, s, path, res):
+        if not s:
+            res.append(path)
             return
-        if not result:
-            result = []
-        for i in range(len(s)-1):
-            left = s[:i+1]
-            right = s[i+1:]
-            if not right:
-                return
-            if left == left[::-1]:
-                result.append(left)
-            else:
-                continue
-            if right == right[::-1]:
-                result.append(right)
-                self.total.append(list(result))
-                result.pop()
-            self.recur(right,result)
-            result.pop()
-        return
+        for i in range(1, len(s)+1):
+            if self.isPal(s[:i]):
+                self.dfs(s[i:], path+[s[:i]], res)
+
+    def isPal(self, s):
+        return s == s[::-1]
 
 # Q132 Palindrome Partitioning II
 class Solution:
-    total = []
-    def partition(self, s):
-        self.recur(s)
-        #can't make minimum = float('inf') because len() would not work
-        minimum = self.total[0]
-        for i in self.total:
-           minimum = i if len(i) < len(minimum) else minimum
-        return len(minimum)
-
-    def recur(self,s,result=None):
-        if len(s) <= 1:
-            return
-        if not result:
-            result = []
-        for i in range(len(s)-1):
-            left = s[:i+1]
-            right = s[i+1:]
-            if not right:
-                return
-            if left == left[::-1]:
-                result.append(left)
-            else:
-                continue
-            if right == right[::-1]:
-                result.append(right)
-                self.total.append(list(result))
-                result.pop()
-            self.recur(right,result)
-            result.pop()
-        return
+    def minCut(self, s):
+        def isPal(s):
+            return s== s[::-1]
+        cnt=0
+        queue=[0]
+        visited = [0]*len(s)
+        while True:
+            temp = []
+            while queue:
+                cur = queue.pop(0)
+                for i in range (len(s)-1, cur-1, -1):
+                    if not visited[i] and isPal(s[cur:i+1]):
+                        if i == len(s)-1:
+                            return cnt
+                        else:
+                            temp.append(i+1)
+                visited[cur] =1
+            cnt+=1
+            queue += temp
 
 # Q133 Clone Graph
 import collections
@@ -1072,9 +1021,6 @@ class Solution:
 
             max_points = max(max_points, current_max)
         return max_points
-
-if __name__ == "__main__":
-    print(Solution().maxPoints([Point(1,1), Point(2,2), Point(3,3)]))
 
 # Q150 Evaluate Reverse Polish Notation
 class Solution:
