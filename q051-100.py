@@ -5,46 +5,58 @@ except NameError:
     xrange = range  # Python 3
 
 class Solution:
-    def solveNQueens(self,n):
-        board = [[0 for _ in range(n)] for _ in range(n)]
+    def solveNQueens(self, n):
+        res = []
+        self.dfs([-1]*n, 0, [], res)
+        return res
 
-        def solveNQUtil(self, board, col=0):
-        # base case: If all queens are placed
-            if col >= n:
-                return True
+    def dfs(self, nums, index, path, res):
+        if index == len(nums):
+            res.append(path)
+            return
+        for i in xrange(len(nums)):
+            nums[index] = i
+            if self.valid(nums, index):
+                tmp = "."*len(nums)
+                self.dfs(nums, index+1, path+[tmp[:i]+"Q"+tmp[i+1:]], res)
 
-            for i in range(n):
-                if self.isSafe(board, i, col):
-                    board[i][col] = 1
-
-                    if self.solveNQUtil(board, col+1):
-                        return True
-
-                    board[i][col] = 0
-            return False
-
-        return solveNQUtil(board)
-
-    def isSafe(self, board, row, col):
-        # Check this row on left side
-        for i in range(col):
-            if board[row][i] == 1:
+    def valid(self, nums, n):
+        for i in xrange(n):
+            if abs(nums[i]-nums[n]) == n -i or nums[i] == nums[n]:
                 return False
-
-        # Check upper diagonal on left side
-        for i,j in zip(range(row,-1,-1), range(col,-1,-1)):
-            if board[i][j] == 1:
-                return False
-
-        # Check lower diagonal on left side
-        for i,j in zip(range(row,n,1), range(col,-1,-1)):
-            if board[i][j] == 1:
-                return False
-
         return True
 
 # Q52 N-Queens II
-#Same as Q51
+class Solution:
+    def totalNQueens(self, n):
+        def is_not_under_attack(row, col):
+            return not (rows[col] or hills[row - col] or dales[row + col])
+
+        def place_queen(row, col):
+            rows[col] = 1
+            hills[row - col] = 1
+            dales[row + col] = 1
+
+        def remove_queen(row, col):
+            rows[col] = 0
+            hills[row - col] = 0
+            dales[row + col] = 0
+
+        def backtrack(row = 0, count = 0):
+            for col in range(n):
+                if is_not_under_attack(row, col):
+                    place_queen(row, col)
+                    if row + 1 == n:
+                        count += 1
+                    else:
+                        count = backtrack(row + 1, count)
+                    remove_queen(row, col)
+            return count
+
+        rows = [0] * n
+        hills = [0] * (2 * n - 1)
+        dales = [0] * (2 * n - 1)
+        return backtrack()
 
 # Q53 Maximum Subarray
 class Solution:

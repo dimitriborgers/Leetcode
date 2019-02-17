@@ -579,6 +579,7 @@ class Solution:
             return
         for i in range(1, len(s)+1):
             if self.isPal(s[:i]):
+                #this creates a new instance of the path since you're adding something to it
                 self.dfs(s[i:], path+[s[:i]], res)
 
     def isPal(self, s):
@@ -651,28 +652,14 @@ class Solution:
         return False
 
 # Q135 Candy
-#Time Limit Exceeded
 class Solution:
-    def candy(self, ratings):
-        result = [1]*len(ratings)
-        for i in range(1,len(ratings)):
-            if ratings[i] > ratings[i-1]:
-                result[i] = result[i-1]+1
-            elif ratings[i] < ratings[i-1]:
-                index = i
-                while index > 0 and ratings[index-1] > ratings[index] and result[index-1] == result[index]:
-                    result[index-1] += 1
-                    index -= 1
-        return sum(result)
-
-class Solution1:
     def candy(self,ratings):
         candies = [1]*len(ratings)
         for i in range(1,len(ratings)):
             if ratings[i] > ratings[i - 1]:
                 candies[i] = candies[i - 1] + 1;
 
-        total = candies[len(ratings) - 1]
+        total = candies[-1]
         for i in range(len(ratings)-2,-1,-1):
             if ratings[i] > ratings[i + 1]:
                 candies[i] = max(candies[i], candies[i + 1] + 1)
@@ -733,6 +720,8 @@ class Solution:
 
 # Q139 Word Break
 class Solution:
+    #Cannot use lru_cache here because one of the arguments is a list, thus mutable
+    #lru_cache or memoization in general will only work when all arguments are immutable
     def wordBreak(self, s, wordDict):
         dp = [False] * (len(s) + 1)
         dp[0] = True
@@ -781,57 +770,68 @@ class Solution:
 # Q142 Linked List Cycle II
 class Solution:
     def detectCycle(self, head):
-        fast, slow = head, head
-        while fast and fast.next:
-            fast, slow = fast.next.next, slow.next
-            if fast is slow:
-                fast = head
-                while fast is not slow:
-                    fast, slow = fast.next, slow.next
-                return fast.val
+        visited = set()
+
+        node = head
+        while node is not None:
+            if node in visited:
+                return node
+            else:
+                visited.add(node)
+                node = node.next
         return None
 
 # Q143 Reorder List
 class Solution:
     def reorderList(self, head):
-        prev = ListNode(-1)
-        prev.next = cur = dummy = head
-        dummy_next = dummy.next
-        while dummy_next and dummy_next.next:
-            while cur.next:
-                cur = cur.next
-                prev = prev.next
-            if cur != dummy_next:
-                dummy.next = cur
-                prev.next = cur.next
-                cur.next = dummy_next
-                dummy = dummy_next
-                dummy_next = dummy.next
-                cur = dummy_next
-                prev = dummy
-        return head
+        if not head or not head.next or not head.next.next:
+            return
+        slow, fast=head, head
+        while fast.next and fast.next.next:
+            slow, fast=slow.next, fast.next.next
+        head1, head2=head, slow.next
+        slow.next, cur, pre=None, head2, None
+        while cur:
+            curnext=cur.next
+            cur.next=pre
+            pre=cur
+            cur=curnext
+        cur1, cur2=head1, pre
+        while cur2:
+            next1, next2=cur1.next, cur2.next
+            cur1.next=cur2
+            cur2.next=next1
+            cur1, cur2=next1, next2
 
 # Q144 Binary Tree Preorder Traversal
 class Solution:
-    output = []
-    def preorderTraversal(self, root):
-        if not root:
-            return
-        self.output.append(root.val)
-        self.preorderTraversal(root.left)
-        self.preorderTraversal(root.right)
-        return self.output
+    def preorderTraversal(self, root: 'TreeNode') -> 'List[int]':
+        output = []
+
+        def recur(node):
+            if not node:
+                return
+            output.append(node.val)
+            recur(node.left)
+            recur(node.right)
+
+        recur(root)
+        return output
 
 # Q145 Binary Tree Postorder Traversal
 class Solution:
-    output = []
-    def postorderTraversal(self, root):
-        if not root:
-            return
-        self.postorderTraversal(root.left)
-        self.postorderTraversal(root.right)
-        self.output.append(root.val)
-        return self.output
+    def postorderTraversal(self, root: 'TreeNode') -> 'List[int]':
+        output = []
+
+        def recur(node):
+            if not node:
+                return
+            recur(node.left)
+            recur(node.right)
+            output.append(node.val)
+
+        recur(root)
+        return output
 
 # Q146 LRU Cache
 """
@@ -929,34 +929,25 @@ class LRUCache:
 # Q147 Insertion Sort List
 class Solution:
     def insertionSortList(self, head):
-        if not head:
-            return -1
-        if not head.next:
-            return head
-
-        dummy = ListNode('A')
-        const = dummy
-        dummy.next = head
-        prev = head
-        cur = head.next
-        while cur.next:
-            if cur.val < prev.val:
-                dummy.next = cur
-                prev.next = cur.next
-                cur.next = prev
-            if dummy.val == 'A':
-                head = dummy.next
-            if dummy.val != 'A' and dummy.val > cur.val:
-                dummy = const
-                prev = head
-                cur = head.next
-            else:
-                dummy = dummy.next
-                prev = dummy.next
-                cur = prev.next
-        return head
+        p = dummy = ListNode(0)
+        cur = dummy.next = head
+        while cur and cur.next:
+            val = cur.next.val
+            if cur.val < val:
+                cur = cur.next
+                continue
+            if p.next.val > val:
+                p = dummy
+            while p.next.val < val:
+                p = p.next
+            new = cur.next
+            cur.next = new.next
+            new.next = p.next
+            p.next = new
+        return dummy.next
 
 # Q148 Sort List
+# easier to do mergelists than quicksort with linked lists
 class Solution:
     def sortList(self, head):
         if not head or not head.next:
