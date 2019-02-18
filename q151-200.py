@@ -1,7 +1,8 @@
 # Q151 Reverse Words in a String
+# Can't do item assignment for a string since it is non-mutable. Splicing is allowed.
 class Solution:
     def reverseWords(self, s):
-        return ' '.join(s.split(' ')[::-1])
+        return " ".join(s.split()[::-1])
 
 # Q152 Maximum Product Subarray
 class Solution:
@@ -9,7 +10,7 @@ class Solution:
     def maxProduct(self, A):
         global_max, local_max, local_min = float("-inf"), 1, 1
         for x in A:
-            local_max = max(1, local_max)
+            local_max = max(x, local_max)
             if x > 0:
                 local_max, local_min = local_max * x, local_min * x
             else:
@@ -35,21 +36,24 @@ class Solution:
 
 # Q154 Find Minimum in Rotated Sorted Array II
 class Solution:
-    #same as without duplicates
     def findMin(self, nums):
-        minimum,left,right = nums[0],0,len(nums)-1
+        low, high = 0, len(nums) - 1
 
-        while left < right:
-            mid = left + (right-left) // 2
-            if nums[right] < nums[mid]:
-                minimum = nums[mid] if nums[mid] < minimum else minimum
-                left = mid + 1
+        # remove duplicates on sides
+        while low < high and nums[low] == nums[high]:
+            low += 1
+
+        # binary search
+        while low <= high:
+            mid = (low + high) // 2
+            if nums[mid] > nums[-1]:
+                low = mid + 1
             else:
-                minimum = nums[mid] if nums[mid] < minimum else minimum
-                right = mid
-        if nums[right] < minimum:
-            minimum = nums[right]
-        return minimum
+                if mid > 0 and nums[mid - 1] > nums[-1] or mid == 0:
+                    return nums[mid]
+                high = mid - 1
+
+        return nums[low]
 
 # Q155 Min Stack
 import heapq

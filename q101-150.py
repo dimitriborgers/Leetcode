@@ -983,35 +983,44 @@ class Solution:
         return dummy.next
 
 # Q149 Max Points on a Line
-import collections
-
-class Point:
-    def __init__(self, a=0, b=0):
-        self.x = a
-        self.y = b
-
 class Solution:
-    #Take time to think about edge cases. In this case, you had to ask about whether or not points in the same place would count as mutliple
     def maxPoints(self, points):
-        max_points = 0
-        for i, start in enumerate(points):
-            slope_count, same = collections.defaultdict(int), 1
-            for j in range(i + 1, len(points)):
-                end = points[j]
-                if start.x == end.x and start.y == end.y:
-                    same += 1
+        def max_points_on_a_line_containing_point_i(i):
+            def add_line(i, j, count, duplicates):
+
+                x1 = points[i].x
+                y1 = points[i].y
+                x2 = points[j].x
+                y2 = points[j].y
+
+                if x1 == x2 and y1 == y2:
+                    duplicates += 1
+
+                elif y1 == y2:
+                    nonlocal horisontal_lines
+                    horisontal_lines += 1
+                    count = max(horisontal_lines, count)
                 else:
-                    slope = float("inf")
-                    if start.x - end.x != 0:
-                        slope = (start.y - end.y) * 1.0 / (start.x - end.x)
-                    slope_count[slope] += 1
+                    slope = (x1 - x2) / (y1 - y2)
+                    lines[slope] = lines.get(slope, 1) + 1
+                    count = max(lines[slope], count)
+                return count, duplicates
 
-            current_max = same
-            for slope in slope_count:
-                current_max = max(current_max, slope_count[slope] + same)
+            lines, horisontal_lines = {}, 1
+            count = 1
+            duplicates = 0
+            for j in range(i + 1, n):
+                count, duplicates = add_line(i, j, count, duplicates)
+            return count + duplicates
 
-            max_points = max(max_points, current_max)
-        return max_points
+        n = len(points)
+        if n < 3:
+            return n
+
+        max_count = 1
+        for i in range(n - 1):
+            max_count = max(max_points_on_a_line_containing_point_i(i), max_count)
+        return max_count
 
 # Q150 Evaluate Reverse Polish Notation
 class Solution:
